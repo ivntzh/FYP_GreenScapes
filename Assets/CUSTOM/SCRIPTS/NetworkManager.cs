@@ -62,37 +62,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log($"Joined room: {PhotonNetwork.CurrentRoom.Name}");
-        
-        if (PhotonNetwork.IsMasterClient)
-        {
-            Debug.Log("You are the Master Client. Loading Game scene...");
-            PhotonNetwork.LoadLevel("Game");
-        }
-    }
-
-    public override void OnMasterClientSwitched(Player newMaster)
-    {
-        Debug.Log($"Master client switched to: {newMaster.NickName} (ID: {newMaster.ActorNumber})");
-    
-        if (PhotonNetwork.CurrentRoom == null) return;
-    
-        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("hostId", out object hostId))
-        {
-            if (newMaster.ActorNumber != (int)hostId)
-            {
-                Debug.Log("New master is not the original host. Leaving room gracefully...");
-                StartCoroutine(LeaveRoomGracefully());
-            }
-        }
-    }
-
-    IEnumerator LeaveRoomGracefully()
-    {
-        Debug.Log("Leaving room...");
-        PhotonNetwork.LeaveRoom();
-        yield return new WaitUntil(() => !PhotonNetwork.InRoom);
-        Debug.Log("Successfully left the room. Returning to Lobby.");
-        SceneManager.LoadScene("Lobby");
+        PhotonNetwork.LoadLevel("Game"); // Remove master client check
     }
 
     // ===== Room Management =====
