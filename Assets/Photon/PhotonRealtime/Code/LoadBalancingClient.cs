@@ -602,11 +602,9 @@ namespace Photon.Realtime
 
         /// <summary>Defines if this client sends telemetry / analytics about how the connection ends.</summary>
         public bool TelemetryEnabled = false;
-
         /// <summary>Tells us if "this session" was already reported. We want to send only one report in best case. Re-set on connect.</summary>
-        #pragma warning disable CS0414
         private bool telemetrySent = false;
-        #pragma warning restore CS0414
+
 
         /// <summary>
         /// After a to a connection loss or timeout, this summarizes the most relevant system conditions which might have contributed to the loss.
@@ -1368,6 +1366,7 @@ namespace Photon.Realtime
             {
                 this.lastJoinType = JoinType.JoinRoom;
                 this.enterRoomParamsCache.JoinMode = JoinMode.RejoinOnly;
+                this.enterRoomParamsCache.Ticket = null;
                 return this.Connect(this.GameServerAddress, this.ProxyServerAddress, ServerConnection.GameServer);
             }
 
@@ -2051,10 +2050,15 @@ namespace Photon.Realtime
                 return false;
             }
 
-            this.State = ClientState.Leaving;
-            this.GameServerAddress = String.Empty;
-            this.enterRoomParamsCache = null;
-            return this.LoadBalancingPeer.OpLeaveRoom(becomeInactive, sendAuthCookie);
+            if (this.LoadBalancingPeer.OpLeaveRoom(becomeInactive, sendAuthCookie))
+            {
+                this.State = ClientState.Leaving;
+                this.GameServerAddress = String.Empty;
+                this.enterRoomParamsCache = null;
+                return true;
+            }
+
+            return false;
         }
 
 
