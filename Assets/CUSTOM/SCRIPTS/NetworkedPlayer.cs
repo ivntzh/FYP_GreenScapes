@@ -12,15 +12,15 @@ public class NetworkedPlayer : MonoBehaviour
     public Transform leftHand;
     public Transform rightHand;
 
-    public Animator leftHandAnimator;
-    public Animator rightHandAnimator;
+    // Use the full-body animator for both body and hand gestures.
+    public Animator fullBodyAnimator;
 
     private PhotonView photonView;
 
     private Transform headRig;
     private Transform leftHandRig;
     private Transform rightHandRig;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         photonView = GetComponent<PhotonView>();
@@ -29,54 +29,78 @@ public class NetworkedPlayer : MonoBehaviour
         leftHandRig = xrOrigin.transform.Find("Camera Offset/Left Controller");
         rightHandRig = xrOrigin.transform.Find("Camera Offset/Right Controller");
 
-        if(photonView.IsMine)
+        if (photonView.IsMine)
         {
+            // Hide local renderers so the local player doesn't see their own avatar.
             foreach (var item in GetComponentsInChildren<Renderer>())
             {
-			    item.enabled = false;
+                item.enabled = false;
             }
         }
-        
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(photonView.IsMine)
+        // Only update positions and animator parameters on the local instance.
+        if (photonView.IsMine)
         {
-            MapPosition(head,headRig);
-            MapPosition(leftHand,leftHandRig);
-            MapPosition(rightHand,rightHandRig);
+            MapPosition(head, headRig);
+            MapPosition(leftHand, leftHandRig);
+            MapPosition(rightHand, rightHandRig);
 
-            UpdateHandAnimation(InputDevices.GetDeviceAtXRNode(XRNode.LeftHand),leftHandAnimator);
-            UpdateHandAnimation(InputDevices.GetDeviceAtXRNode(XRNode.RightHand),rightHandAnimator);
+            // Update the full-body animator with hand input values.
+            UpdateFullBodyAnimator();
         }
     }
 
-    void UpdateHandAnimation(InputDevice targetDevice, Animator handAnimator)
+    // Reads the XR device input and assigns the values to the full-body animator parameters.
+    void UpdateFullBodyAnimator()
     {
-        if(targetDevice.TryGetFeatureValue(CommonUsages.trigger, out float triggerValue))
+        // Get left-hand input
+        InputDevice leftDevice = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        float leftTrigger = 0f, leftGrip = 0f;
+        if (leftDevice.TryGetFeatureValue(CommonUsages.trigger, out leftTrigger))
         {
-            handAnimator.SetFloat("Trigger", triggerValue);
+            fullBodyAnimator.SetFloat("Left Pinch", leftTrigger);
         }
         else
         {
-            handAnimator.SetFloat("Trigger", 0);
+            fullBodyAnimator.SetFloat("Left Pinch", 0f);
+        }
+        if (leftDevice.TryGetFeatureValue(CommonUsages.grip, out leftGrip))
+        {
+            fullBodyAnimator.SetFloat("Left Grab", leftGrip);
+        }
+        else
+        {
+            fullBodyAnimator.SetFloat("Left Grab", 0f);
         }
 
-        if (targetDevice.TryGetFeatureValue(CommonUsages.grip, out float gripValue))
+        // Get right-hand input
+        InputDevice rightDevice = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        float rightTrigger = 0f, rightGrip = 0f;
+        if (rightDevice.TryGetFeatureValue(CommonUsages.trigger, out rightTrigger))
         {
-            handAnimator.SetFloat("Grip", gripValue);
+            fullBodyAnimator.SetFloat("Right Pinch", rightTrigger);
         }
         else
         {
-            handAnimator.SetFloat("Grip", 0);
+            fullBodyAnimator.SetFloat("Right Pinch", 0f);
+        }
+        if (rightDevice.TryGetFeatureValue(CommonUsages.grip, out rightGrip))
+        {
+            fullBodyAnimator.SetFloat("Right Grab", rightGrip);
+        }
+        else
+        {
+            fullBodyAnimator.SetFloat("Right Grab", 0f);
         }
     }
 
-    void MapPosition(Transform target,Transform xrOriginTransform)
-	{
-		target.position = xrOriginTransform.position;
+    // Updates the position and rotation of a target transform to match the corresponding XR rig transform.
+    void MapPosition(Transform target, Transform xrOriginTransform)
+    {
+        target.position = xrOriginTransform.position;
         target.rotation = xrOriginTransform.rotation;
-	}
+    }
 }

@@ -6440,6 +6440,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5731685395677134978, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
+      propertyPath: near clip plane
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 6129192590855243032, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -6507,6 +6511,14 @@ PrefabInstance:
     - target: {fileID: 8086862772499370372, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164109279931912755, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
+      propertyPath: m_MoveSpeed
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8164109279931912755, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
+      propertyPath: m_UseGravity
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8512746759182633514, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
       propertyPath: m_SizeDelta.x
