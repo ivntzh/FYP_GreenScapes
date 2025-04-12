@@ -25,6 +25,9 @@ public class FishingString : MonoBehaviour
     private List<Vector3> ropeSegments; // Points of the rope
     private Vector3[] previousPositions; // Positions from the last frame to calculate velocity
 
+    [HideInInspector]
+    public bool clampEndPoint = true;  // new: turn off during Pulling
+
     private void Start()
     {
         // If no LineRenderer is assigned, add one dynamically
@@ -79,10 +82,10 @@ public class FishingString : MonoBehaviour
             ropeSegments[i] += Vector3.down * gravity * Time.deltaTime; // Apply gravity
         }
 
-        // Enforce a maximum rope length by clamping the endPoint position if necessary
+        // **only** clamp the endPoint if clampEndPoint is true
         Vector3 rodToBait = endPoint.position - startPoint.position;
         float currentRopeLength = rodToBait.magnitude;
-        if (currentRopeLength > maxRopeLength)
+        if (clampEndPoint && currentRopeLength > maxRopeLength)
         {
             Vector3 clampedDirection = rodToBait.normalized;
             endPoint.position = startPoint.position + clampedDirection * maxRopeLength;
