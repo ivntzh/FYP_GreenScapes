@@ -6,6 +6,19 @@ using System.Collections;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    public static GameManager Instance;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
     void Start()
     {
         PhotonNetwork.AutomaticallySyncScene = true;
