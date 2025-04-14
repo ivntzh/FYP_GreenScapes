@@ -7,6 +7,9 @@ public class FishingArea : MonoBehaviour
 {
     private enum FishState { Idle, Waiting, Prompt, Pulling, Caught }
     private FishState state = FishState.Idle;
+    // at top of FishingArea
+    private bool waitingForRubbish = false;
+
 
     [Header("References")]
     public GameObject       bait;               // Your bait prefab instance
@@ -28,6 +31,14 @@ public class FishingArea : MonoBehaviour
     public AudioClip        treasureCatchSound;
     private AudioSource     audioSource;
 
+    [Header("Rubbish Object Settings")]
+    public AudioClip        disposalSfx;            // drag your “bin drop” sound here
+    // public GameObject       disposalPopupPanel;     // a small panel with text, initially inactive
+    // public TextMeshProUGUI  disposalPopupText;      // the “+90 Coins!” text
+    // public float            disposalPopupDuration = 2f;  // seconds to show the popup
+
+
+    [Header("Fish Objects")]
     public GameObject fishModel; // Model to spawn for fish
     public GameObject rubbishModel; // Model to spawn for rubbish
     public GameObject treasureModel; // Model to spawn for treasure
@@ -196,7 +207,8 @@ public class FishingArea : MonoBehaviour
         ShowCatchResult();
 
         // 4) Finally, do the full reset (rope length, state, UI) after a short delay
-        Invoke(nameof(ResetFishingArea), 1f);
+        Invoke(nameof(ResetFishingArea), 0.5f);
+        Invoke(nameof(ResetFishGameUI), 5f);
     }
 
 
@@ -208,89 +220,96 @@ public class FishingArea : MonoBehaviour
 
     private void ShowCatchResult()
     {
-
         // Disable exclamation prompt
-        if (exclamationIcon != null)
-        {
-            exclamationIcon.SetActive(false);
-        }
-
-        Debug.Log("Showing catch result.");
+        exclamationIcon?.SetActive(false);
         catchPromptPanel.SetActive(false);
         catchResultPanel.SetActive(true);
 
-        // Check if bait is null
         if (bait == null)
         {
             Debug.LogError("Bait object is not assigned!");
-            return; // Exit the method if bait is null
+            return;
         }
 
-        // Randomize the result: 60% chance of fish, 30% chance of rubbish, 10% chance of treasure
+        // Randomize the result
         float randomValue = Random.value;
-
-        // Give points based on catch result
-        int pointsAwarded = 0;
-
+        int   pointsAwarded = 0;
         GameObject modelToSpawn = null;
+
         if (randomValue < 0.6f)
         {
+            // Fish
             catchResultText.text = "You caught a fish!";
-            modelToSpawn = fishModel;
-            pointsAwarded = 100; // fish
+            modelToSpawn   = fishModel;
+            pointsAwarded  = 100;
             PlaySound(fishCatchSound);
         }
         else if (randomValue < 0.9f)
         {
-            catchResultText.text = "You caught some rubbish!";
-            modelToSpawn = rubbishModel;
-            pointsAwarded = 50; // rubbish
+            // Rubbish
+            catchResultText.text = "You caught some rubbish!\nThrow it in the bin!";
+            modelToSpawn   = rubbishModel;
+            pointsAwarded  = 25;             // immediate rubbish points
             PlaySound(rubbishCatchSound);
+            waitingForRubbish = true;        // hold reset until disposal
         }
         else
         {
+            // Treasure
             catchResultText.text = "You found a treasure!";
-            modelToSpawn = treasureModel;
-            pointsAwarded = 200; // treasure
+            modelToSpawn   = treasureModel;
+            pointsAwarded  = 200;
             PlaySound(treasureCatchSound);
         }
 
-        // Only add score if the game is in the Playing state
-        if (gameManager != null && gameManager.currentState == GameState.Playing)
-        {
+        // Award fish, treasure, or the 10pts for rubbish
+        if (gameManager.currentState == GameState.Playing)
             gameManager.AddScore(pointsAwarded);
-        }
 
-
-        // Check if modelToSpawn is null
         if (modelToSpawn == null)
         {
-            Debug.LogError("modelToSpawn is null! This should not happen.");
-            return; // Exit the method if modelToSpawn is null
+            Debug.LogError("modelToSpawn is null!");
+            return;
         }
 
-        // Instantiate the model at the bait's position
-        Debug.Log("Instantiating model at position: " + bait.transform.position);
-        currentModel = Instantiate(modelToSpawn, bait.transform.position, Quaternion.identity); // Use bait's position
+        // Spawn it as a child of the bait (so it follows during pull)
+        currentModel = Instantiate(modelToSpawn, bait.transform.position, Quaternion.identity);
+        currentModel.transform.SetParent(bait.transform);
+        currentModel.transform.localPosition = Vector3.zero;
 
-        // Attach the model to the bait
-        currentModel.transform.SetParent(bait.transform); // Attach to bait object
+        // Fish & treasure auto‑destroy after 5s
+        if (!waitingForRubbish)
+        {
+            Destroy(currentModel, 5f);  // destroys after 5 seconds :contentReference[oaicite:0]{index=0}
+        }
 
-        // Optionally adjust the model's position relative to the bait
-        currentModel.transform.localPosition = Vector3.zero; // This can be adjusted if needed
-
-        // Destroy the spawned model after 5 seconds
-        Destroy(currentModel, 5f);
-
+        state = FishState.Caught;
     }
+
+    public void OnRubbishDisposed()
+    {
+        if (!waitingForRubbish) return;
+
+        waitingForRubbish = false;
+
+        // award the final 90 points
+        if (gameManager.currentState == GameState.Playing)
+            gameManager.AddScore(125);
+
+        PlaySound(disposalSfx);
+
+        // clean up the model
+        if (currentModel != null)
+            Destroy(currentModel);
+
+        // reset for next cast
+        ResetFishingArea();
+    }
+
 
     private void ResetFishingArea()
     {
         state = FishState.Idle;
-
-        catchPromptPanel.SetActive(false);
-        catchResultPanel.SetActive(false);
-        exclamationIcon?.SetActive(false);
 
         // unfreeze bait
         if (bait.TryGetComponent<Rigidbody>(out var rb))
@@ -307,6 +326,13 @@ public class FishingArea : MonoBehaviour
             fishingString.maxRopeLength = fishingString.segmentLength * fishingString.segmentCount;
         }
 
+    }
+
+    private void ResetFishGameUI()
+    {
+        catchPromptPanel.SetActive(false);
+        catchResultPanel.SetActive(false);
+        exclamationIcon?.SetActive(false);
     }
 
 

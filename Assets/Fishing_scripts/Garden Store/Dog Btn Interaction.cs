@@ -79,7 +79,7 @@ public class DogBtnInteraction : MonoBehaviour
             int idx = Random.Range(0, dialogueLines.Length);
             string line = dialogueLines[idx];
             StopAllCoroutines();
-            StartCoroutine(ShowDialogueRoutine(line));
+            StartCoroutine(ShowDialogueRoutine(line, Color.yellow));
             Debug.Log("This is dialogue: " + line);
         }
 
@@ -90,9 +90,10 @@ public class DogBtnInteraction : MonoBehaviour
         }
     }
 
-    private IEnumerator ShowDialogueRoutine(string line)
+    private IEnumerator ShowDialogueRoutine(string line, Color color)
     {
         dialogueText.text = line;
+        dialogueText.color = color;
         dialogueText.gameObject.SetActive(true);
         yield return new WaitForSeconds(dialogueDuration);
         dialogueText.gameObject.SetActive(false);

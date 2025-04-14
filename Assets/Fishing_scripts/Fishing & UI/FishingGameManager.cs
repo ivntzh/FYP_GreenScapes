@@ -22,6 +22,7 @@ public class FishingGameManager : MonoBehaviour
 
     [Header("UI References")]
     public GameObject startButton;      // Button to start the game
+    public GameObject startGamePanel; 
     public GameObject grabRodPrompt;    // UI panel or text that says "Grab the rod"
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI timerText;
@@ -33,6 +34,9 @@ public class FishingGameManager : MonoBehaviour
     public TextMeshProUGUI endScoreText;
     public Button playAgainButton;
     public Button exitButton;
+    public AudioClip gameStartSound;
+    public AudioClip gameEndSound;
+    public AudioSource audioPlayer;
 
     private void Start()
     {
@@ -75,14 +79,10 @@ public class FishingGameManager : MonoBehaviour
     private void OnStartButtonClicked()
     {
         // Hide start button, show "Grab the rod" prompt
-        startButton.SetActive(false);
+        startGamePanel.SetActive(false);
         grabRodPrompt.SetActive(true);
         Debug.Log("Startbtn clicked");
         StartCountdown();
-
-        // Wait for the user to actually grab the rod...
-        // You might have some event or script that detects rod pickup
-        // Then call StartCountdown() from that event.
     }
 
     public void OnRodGrabbed()
@@ -97,6 +97,7 @@ public class FishingGameManager : MonoBehaviour
 
     private void StartCountdown()
     {
+        PlaySound(gameStartSound, 0.4f);
         currentState = GameState.Countdown;
         countdownText.gameObject.SetActive(true);
         GameUI.SetActive(true);
@@ -156,6 +157,8 @@ public class FishingGameManager : MonoBehaviour
     {
         currentState = GameState.GameOver;
 
+        PlaySound(gameEndSound, 0.7f);
+
         // 1) Save high score
         SaveHighScore(currentScore);
 
@@ -166,7 +169,7 @@ public class FishingGameManager : MonoBehaviour
         endGamePanel.SetActive(true);
         endScoreText.text    = $"Your Score: {currentScore}";
         highScoreText.text   = $"High Score: {PlayerPrefs.GetInt("HighScore", 0)}";
-        currencyText.text    = $"Coins: {CurrencyManager.GetCurrency()}";
+        currencyText.text    = $"Coins:\n{CurrencyManager.GetCurrency()}";
     }
 
     private void UpdateUI()
@@ -203,11 +206,18 @@ public class FishingGameManager : MonoBehaviour
         currentScore = 0;
         currentState = GameState.Idle;
         endGamePanel.SetActive(false);
-        startButton.SetActive(true);
+        startGamePanel.SetActive(true);
         GameUI.SetActive(false);
         timerText.text = "";
         scoreText.text = "Score: 0";
         Debug.Log("Exiting Fishing Game...");
-        // Application.Quit(); // or load another scene
+        grabRodPrompt.SetActive(false);
     }
+
+    private void PlaySound(AudioClip clip, float volumeScale = 1.0f)
+    {
+        if (audioPlayer != null && clip != null)
+            audioPlayer.PlayOneShot(clip, volumeScale);
+    }
+
 }
