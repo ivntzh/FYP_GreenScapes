@@ -14,6 +14,7 @@
     <meta-data android:name="com.oculus.telemetry.project_guid" android:value="33d787df-e9af-4a05-8676-01e62a34273e" />
     <meta-data android:name="com.oculus.supportedDevices" android:value="quest|quest2|questpro|quest3|quest3s" tools:replace="android:value" />
   </application>
+  <uses-permission android:name="oculus.software.overlay_keyboard" android:required="true" />
   <uses-feature android:name="android.hardware.vr.headtracking" android:version="1" android:required="true" />
   <uses-feature android:name="com.oculus.software.body_tracking" android:required="false" />
   <uses-permission android:name="com.oculus.permission.BODY_TRACKING" />
