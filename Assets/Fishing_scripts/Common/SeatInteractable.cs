@@ -76,8 +76,9 @@ public class SeatInteractable : MonoBehaviour
         localPosFrozen   = true;
 
         // keep continuous‑move enabled so player can walk off
-        if (continuousMoveProvider != null)
-            continuousMoveProvider.enabled = true;
+        // if (continuousMoveProvider != null)
+        //     continuousMoveProvider.enabled = true;
+        continuousMoveProvider.enabled = false; // disable movement so that player is fixed in position unless button is pressed
     }
 
     void Update()
