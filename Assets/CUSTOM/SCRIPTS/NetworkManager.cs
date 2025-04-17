@@ -6,10 +6,7 @@ using ExitGames.Client.Photon;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System;
 using System.Collections;
-
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -22,65 +19,69 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomButtonPrefab;
     
     private Dictionary<string, RoomInfo> cachedRooms = new Dictionary<string, RoomInfo>();
+    private bool connectionReady;
 
     void Start()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
-        Debug.Log("Starting NetworkManager: Attempting to connect to Photon.");
+        PhotonNetwork.AutomaticallySyncScene = false;
         ConnectToPhoton();
     }
 
-    void ConnectToPhoton()
+    public void ConnectToPhoton()
     {
         if (!PhotonNetwork.IsConnected)
         {
             PhotonNetwork.ConnectUsingSettings();
             statusText.text = "Connecting...";
-            Debug.Log("Connecting to Photon...");
-        }
-        else
-        {
-            Debug.LogWarning("Already connected to Photon.");
         }
     }
 
-    // ===== Photon Callbacks =====
     public override void OnConnectedToMaster()
     {
-        Debug.Log("Connected to Photon Master Server.");
+        connectionReady = true;
         PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
         statusText.text = "In Lobby";
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        Debug.Log($"Room list updated. {roomList.Count} rooms available.");
         UpdateCachedRooms(roomList);
         UpdateRoomUI();
     }
 
     public override void OnJoinedRoom()
     {
-        Debug.Log($"Joined room: {PhotonNetwork.CurrentRoom.Name}");
-        PhotonNetwork.LoadLevel("Game"); // Remove master client check
+        StartCoroutine(LoadGameScene());
     }
 
-    // ===== Room Management =====
+    IEnumerator LoadGameScene()
+    {
+        PhotonNetwork.LoadLevel("Game");
+        yield return new WaitForSeconds(0.1f);
+    }
+
     public void CreateRoom()
     {
+        if (!connectionReady || !PhotonNetwork.IsConnected)
+        {
+            statusText.text = "Not connected properly!";
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(roomNameInput.text))
         {
-            Debug.LogWarning("Room creation failed: Room name is empty.");
             statusText.text = "Please enter a room name!";
             return;
         }
 
-        Debug.Log($"Creating room: {roomNameInput.text} with password: {(string.IsNullOrEmpty(passwordInput.text) ? "No" : "Yes")}");
-
         RoomOptions options = new RoomOptions()
         {
             MaxPlayers = 2,
-            CustomRoomProperties = new Hashtable
+            CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
             {
                 { "hostId", PhotonNetwork.LocalPlayer.ActorNumber },
                 { "password", passwordInput.text },
@@ -94,8 +95,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void JoinRoom(string roomName)
     {
-        Debug.Log($"Attempting to join room: {roomName}");
-
         if (cachedRooms.TryGetValue(roomName, out RoomInfo room))
         {
             bool requiresPassword = room.CustomProperties.ContainsKey("hasPassword") && (bool)room.CustomProperties["hasPassword"];
@@ -105,14 +104,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
                 {
                     if (joinPasswordInput.text != (string)roomPassword)
                     {
-                        Debug.LogWarning("Incorrect password entered.");
                         statusText.text = "Incorrect password!";
                         return;
                     }
                 }
                 else
                 {
-                    Debug.LogError("Room requires a password, but no password found in properties!");
                     statusText.text = "Password not available!";
                     return;
                 }
@@ -121,7 +118,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.LogWarning("Room not found in cached list.");
             statusText.text = "Room not found!";
         }
     }
@@ -132,12 +128,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             if (room.RemovedFromList)
             {
-                Debug.Log($"Removing room from cache: {room.Name}");
                 cachedRooms.Remove(room.Name);
             }
             else
             {
-                Debug.Log($"Updating cached room: {room.Name}");
                 cachedRooms[room.Name] = room;
             }
         }
@@ -145,8 +139,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     void UpdateRoomUI()
     {
-        Debug.Log("Updating Room UI...");
-
         foreach (Transform child in roomListContent)
             Destroy(child.gameObject);
         
@@ -154,31 +146,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             GameObject button = Instantiate(roomButtonPrefab, roomListContent);
             button.GetComponent<RoomButton>().Initialize(room, JoinRoom);
-            Debug.Log($"Added room to UI: {room.Name}");
         }
-    }
-
-    public void LeaveRoom()
-    {
-        Debug.Log("Leaving current room...");
-        PhotonNetwork.LeaveRoom();
-    }
-
-    public override void OnLeftRoom()
-    {
-        Debug.Log("Successfully left room. Loading Lobby scene.");
-        SceneManager.LoadScene("Lobby");
-    }
-
-    public void Disconnect()
-    {
-        Debug.Log("Disconnecting from Photon...");
-        PhotonNetwork.Disconnect();
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        Debug.Log($"Disconnected from Photon. Reason: {cause}");
-        SceneManager.LoadScene("StartMenu");
+        connectionReady = false;
+        FindObjectOfType<MenuManager>()?.ShowStartMenu();
     }
 }

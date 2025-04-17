@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: cf97b07ee4404a23a3b7b77d64c23dab
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - volumeProfile: {fileID: 11400000, guid: f341bd8f800061c4796c964155e32452, type: 2}
+  - universalRendererData: {fileID: 11400000, guid: a9e16df41136c7447a00752210f829ac,
+      type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
