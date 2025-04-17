@@ -1,13 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq; // for OrderBy
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 [System.Serializable]
 public class ShopItemData
 {
-    public string id;         // unique identifier, e.g. "skybox_sunset"
+    public string id;         // MUST match: 
+                              // • Environment prefab GameObject name 
+                              // • Skybox Material.name 
+                              // • BGM AudioClip.name
     public string itemName;
     public Sprite itemIcon;
     public int price;
@@ -16,9 +21,16 @@ public class ShopItemData
 
 public class ShopManager : MonoBehaviour
 {
+    private const string PURCHASED_KEY = "PurchasedItems";
+
+    [Header("Testing (Inspector‑only)")]
+    [Tooltip("Set to >= 0 to override PlayerCurrency on Start")]
+    public int testCurrency = -1;
+
     [Header("Panel & Buttons")]
     public GameObject shopPanel;
     public Button openShopButton;
+    public Button resetShopButton; 
 
     [Header("Message Settings")]
     public float messageDuration = 5f;   // seconds before auto‑hide
@@ -35,58 +47,103 @@ public class ShopManager : MonoBehaviour
     public TextMeshProUGUI messageText;
     public Button checkoutButton;
 
+    [Header("References")]
+    public EnvironmentSettingsManager environmentSettingsManager;
+
     // track selected item IDs and running total
     private HashSet<string> selectedIds = new HashSet<string>();
     private int runningTotal = 0;
 
+    private HashSet<string> purchasedIds = new HashSet<string>();
+
     void Start()
     {
+        // ——— Testing override ———
+        if (testCurrency >= 0)
+        {
+            PlayerPrefs.SetInt("PlayerCurrency", testCurrency);
+            PlayerPrefs.Save();
+        }
+        
+        LoadPurchased();
         shopPanel.SetActive(false);
         checkoutButton.interactable = false;
         openShopButton.onClick.AddListener(ToggleShop);
         checkoutButton.onClick.AddListener(OnCheckout);
+
+        if (resetShopButton != null)
+            resetShopButton.onClick.AddListener(ResetShop);
+
         UpdateCurrencyDisplay();
+    }
+
+    private void LoadPurchased()
+    {
+        string json = PlayerPrefs.GetString(PURCHASED_KEY, "");
+        if (!string.IsNullOrEmpty(json))
+            purchasedIds = new HashSet<string>(
+                JsonUtility.FromJson<Serialization<string>>(json).ToList()
+            );
+    }
+
+    private void SavePurchased()
+    {
+        var wrapper = new Serialization<string>(purchasedIds.ToList());
+        PlayerPrefs.SetString(PURCHASED_KEY, JsonUtility.ToJson(wrapper));
+        PlayerPrefs.Save();
     }
 
     public void ToggleShop()
     {
         bool open = !shopPanel.activeSelf;
         shopPanel.SetActive(open);
-        checkoutButton.interactable = true;
+        checkoutButton.interactable = open;
 
         // hide any leftover message
         if (messageCoroutine != null)
             StopCoroutine(messageCoroutine);
         messageText.gameObject.SetActive(false);
-        
+
+        // ——— Clear out any previous selection ———
+        selectedIds.Clear();
+        runningTotal = 0;
 
         if (open)
         {
-            PopulateShop();
-            UpdateCurrencyDisplay();
-            UpdateTotalCostDisplay();
+            PopulateShop();            // re‑create all rows (each will start unselected)
+            UpdateCurrencyDisplay();   
+            UpdateTotalCostDisplay();  // now shows “0 Coins” in green
         }
         else 
         {
-            checkoutButton.interactable = false;
+            // shop closed, blank out the total
+            totalCostText.text = "Total:";
         }
     }
 
+
     private void PopulateShop()
     {
-        foreach (Transform t in shopListContent)
-            Destroy(t.gameObject);
+        // Clear
+        foreach (Transform t in shopListContent) Destroy(t.gameObject);
 
-        foreach (var item in storeItems)
+        // Sort: available first, then by price ascending
+        var sorted = storeItems
+            .OrderBy(item => purchasedIds.Contains(item.id));  // false (0) first, true (1) last
+            //.ThenBy(item => item.price);
+
+        foreach (var item in sorted)
         {
-            var rowObj = Instantiate(shopItemPrefab, shopListContent);
+            var rowObj  = Instantiate(shopItemPrefab, shopListContent);
             var rowCtrl = rowObj.GetComponent<ShopItemRowController>();
-            rowCtrl.Initialize(item, this);
+            bool bought = purchasedIds.Contains(item.id);
+            rowCtrl.Initialize(item, this, bought);
         }
     }
 
     public void SelectItem(string id, int price)
     {
+        if (purchasedIds.Contains(id)) return;
         if (selectedIds.Add(id))
         {
             runningTotal += price;
@@ -122,26 +179,38 @@ public class ShopManager : MonoBehaviour
 
     private void OnCheckout()
     {
+        //if no items selected
+        if (runningTotal == 0)
+        {
+            ShowMessage("Please select an item first.", Color.yellow);
+            return;
+        }
+
         int balance = PlayerPrefs.GetInt("PlayerCurrency", 0);
         if (balance >= runningTotal)
         {
             PlayerPrefs.SetInt("PlayerCurrency", balance - runningTotal);
             PlayerPrefs.Save();
 
-            // TODO: unlock each selectedId (e.g. instantiate prefabs or set skybox)
+            foreach (var id in selectedIds)
+                purchasedIds.Add(id);
+            SavePurchased();
+
             selectedIds.Clear();
             runningTotal = 0;
 
             ShowMessage("Purchase successful!", Color.green);
-
             UpdateCurrencyDisplay();
             UpdateTotalCostDisplay();
-            PopulateShop(); // reset toggles
+            PopulateShop();
+
+            // **refresh environment settings**
+            environmentSettingsManager.Refresh();
         }
         else
         {
-            int needed = runningTotal - balance;
-            ShowMessage($"Not enough Coins! Need {needed} more.", Color.red);
+            int need = runningTotal - balance;
+            ShowMessage($"Not enough Coins! Need {need} more.", Color.red);
         }
     }
 
@@ -169,5 +238,22 @@ public class ShopManager : MonoBehaviour
     {
         yield return new WaitForSeconds(messageDuration);
         messageText.gameObject.SetActive(false);
+    }
+
+        /// <summary>
+    /// Clears all purchased items (and currency) for testing.
+    /// </summary>
+    public void ResetShop()
+    {
+        PlayerPrefs.DeleteKey(PURCHASED_KEY);
+        PlayerPrefs.DeleteKey("PlayerCurrency");
+        PlayerPrefs.Save();
+
+        purchasedIds.Clear();
+        selectedIds.Clear();
+        runningTotal = 0;
+
+        // Reload the current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

@@ -445,7 +445,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 65, y: -1}
-  m_SizeDelta: {x: 25, y: 25}
+  m_SizeDelta: {x: 23, y: 23}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5125215211228620453
 CanvasRenderer:
@@ -564,7 +564,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -64.7, y: -0.39999962}
-  m_SizeDelta: {x: 40, y: 40}
+  m_SizeDelta: {x: 35, y: 35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3739611049446088896
 CanvasRenderer:
@@ -717,10 +717,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de1b6ac58c7f86246aab934c4fb2c1bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconImage: {fileID: 3470596371762530335}
+  itemIcon: {fileID: 3470596371762530335}
   nameText: {fileID: 1735630966003314236}
   priceText: {fileID: 4656893541163292060}
-  toggleButton: {fileID: 8921991053523814022}
-  toggleIcon: {fileID: 2694543756800412853}
-  plusSprite: {fileID: 21300000, guid: 48d01e73e3bad8c42a245f5f50b9ca2b, type: 3}
-  crossSprite: {fileID: 21300000, guid: 92d367b138ee2d040a34c3fd0c26aace, type: 3}
+  addButton: {fileID: 8921991053523814022}
+  buttonIcon: {fileID: 2694543756800412853}
+  plusSprite: {fileID: 21300000, guid: a39eb46e84f299c479b0e4226b35c9e3, type: 3}
+  crossSprite: {fileID: 21300000, guid: f45b6ef5856973a42b3732da4c20b1c8, type: 3}

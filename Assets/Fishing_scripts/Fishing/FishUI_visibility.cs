@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UI_visibility : MonoBehaviour
+public class FishUI_visibility : MonoBehaviour
 {
     [Header("References")]
     // Instead of a camera, assign an empty GameObject that's a child of your XR rig.

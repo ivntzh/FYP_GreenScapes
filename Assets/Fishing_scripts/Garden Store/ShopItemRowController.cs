@@ -5,51 +5,74 @@ using TMPro;
 public class ShopItemRowController : MonoBehaviour
 {
     [Header("UI References")]
-    public Image       iconImage;      // child "Icon"
-    public TextMeshProUGUI nameText;   // child "ItemName"
-    public TextMeshProUGUI priceText;  // child "ItemPrice"
-    public Button      toggleButton;   // child "AddItem"
-    public Image       toggleIcon;     // the Image component on that button
-
+    public Image              itemIcon;     // your product icon
+    public TextMeshProUGUI    nameText;
+    public TextMeshProUGUI    priceText;
+    public Button             addButton;    // the button you click
+    public Image              buttonIcon;   // the little icon on the right
     [Header("Toggle Sprites")]
-    public Sprite      plusSprite;     // assign your “+” icon
-    public Sprite      crossSprite;    // assign your “×” icon
+    public Sprite             plusSprite;   // e.g. “+”
+    public Sprite             crossSprite;  // e.g. “×”
 
-    // Internal
-    private ShopItemData data;
-    private ShopManager manager;
-    private bool        isSelected = false;
+    // runtime
+    private ShopItemData      data;
+    private ShopManager       manager;
+    private bool              isBought;
+    private bool              isSelected;
 
     /// <summary>
-    /// Call this from ShopManager when creating the row.
+    /// Called by ShopManager.PopulateShop(...)
     /// </summary>
-    public void Initialize(ShopItemData itemData, ShopManager shopManager)
+    public void Initialize(ShopItemData item, ShopManager mgr, bool bought)
     {
-        data    = itemData;
-        manager = shopManager;
+        data      = item;
+        manager   = mgr;
+        isBought  = bought;
+        isSelected = false;
 
-        iconImage.sprite     = data.itemIcon;
-        nameText.text        = data.itemName;
-        priceText.text       = $"{data.price} Coins";
-        toggleButton.onClick.AddListener(OnToggleClicked);
+        // fill in the UI
+        itemIcon.sprite    = item.itemIcon;
+        nameText.text      = item.itemName;
+        priceText.text     = $"{item.price} Coins";
 
-        SetSelected(false);
-    }
+        addButton.onClick.RemoveAllListeners();
 
-    private void OnToggleClicked()
-    {
-        SetSelected(!isSelected);
-
-        if (isSelected)
-            manager.SelectItem(data.id, data.price);
+        if (isBought)
+        {
+            // already owned → disable entirely
+            addButton.interactable = false;
+            buttonIcon.gameObject.SetActive(false);
+            nameText.color         = Color.gray;
+            priceText.color        = Color.gray;
+        }
         else
-            manager.DeselectItem(data.id, data.price);
+        {
+            // not yet owned → set to plus icon and hook toggle
+            addButton.interactable = true;
+            buttonIcon.gameObject.SetActive(true);
+            buttonIcon.sprite      = plusSprite;
+            addButton.onClick.AddListener(ToggleSelection);
+        }
     }
 
-    private void SetSelected(bool selected)
+    /// <summary>
+    /// Called when the addButton is clicked
+    /// </summary>
+    private void ToggleSelection()
     {
-        isSelected = selected;
-        // Swap the button’s icon sprite at runtime :contentReference[oaicite:0]{index=0}
-        toggleIcon.sprite = isSelected ? crossSprite : plusSprite;
+        if (!isSelected)
+        {
+            // select
+            manager.SelectItem(data.id, data.price);
+            buttonIcon.sprite = crossSprite;
+            isSelected = true;
+        }
+        else
+        {
+            // deselect
+            manager.DeselectItem(data.id, data.price);
+            buttonIcon.sprite = plusSprite;
+            isSelected = false;
+        }
     }
 }
