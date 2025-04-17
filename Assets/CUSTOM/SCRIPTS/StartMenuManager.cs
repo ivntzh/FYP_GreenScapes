@@ -1,20 +1,40 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-public class StartMenuManager : MonoBehaviour
+public class MenuManager : MonoBehaviour
 {
+    [Header("Canvases")]
+    [SerializeField] private GameObject startCanvas;
+    [SerializeField] private GameObject lobbyCanvas;
+
+    [Header("References")]
+    [SerializeField] private NetworkManager networkManager;
+
+    void Start()
+    {
+        ShowStartMenu();
+    }
+
     public void OnStartButtonClicked()
     {
-        SceneManager.LoadScene("Lobby"); // Load Lobby scene
+        ShowLobbyMenu();
+        networkManager.ConnectToPhoton();
     }
 
     public void OnExitButtonClicked()
     {
-        Application.Quit(); // Works in builds, not in editor
+        Application.Quit();
     }
 
-    public void OnMuteButtonClicked()
+    public void ShowStartMenu()
     {
-        AudioListener.volume = (AudioListener.volume == 0) ? 1 : 0; // Toggle audio
+        startCanvas.SetActive(true);
+        lobbyCanvas.SetActive(false);
+    }
+
+    public void ShowLobbyMenu()
+    {
+        startCanvas.SetActive(false);
+        lobbyCanvas.SetActive(true);
     }
 }

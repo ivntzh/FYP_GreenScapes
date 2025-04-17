@@ -7,6 +7,7 @@ using System.Collections;
 public class GameManager : MonoBehaviourPunCallbacks
 {
     public static GameManager Instance;
+    private bool isLeaving;
 
     void Awake()
     {
@@ -19,14 +20,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         DontDestroyOnLoad(gameObject);
     }
 
-    void Start()
-    {
-        PhotonNetwork.AutomaticallySyncScene = true;
-    }
-
     public override void OnMasterClientSwitched(Player newMaster)
     {
-        if (PhotonNetwork.CurrentRoom == null) return;
+        if (PhotonNetwork.CurrentRoom == null || !PhotonNetwork.InRoom) return;
         
         if (!PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("hostId", out object hostId))
         {
@@ -34,30 +30,63 @@ public class GameManager : MonoBehaviourPunCallbacks
             return;
         }
         
-        if ((int)hostId != newMaster.ActorNumber)
+        if ((int)hostId != newMaster.ActorNumber && PhotonNetwork.IsConnected)
         {
-            PhotonNetwork.LeaveRoom();
+            StartCoroutine(SafeLeaveRoom());
         }
-    }
-
-    public override void OnLeftRoom()
-    {
-        SceneManager.LoadScene("Lobby");
     }
 
     public void ExitGame()
     {
-        if (!PhotonNetwork.InRoom) return;
-        StartCoroutine(LeaveGame());
+        if (!PhotonNetwork.InRoom || isLeaving) return;
+        StartCoroutine(SafeLeaveRoom());
     }
 
-    IEnumerator LeaveGame()
+    IEnumerator SafeLeaveRoom()
     {
-        PhotonNetwork.LeaveRoom();
-        while (PhotonNetwork.InRoom || PhotonNetwork.IsConnected)
+        if (isLeaving) yield break;
+        isLeaving = true;
+        
+        if (PhotonNetwork.InRoom && PhotonNetwork.Server == ServerConnection.GameServer)
         {
-            yield return null;
+            PhotonNetwork.LeaveRoom();
+            yield return new WaitUntil(() => !PhotonNetwork.InRoom);
         }
-        SceneManager.LoadScene("Lobby");
+
+        if (PhotonNetwork.IsConnected)
+        {
+            yield return new WaitUntil(() => PhotonNetwork.Server == ServerConnection.MasterServer);
+            PhotonNetwork.Disconnect();
+            yield return new WaitUntil(() => !PhotonNetwork.IsConnected);
+        }
+
+        LoadLobbyUI();
+        isLeaving = false;
+    }
+
+    void LoadLobbyUI()
+    {
+        if (SceneManager.GetActiveScene().name != "StartMenu")
+        {
+            SceneManager.LoadScene("StartMenu");
+        }
+        StartCoroutine(ReinitializeNetwork());
+    }
+
+    IEnumerator ReinitializeNetwork()
+    {
+        yield return new WaitForSeconds(0.1f);
+        NetworkManager netManager = FindObjectOfType<NetworkManager>();
+        netManager?.ConnectToPhoton();
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        if (SceneManager.GetActiveScene().name != "StartMenu")
+        {
+            // Explicitly destroy when disconnecting
+            Destroy(gameObject);
+            LoadLobbyUI();
+        }
     }
 }
