@@ -921,13 +921,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392ffa26a84b41242a40fd79f0f875dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyboardPrefab: {fileID: 56409356}
   positionMode: 1
   positionSource: {fileID: 134970683}
   distance: -1
   verticalOffset: -1.5
   staticPosition: {x: -4.5, y: 0.65, z: -3}
-  staticRotation: {x: 12, y: -90, z: 0}
+  staticRotation: {x: 6, y: -90, z: 0}
+  keyboardPrefab: {fileID: 56409356}
 --- !u!1 &125580431
 GameObject:
   m_ObjectHideFlags: 0
@@ -1549,13 +1549,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392ffa26a84b41242a40fd79f0f875dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyboardPrefab: {fileID: 56409356}
   positionMode: 1
   positionSource: {fileID: 134970683}
   distance: -1
   verticalOffset: -1.5
   staticPosition: {x: -4.5, y: 0.65, z: -3}
-  staticRotation: {x: 12, y: -90, z: 0}
+  staticRotation: {x: 6, y: -90, z: 0}
+  keyboardPrefab: {fileID: 56409356}
 --- !u!1 &192096430
 GameObject:
   m_ObjectHideFlags: 0
@@ -2474,13 +2474,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392ffa26a84b41242a40fd79f0f875dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyboardPrefab: {fileID: 56409356}
   positionMode: 1
   positionSource: {fileID: 134970683}
   distance: -1
   verticalOffset: -1.5
   staticPosition: {x: -4.5, y: 0.65, z: -3}
-  staticRotation: {x: 12, y: -90, z: 0}
+  staticRotation: {x: 6, y: -90, z: 0}
+  keyboardPrefab: {fileID: 56409356}
 --- !u!4 &361154074 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4783818049892876276, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
@@ -3457,13 +3457,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 392ffa26a84b41242a40fd79f0f875dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  keyboardPrefab: {fileID: 56409356}
   positionMode: 1
   positionSource: {fileID: 134970683}
   distance: -1
   verticalOffset: -1.5
   staticPosition: {x: -4.5, y: 0.65, z: -3}
-  staticRotation: {x: 12, y: -90, z: 0}
+  staticRotation: {x: 6, y: -90, z: 0}
+  keyboardPrefab: {fileID: 56409356}
 --- !u!1001 &601853090
 PrefabInstance:
   m_ObjectHideFlags: 0

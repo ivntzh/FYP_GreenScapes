@@ -8,68 +8,42 @@ public class ShowKeyboard : MonoBehaviour
 {
     public enum PositionMode { FollowTransform, StaticPosition }
 
-    [Header("Keyboard Settings")]
-    [SerializeField] NonNativeKeyboard keyboardPrefab; // Assign in inspector
+    [Header("Position Settings")]
     [SerializeField] PositionMode positionMode = PositionMode.FollowTransform;
-
-    [Header("Dynamic Positioning")]
     [SerializeField] Transform positionSource;
     [SerializeField] float distance = 0.5f;
     [SerializeField] float verticalOffset = 0.1f;
-
-    [Header("Static Positioning")]
     [SerializeField] Vector3 staticPosition = new Vector3(0, -0.5f, 1f);
     [SerializeField] Vector3 staticRotation = new Vector3(0, 180f, 0);
 
+    [Header("Keyboard Reference")]
+    [SerializeField] NonNativeKeyboard keyboardPrefab;
+
     private TMP_InputField inputField;
-    private NonNativeKeyboard keyboardInstance;
-    private bool isInitializationComplete;
+    private static NonNativeKeyboard keyboardInstance;
 
     void Start()
     {
         inputField = GetComponent<TMP_InputField>();
         inputField.onSelect.AddListener(_ => OpenKeyboard());
-        StartCoroutine(InitializeKeyboard());
+        InitializeKeyboard();
     }
 
-    IEnumerator InitializeKeyboard()
+    void InitializeKeyboard()
     {
-        if (keyboardPrefab == null)
-        {
-            Debug.LogError("Keyboard prefab not assigned in inspector!");
-            yield break;
-        }
+        if (keyboardInstance != null || keyboardPrefab == null) return;
 
-        // Find existing instance including inactive
-        keyboardInstance = FindObjectOfType<NonNativeKeyboard>(true);
-
-        if (keyboardInstance == null)
-        {
-            // Create new instance
-            keyboardInstance = Instantiate(keyboardPrefab);
-            
-            // Force initialization
-            keyboardInstance.gameObject.SetActive(true);
-            yield return null; // Wait one frame for Awake/Start
-            
-            // Set static position if needed
-            if (positionMode == PositionMode.StaticPosition)
-            {
-                keyboardInstance.transform.position = staticPosition;
-                keyboardInstance.transform.rotation = Quaternion.Euler(staticRotation);
-            }
-            
-            keyboardInstance.gameObject.SetActive(false);
-        }
-
-        isInitializationComplete = true;
+        // Create keyboard in hidden space first
+        keyboardInstance = Instantiate(keyboardPrefab, Vector3.down * 1000f, Quaternion.identity);
+        keyboardInstance.gameObject.SetActive(true);
+        keyboardInstance.gameObject.SetActive(false);
     }
 
     void OpenKeyboard()
     {
-        if (!isInitializationComplete || keyboardInstance == null)
+        if (keyboardInstance == null)
         {
-            Debug.LogError($"Keyboard initialization failed. Ready: {isInitializationComplete} Instance: {keyboardInstance != null}");
+            Debug.LogError("Keyboard not initialized! Assign prefab in inspector.");
             return;
         }
 
@@ -78,30 +52,29 @@ public class ShowKeyboard : MonoBehaviour
 
     IEnumerator ActivateKeyboard()
     {
+        // Ensure keyboard is ready
         keyboardInstance.gameObject.SetActive(true);
-        yield return null; // Wait for components to initialize
+        yield return new WaitForEndOfFrame();
 
         // Configure keyboard
         keyboardInstance.InputField = inputField;
         keyboardInstance.PresentKeyboard(inputField.text);
 
-        // Set position
-        switch (positionMode)
+        // Set position/rotation
+        if (positionMode == PositionMode.StaticPosition)
         {
-            case PositionMode.FollowTransform:
-                if (positionSource != null)
-                {
-                    Vector3 pos = positionSource.position + 
-                                positionSource.forward * distance + 
-                                Vector3.up * verticalOffset;
-                    keyboardInstance.RepositionKeyboard(pos);
-                }
-                break;
-
-            case PositionMode.StaticPosition:
-                keyboardInstance.transform.position = staticPosition;
-                keyboardInstance.transform.rotation = Quaternion.Euler(staticRotation);
-                break;
+            keyboardInstance.transform.SetPositionAndRotation(
+                staticPosition, 
+                Quaternion.Euler(staticRotation)
+            );
+        }
+        else
+        {
+            Vector3 targetPos = positionSource.position + 
+                              positionSource.forward * distance + 
+                              Vector3.up * verticalOffset;
+                              
+            keyboardInstance.RepositionKeyboard(targetPos, positionSource.eulerAngles.y);
         }
 
         keyboardInstance.OnClosed += (s, e) => 
@@ -115,8 +88,5 @@ public class ShowKeyboard : MonoBehaviour
     {
         if (inputField != null)
             inputField.onSelect.RemoveAllListeners();
-        
-        if (keyboardInstance != null)
-            Destroy(keyboardInstance.gameObject);
     }
 }
