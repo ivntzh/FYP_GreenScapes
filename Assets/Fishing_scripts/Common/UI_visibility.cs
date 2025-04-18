@@ -32,7 +32,7 @@ public class UI_visibility : MonoBehaviour
         }
         else
         {
-            uiCanvas.SetActive(false);
+            uiCanvas.SetActive(false);   
         }
     }
 }
