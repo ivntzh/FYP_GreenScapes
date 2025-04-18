@@ -48,7 +48,7 @@ public class ShopManager : MonoBehaviourPunCallbacks
     public EnvironmentSettingsManager environmentSettingsManager;
 
     private int currentCurrency;
-    private HashSet<string> currentPurchasedIds = new HashSet<string>();
+    public HashSet<string> currentPurchasedIds = new HashSet<string>();
     private HashSet<string> selectedIds = new HashSet<string>();
     private int runningTotal = 0;
 
@@ -124,6 +124,7 @@ public class ShopManager : MonoBehaviourPunCallbacks
             JsonUtility.FromJson<Serialization<string>>(purchasedJson).ToList()
         );
         UpdateUI();
+        environmentSettingsManager.RefreshEnvironment();
     }
 
     void SyncDataToClients()
@@ -208,78 +209,102 @@ public class ShopManager : MonoBehaviourPunCallbacks
 
     public void OnCheckout()
     {
-        if (PhotonNetwork.IsConnected && !PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("RequestPurchaseRPC", RpcTarget.MasterClient, selectedIds.ToArray());
-            return;
-        }
-
-        ProcessPurchase();
-    }
-
-    [PunRPC]
-    void RequestPurchaseRPC(string[] itemIds, PhotonMessageInfo info)
-    {
-        int total = itemIds.Sum(id => storeItems.Find(i => i.id == id).price);
-        if (currentCurrency >= total)
-        {
-            currentCurrency -= total;
-            foreach (string id in itemIds) currentPurchasedIds.Add(id);
-            SaveLocalData();
-            photonView.RPC("PurchaseSuccessRPC", info.Sender);
-            SyncDataToClients();
-        }
-        else
-        {
-            photonView.RPC("PurchaseFailedRPC", info.Sender, "Not enough coins!");
-        }
-    }
-
-    void ProcessPurchase()
-    {
         if (runningTotal == 0)
         {
             ShowMessage("Please select an item first.", Color.yellow);
             return;
         }
 
-        if (currentCurrency >= runningTotal)
+        if (PhotonNetwork.IsConnected)
         {
-            currentCurrency -= runningTotal;
-            foreach (var id in selectedIds)
-                currentPurchasedIds.Add(id);
-            
-            SaveLocalData();
-            selectedIds.Clear();
-            runningTotal = 0;
-
-            ShowMessage("Purchase successful!", Color.green);
-            UpdateUI();
-            environmentSettingsManager.Refresh();
-
-            if (PhotonNetwork.IsConnected)
-                SyncDataToClients();
+            if (PhotonNetwork.IsMasterClient)
+            {
+                ProcessPurchase();
+            }
+            else
+            {
+                // Convert array to comma-separated string
+                string itemsString = string.Join(",", selectedIds.ToArray());
+                photonView.RPC("RequestPurchaseRPC", RpcTarget.MasterClient, itemsString);
+            }
         }
         else
         {
-            int need = runningTotal - currentCurrency;
-            ShowMessage($"Not enough Coins! Need {need} more.", Color.red);
+            ProcessPurchase();
         }
     }
 
     [PunRPC]
-    void PurchaseSuccessRPC()
+    void RequestPurchaseRPC(string itemsString)
     {
+        // Convert back to array
+        string[] itemIds = itemsString.Split(',');
+
+        int total = itemIds.Sum(id => storeItems.Find(i => i.id == id).price);
+        if (currentCurrency >= total)
+        {
+            currentCurrency -= total;
+            foreach (string id in itemIds) currentPurchasedIds.Add(id);
+            SaveLocalData();
+        
+            // Send success response
+            photonView.RPC("PurchaseSuccessRPC", RpcTarget.All, itemsString);
+            SyncDataToClients();
+        }
+        else
+        {
+            int need = total - currentCurrency;
+            photonView.RPC("PurchaseFailedRPC", RpcTarget.All, $"Not enough coins! Need {need} more.");
+        }
+    }
+
+    void ProcessPurchase()
+    {
+        int total = runningTotal;
+        if (currentCurrency >= total)
+        {
+            currentCurrency -= total;
+            foreach (var id in selectedIds)
+                currentPurchasedIds.Add(id);
+        
+            SaveLocalData();
+            SyncDataToClients();
+        
+            // Convert to string for RPC
+            string itemsString = string.Join(",", selectedIds.ToArray());
+            photonView.RPC("PurchaseSuccessRPC", RpcTarget.All, itemsString);
+        }
+        else
+        {
+            int need = total - currentCurrency;
+            photonView.RPC("PurchaseFailedRPC", RpcTarget.All, $"Not enough Coins! Need {need} more.");
+        }
+    }
+
+    [PunRPC]
+    void PurchaseSuccessRPC(string purchasedItems)
+    {
+        // Clear selection for all clients
         selectedIds.Clear();
         runningTotal = 0;
+    
+        // Update local state
+        string[] itemIds = purchasedItems.Split(',');
+        foreach (string id in itemIds)
+        {
+            currentPurchasedIds.Add(id);
+        }
+    
         ShowMessage("Purchase successful!", Color.green);
         UpdateUI();
+        environmentSettingsManager.RefreshEnvironment();
     }
 
     [PunRPC]
     void PurchaseFailedRPC(string message)
     {
         ShowMessage(message, Color.red);
+        UpdateUI();
     }
 
     void UpdateUI()
