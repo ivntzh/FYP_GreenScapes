@@ -14499,6 +14499,7 @@ GameObject:
   - component: {fileID: 804597561}
   - component: {fileID: 804597560}
   - component: {fileID: 804597559}
+  - component: {fileID: 804597565}
   m_Layer: 5
   m_Name: Environment Settings
   m_TagString: Untagged
@@ -14642,6 +14643,29 @@ RectTransform:
   m_AnchoredPosition: {x: 13.833, y: 2.522}
   m_SizeDelta: {x: 200, y: 160}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &804597565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 804597558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 1
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 804597563}
+  sceneViewId: 8
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!4 &808028236 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 792eee72024f3274fa9747698ed53a9c, type: 3}
@@ -19348,7 +19372,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 1
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 1055273094}
   sceneViewId: 3
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -77385,7 +77410,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543450651635676886}
-  - component: {fileID: 919132147896462445}
   m_Layer: 0
   m_Name: Garden Table
   m_TagString: Untagged
@@ -77393,28 +77417,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
---- !u!114 &919132147896462445
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132147896462444}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 1
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 7
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!1 &919132148250188417
 GameObject:
   m_ObjectHideFlags: 0
@@ -77444,7 +77446,6 @@ GameObject:
   - component: {fileID: 543450652983655481}
   - component: {fileID: 3469287836833051548}
   - component: {fileID: 1711813856261867350}
-  - component: {fileID: 3469287836833051549}
   m_Layer: 0
   m_Name: Sakura Tree
   m_TagString: Untagged
@@ -77463,7 +77464,6 @@ GameObject:
   - component: {fileID: 543450653677721197}
   - component: {fileID: 3469287837527251400}
   - component: {fileID: 1711813855613938946}
-  - component: {fileID: 3469287837527251401}
   m_Layer: 0
   m_Name: Sakura Tree 2
   m_TagString: Untagged
@@ -77480,7 +77480,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543450653678059029}
-  - component: {fileID: 919132149219550384}
   m_Layer: 0
   m_Name: Gazebo
   m_TagString: Untagged
@@ -77488,28 +77487,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
---- !u!114 &919132149219550384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132149219550383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 4
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!4 &919144174872546009
 Transform:
   m_ObjectHideFlags: 0
@@ -176521,28 +176498,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132148797744771}
   m_Mesh: {fileID: 4781277628412113339, guid: afde9f506f07d8d4ea24bd7ecef21701, type: 3}
---- !u!114 &3469287836833051549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132148797744771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 6
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!33 &3469287837527251400
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -176551,28 +176506,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132149219216599}
   m_Mesh: {fileID: 4781277628412113339, guid: afde9f506f07d8d4ea24bd7ecef21701, type: 3}
---- !u!114 &3469287837527251401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132149219216599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 5
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!23 &3470232608194513519
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ public class ShopItemData
     public int price;
 }
 
-public class ShopManager : MonoBehaviourPunCallbacks
+public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     private const string PURCHASED_KEY = "PurchasedItems";
     
@@ -51,6 +51,12 @@ public class ShopManager : MonoBehaviourPunCallbacks
     public HashSet<string> currentPurchasedIds = new HashSet<string>();
     private HashSet<string> selectedIds = new HashSet<string>();
     private int runningTotal = 0;
+
+    // Required empty implementation
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // Empty but required for PhotonView observation
+    }
 
     void Start()
     {
@@ -86,12 +92,20 @@ public class ShopManager : MonoBehaviourPunCallbacks
             if (PhotonNetwork.IsMasterClient)
             {
                 LoadLocalData();
+                Debug.Log($"Master loaded {currentPurchasedIds.Count} purchased items");
                 SyncDataToClients();
+            
+                // Force immediate environment update
+                environmentSettingsManager.RefreshEnvironment();
             }
         }
         else
         {
             LoadLocalData();
+            Debug.Log($"Offline loaded {currentPurchasedIds.Count} purchased items");
+        
+            // Directly trigger environment refresh
+            environmentSettingsManager.RefreshEnvironment();
         }
     }
 
@@ -117,15 +131,24 @@ public class ShopManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void SyncShopDataRPC(int currency, string purchasedJson)
+void SyncShopDataRPC(int currency, string purchasedJson)
+{
+    currentCurrency = currency;
+    currentPurchasedIds = new HashSet<string>(
+        JsonUtility.FromJson<Serialization<string>>(purchasedJson).ToList()
+    );
+    UpdateUI();
+    
+    // Add this line to force environment refresh
+    if (environmentSettingsManager != null)
     {
-        currentCurrency = currency;
-        currentPurchasedIds = new HashSet<string>(
-            JsonUtility.FromJson<Serialization<string>>(purchasedJson).ToList()
-        );
-        UpdateUI();
         environmentSettingsManager.RefreshEnvironment();
+        if (PhotonNetwork.IsConnected)
+        {
+            environmentSettingsManager.photonView.RPC("RefreshEnvironmentRPC", RpcTarget.Others);
+        }
     }
+}
 
     void SyncDataToClients()
     {

@@ -1,11 +1,12 @@
 using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Photon.Pun;
 
-public class EnvironmentSettingsManager : MonoBehaviourPunCallbacks
+public class EnvironmentSettingsManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     [Header("Environment Addons (scene objects)")]
     public Transform addonsParent;
@@ -30,9 +31,49 @@ public class EnvironmentSettingsManager : MonoBehaviourPunCallbacks
     private List<Material> availableSky;
     private List<AudioClip> availableMusic;
 
+    private PhotonView photonView;
+
+    // Required empty implementation
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // Empty but required for PhotonView observation
+    }
+
     void Start()
     {
+        photonView = GetComponent<PhotonView>();
         InitializeDefaults();
+    
+        // Delay initial refresh to ensure ShopManager is ready
+        StartCoroutine(DelayedInitialRefresh());
+    }
+
+    IEnumerator DelayedInitialRefresh()
+    {
+        // Wait until ShopManager initialization completes
+        while (shopManager == null || shopManager.currentPurchasedIds == null)
+        {
+            yield return null;
+        }
+    
+        // Additional safety delay
+        yield return new WaitForEndOfFrame();
+    
+        RefreshEnvironment();
+    }
+
+    [PunRPC]
+    void RequestEnvironmentSync()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("RefreshEnvironmentRPC", RpcTarget.Others);
+        }
+    }
+
+    [PunRPC]
+    public void RefreshEnvironmentRPC()
+    {
         RefreshEnvironment();
     }
 
@@ -72,16 +113,32 @@ public class EnvironmentSettingsManager : MonoBehaviourPunCallbacks
 
     void UpdateAddons()
     {
-        if (addonsParent == null) return;
+        if (addonsParent == null)
+        {
+            Debug.LogWarning("Addons parent not assigned!");
+            return;
+        }
 
+        Debug.Log($"Updating addons. Purchased IDs count: {purchasedIds?.Count ?? 0}");
+    
         foreach (Transform child in addonsParent)
         {
-            bool shouldActivate = purchasedIds.Contains(child.name);
-            
+            if (child == null) continue;
+        
+            bool shouldActivate = purchasedIds?.Contains(child.name) ?? false;
+            Debug.Log($"{child.name} activation: {shouldActivate}");
+
             if (PhotonNetwork.IsConnected)
             {
-                // Networked activation
-                child.gameObject.GetPhotonView().RPC("SetActiveRPC", RpcTarget.AllBuffered, shouldActivate);
+                if (photonView != null)
+                {
+                    photonView.RPC("SetActiveRPC", RpcTarget.AllBuffered, child.name, shouldActivate);
+                }
+                else
+                {
+                    Debug.LogWarning("PhotonView missing - activating locally");
+                    child.gameObject.SetActive(shouldActivate);
+                }
             }
             else
             {
@@ -143,10 +200,13 @@ public class EnvironmentSettingsManager : MonoBehaviourPunCallbacks
         callback?.Invoke(clampedIndex);
     }
 
-    // Add this to any networked objects you want to control
     [PunRPC]
-    public void SetActiveRPC(bool state)
+    private void SetActiveRPC(string childName, bool state)
     {
-        gameObject.SetActive(state);
+        Transform child = addonsParent.Find(childName);
+        if (child != null)
+        {
+            child.gameObject.SetActive(state);
+        }
     }
 }

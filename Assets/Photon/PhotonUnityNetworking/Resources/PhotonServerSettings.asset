@@ -47,6 +47,9 @@ MonoBehaviour:
   - RequestPurchaseRPC
   - SyncShopDataRPC
   - SetActiveRPC
+  - SetObjectActiveRPC
+  - RefreshEnvironmentRPC
+  - RequestEnvironmentSync
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
