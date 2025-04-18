@@ -21,11 +21,6 @@ public class ShopManager : MonoBehaviourPunCallbacks
 {
     private const string PURCHASED_KEY = "PurchasedItems";
     
-    // Added Photon data tracking
-    private int currentCurrency;
-    private HashSet<string> currentPurchasedIds = new HashSet<string>();
-    private bool usingHostData = false;
-
     [Header("Testing (Inspector‑only)")]
     public int testCurrency = -1;
 
@@ -52,16 +47,17 @@ public class ShopManager : MonoBehaviourPunCallbacks
     [Header("References")]
     public EnvironmentSettingsManager environmentSettingsManager;
 
+    private int currentCurrency;
+    private HashSet<string> currentPurchasedIds = new HashSet<string>();
     private HashSet<string> selectedIds = new HashSet<string>();
     private int runningTotal = 0;
 
     void Start()
     {
-        // Initialize Photon View if missing
-        if (!GetComponent<PhotonView>())
+        // Ensure PhotonView exists on this GameObject
+        if (GetComponent<PhotonView>() == null)
         {
-            var pv = gameObject.AddComponent<PhotonView>();
-            pv.ObservedComponents = new List<Component> { this };
+            gameObject.AddComponent<PhotonView>();
         }
 
         // Testing override
@@ -127,12 +123,13 @@ public class ShopManager : MonoBehaviourPunCallbacks
         currentPurchasedIds = new HashSet<string>(
             JsonUtility.FromJson<Serialization<string>>(purchasedJson).ToList()
         );
-        usingHostData = true;
         UpdateUI();
     }
 
     void SyncDataToClients()
     {
+        if (!PhotonNetwork.IsMasterClient) return;
+
         var wrapper = new Serialization<string>(currentPurchasedIds.ToList());
         string json = JsonUtility.ToJson(wrapper);
         photonView.RPC("SyncShopDataRPC", RpcTarget.OthersBuffered, currentCurrency, json);
