@@ -41,6 +41,8 @@ TagManager:
   - DirtPile
   - DroppedDirt
   - Rake
+  - Seed
+  - Water
   layers:
   - Default
   - TransparentFX
@@ -48,7 +50,7 @@ TagManager:
   - HiddenMesh
   - Water
   - UI
-  - 
+  - Soil
   - 
   - Character Preview
   - 
