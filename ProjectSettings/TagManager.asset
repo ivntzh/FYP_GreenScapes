@@ -38,6 +38,9 @@ TagManager:
   - SenderTMP
   - Bait
   - fishing_rubbish
+  - DirtPile
+  - DroppedDirt
+  - Rake
   layers:
   - Default
   - TransparentFX
