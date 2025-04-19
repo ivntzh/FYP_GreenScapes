@@ -1,6 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< Updated upstream:Assets/Photon/PhotonChat/Demos/DemoChat/Files.meta
 guid: c73bd05f7e3a006418e6398b47511e49
 folderAsset: yes
+========
+guid: c92c4ecda40524d11b64a5a844a394cf
+>>>>>>>> Stashed changes:Assets/Convai/Custom Packages/ConvaiCustomTMP.unitypackage.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

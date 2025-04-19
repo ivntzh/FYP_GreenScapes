@@ -1,10 +1,20 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream
 guid: c92c4ecda40524d11b64a5a844a394cf
+=======
+<<<<<<<< Updated upstream:Assets/Photon/PhotonChat/Demos/DemoChat/Files.meta
+guid: c73bd05f7e3a006418e6398b47511e49
+folderAsset: yes
+========
+guid: c92c4ecda40524d11b64a5a844a394cf
+>>>>>>>> Stashed changes:Assets/Convai/Custom Packages/ConvaiCustomTMP.unitypackage.meta
+>>>>>>> Stashed changes
 DefaultImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream
 AssetOrigin:
   serializedVersion: 1
   productId: 235621
@@ -12,3 +22,5 @@ AssetOrigin:
   packageVersion: 3.2.4
   assetPath: Assets/Convai/Custom Packages/ConvaiCustomTMP.unitypackage
   uploadId: 737824
+=======
+>>>>>>> Stashed changes

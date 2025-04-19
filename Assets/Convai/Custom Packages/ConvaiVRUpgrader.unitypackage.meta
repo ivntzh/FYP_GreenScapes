@@ -5,6 +5,7 @@ DefaultImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream
 AssetOrigin:
   serializedVersion: 1
   productId: 235621
@@ -12,3 +13,5 @@ AssetOrigin:
   packageVersion: 3.2.4
   assetPath: Assets/Convai/Custom Packages/ConvaiVRUpgrader.unitypackage
   uploadId: 737824
+=======
+>>>>>>> Stashed changes

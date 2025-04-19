@@ -1,10 +1,20 @@
 fileFormatVersion: 2
+<<<<<<< Updated upstream
 guid: 34d7bfbfac2ff6042948f875ed05a4e1
+=======
+<<<<<<<< Updated upstream:Assets/Photon/PhotonChat/Demos/DemoChat/Editor.meta
+guid: c33037d6755b1134db073d59feb6f7d9
+folderAsset: yes
+========
+guid: 34d7bfbfac2ff6042948f875ed05a4e1
+>>>>>>>> Stashed changes:Assets/Convai/Custom Packages/ConvaiARUpgrader.unitypackage.meta
+>>>>>>> Stashed changes
 DefaultImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream
 AssetOrigin:
   serializedVersion: 1
   productId: 235621
@@ -12,3 +22,5 @@ AssetOrigin:
   packageVersion: 3.2.4
   assetPath: Assets/Convai/Custom Packages/ConvaiARUpgrader.unitypackage
   uploadId: 737824
+=======
+>>>>>>> Stashed changes

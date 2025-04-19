@@ -39,6 +39,18 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+<<<<<<< Updated upstream
+=======
+  - PurchaseFailedRPC
+  - PurchaseSuccessRPC
+  - RequestPurchaseRPC
+  - SyncShopDataRPC
+  - SetActiveRPC
+  - SetObjectActiveRPC
+  - RefreshEnvironmentRPC
+  - RequestEnvironmentSync
+  - RefreshAllEnvironment
+>>>>>>> Stashed changes
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

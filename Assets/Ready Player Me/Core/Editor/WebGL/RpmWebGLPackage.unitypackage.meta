@@ -5,6 +5,7 @@ DefaultImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
+<<<<<<< Updated upstream
 AssetOrigin:
   serializedVersion: 1
   productId: 259814
@@ -12,3 +13,5 @@ AssetOrigin:
   packageVersion: 7.3.1
   assetPath: Assets/Ready Player Me/Core/Editor/WebGL/RpmWebGLPackage.unitypackage
   uploadId: 704624
+=======
+>>>>>>> Stashed changes
