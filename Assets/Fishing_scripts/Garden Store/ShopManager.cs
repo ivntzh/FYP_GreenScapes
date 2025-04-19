@@ -361,21 +361,58 @@ void SyncShopDataRPC(int currency, string purchasedJson)
 
     public void ResetShop()
     {
-        if (PhotonNetwork.IsConnected && !PhotonNetwork.IsMasterClient) return;
+        // Only MasterClient (host) can reset when connected
+        if (PhotonNetwork.IsConnected && !PhotonNetwork.IsMasterClient)
+        {
+            ShowMessage("Only the host can reset the shop.", Color.red);
+            return;
+        }
 
+        // Clear local data
+        currentPurchasedIds.Clear();
+        currentCurrency = 0;
+        selectedIds.Clear();
+        runningTotal = 0;
+
+        // Reset PlayerPrefs
         PlayerPrefs.DeleteKey(PURCHASED_KEY);
         PlayerPrefs.DeleteKey("PlayerCurrency");
         PlayerPrefs.Save();
 
-        currentPurchasedIds.Clear();
-        currentCurrency = 0;
-
         if (PhotonNetwork.IsConnected)
         {
-            photonView.RPC("SyncShopDataRPC", RpcTarget.AllBuffered, currentCurrency, 
-                JsonUtility.ToJson(new Serialization<string>(new List<string>())));
+            // Sync cleared data to all clients
+            photonView.RPC("SyncShopDataRPC", RpcTarget.AllBuffered, 
+                currentCurrency,
+                JsonUtility.ToJson(new Serialization<string>(new List<string>()))
+            );
+        
+            // Refresh environment for all players
+            photonView.RPC("RefreshAllEnvironment", RpcTarget.All);
+        }
+        else
+        {
+            // Singleplayer refresh
+            UpdateUI();
+            environmentSettingsManager.RefreshEnvironment();
         }
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        // Force UI rebuild
+        PopulateShop();
+        UpdateCurrencyDisplay();
+        UpdateTotalCostDisplay();
+    }
+
+    [PunRPC]
+    void RefreshAllEnvironment()
+    {
+        UpdateUI();
+        environmentSettingsManager.RefreshEnvironment();
+    }
+
+    [System.Serializable]
+    public class StringArray
+    {
+        public string[] items;
     }
 }
