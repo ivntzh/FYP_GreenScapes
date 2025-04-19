@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 2518771031537762513}
   - component: {fileID: 7548479701193686148}
   - component: {fileID: 7986987329378378603}
+  - component: {fileID: 7829198683278506514}
   - component: {fileID: 4265681565896122082}
   m_Layer: 0
   m_Name: Plant(BluePot)
@@ -138,7 +139,19 @@ MonoBehaviour:
       m_Calls: []
   m_FirstSelectEntered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7829198683278506514}
+        m_TargetAssemblyTypeName: PotSpawner, Assembly-CSharp
+        m_MethodName: OnGrab
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_LastSelectExited:
     m_PersistentCalls:
       m_Calls: []
@@ -231,6 +244,20 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
+--- !u!114 &7829198683278506514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1887544697057397891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e41662e928b7674cae6be3c5e9e27d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soilAndPlantPrefab: {fileID: 1392908957678402329, guid: e56fdb35fc118f6458e05f058cd2ba6a, type: 3}
+  spawnPoint: {fileID: 7763621359963462484, guid: 5a8f7bd6f01ca844bb110c385c90a414, type: 3}
 --- !u!64 &4265681565896122082
 MeshCollider:
   m_ObjectHideFlags: 0
