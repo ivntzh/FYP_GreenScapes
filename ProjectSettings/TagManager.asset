@@ -38,6 +38,13 @@ TagManager:
   - SenderTMP
   - Bait
   - fishing_rubbish
+  - DirtPile
+  - DroppedDirt
+  - Rake
+  - Seed
+  - Water
+  - NPC
+  - Trash
   layers:
   - Default
   - TransparentFX
@@ -45,8 +52,8 @@ TagManager:
   - HiddenMesh
   - Water
   - UI
-  - 
-  - 
+  - Soil
+  - NavMesh
   - Character Preview
   - 
   - Character
