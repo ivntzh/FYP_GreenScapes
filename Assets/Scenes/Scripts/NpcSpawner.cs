@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class NpcSpawner : MonoBehaviour
 {
+    [Header("Zeppelin Fly-In Settings")]
+    public GameObject zeppelin;
+    public Transform zeppelinDestination;
+    public float flyInDuration = 10f;
+    public AnimationCurve flyInCurve;
+
     public GameObject[] npc;
 
     public float startDelay = 5.0f;
@@ -98,5 +104,36 @@ public class NpcSpawner : MonoBehaviour
         Spawn();
         Hide();
         lightManager.SetActive(true);
+    }
+
+    public void Begin()
+    {
+        if (zeppelin != null && zeppelinDestination != null)
+        {
+            StartCoroutine(FlyInZeppelin());
+        }
+    }
+
+    private IEnumerator FlyInZeppelin()
+    {
+        Vector3 startPoint = zeppelin.transform.position;
+        Vector3 endPoint = zeppelinDestination.position;
+        float timer = 0f;
+
+        while (timer < flyInDuration)
+        {
+            timer += Time.deltaTime;
+            float t = Mathf.Clamp01(timer / flyInDuration);
+            float curvedT = flyInCurve.Evaluate(t);
+
+            zeppelin.transform.position = Vector3.Lerp(startPoint, endPoint, curvedT);
+
+            yield return null;
+        }
+
+        zeppelin.transform.position = endPoint;
+
+        // Start the game AFTER the zeppelin finishes flying in
+        StartGame();
     }
 }
