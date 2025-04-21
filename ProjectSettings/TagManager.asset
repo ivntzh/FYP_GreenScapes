@@ -43,6 +43,8 @@ TagManager:
   - Rake
   - Seed
   - Water
+  - NPC
+  - Trash
   layers:
   - Default
   - TransparentFX
@@ -51,7 +53,7 @@ TagManager:
   - Water
   - UI
   - Soil
-  - 
+  - NavMesh
   - Character Preview
   - 
   - Character
