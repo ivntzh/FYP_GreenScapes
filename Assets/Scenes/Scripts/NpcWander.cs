@@ -121,7 +121,7 @@ public class NpcWander : MonoBehaviour
             agent.SetDestination(destPoint);
         }
 
-        if (Vector3.Distance(transform.position, destPoint) < 2 || dropping == true)
+        if (Vector3.Distance(transform.position, destPoint) < 3 || dropping == true)
         {
             walkPointSet = false;
         }

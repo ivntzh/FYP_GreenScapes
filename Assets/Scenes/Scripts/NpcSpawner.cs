@@ -44,7 +44,7 @@ public class NpcSpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Spawn();
+
     }
 
     // Update is called once per frame
