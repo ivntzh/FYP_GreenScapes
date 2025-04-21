@@ -13,9 +13,12 @@ public class FishingArea : MonoBehaviour
 
     [Header("References")]
     public GameObject       bait;               // Your bait prefab instance
+    public GameObject       rod;
     public FishingString    fishingString;      // The rope simulator
     public Transform        startPoint;         // Should match fishingString.startPoint
     public FishingGameManager gameManager;      // Assign or Find in Start()
+    public Transform        objectTP;     
+    public Transform        rodTP;
 
     [Header("UI & Audio")]
     public GameObject       catchPromptPanel;
@@ -125,6 +128,7 @@ public class FishingArea : MonoBehaviour
 
     private void StartFishingTimer()
     {
+        if (gameManager.currentState == GameState.GameOver) return;
         state = FishState.Waiting;
         catchTime    = Random.Range(5f, 10f);
         fishingTimer = Time.time + catchTime;
@@ -133,6 +137,31 @@ public class FishingArea : MonoBehaviour
 
     private void Update()
     {
+        if (gameManager.currentState == GameState.GameOver)
+        {
+            // send a zero‐strength pulse to stop any ongoing vibration
+            HapticManager.Instance.PulseBoth(0f, 0f);
+
+            catchPromptPanel.SetActive(false);
+            catchResultPanel.SetActive(false);
+            exclamationIcon?.SetActive(false);
+
+            ResetFishingArea();
+            
+            rod.transform.position = rodTP.position;
+            rod.transform.rotation = rodTP.rotation;
+
+            if (currentModel != null )
+            {
+                // detach from bait (optional)
+                currentModel.transform.SetParent(null, true);
+
+                // snap to objectTP’s world position & rotation
+                currentModel.transform.position = objectTP.position;
+                currentModel.transform.rotation = objectTP.rotation;
+            }
+        }
+
         // 1) waiting for a bite
         if (state == FishState.Waiting && Time.time >= fishingTimer)
             CompleteFishingTimer();
@@ -145,6 +174,7 @@ public class FishingArea : MonoBehaviour
     private void CompleteFishingTimer()
     {
         Debug.Log($"[Fishing] CompleteTimer called in state={state}");
+        if (gameManager.currentState == GameState.GameOver) return;
         if (state != FishState.Waiting) return;
 
         state = FishState.Prompt;
@@ -185,7 +215,11 @@ public class FishingArea : MonoBehaviour
             Debug.LogWarning("[Fishing] HandlePulling: fishingString is null!");
         }
 
-        HapticManager.Instance.PulseBoth(t, 0.02f);
+        // only pulse if we’re still actually playing
+        if (gameManager.currentState == GameState.Playing)
+        {
+            HapticManager.Instance.PulseBoth(t, 0.02f);
+        }
 
         if (t >= 1f)
             OnPullSuccess();
@@ -225,6 +259,7 @@ public class FishingArea : MonoBehaviour
         catchPromptPanel.SetActive(false);
         catchResultPanel.SetActive(true);
 
+
         if (bait == null)
         {
             Debug.LogError("Bait object is not assigned!");
@@ -252,6 +287,7 @@ public class FishingArea : MonoBehaviour
             pointsAwarded  = 25;             // immediate rubbish points
             PlaySound(rubbishCatchSound);
             waitingForRubbish = true;        // hold reset until disposal
+
         }
         else
         {

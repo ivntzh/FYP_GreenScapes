@@ -51,6 +51,8 @@ MonoBehaviour:
   - RefreshEnvironmentRPC
   - RequestEnvironmentSync
   - RefreshAllEnvironment
+  - CurrencyAddedConfirmationRPC
+  - RequestAddCurrencyRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

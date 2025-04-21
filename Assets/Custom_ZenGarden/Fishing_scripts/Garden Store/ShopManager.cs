@@ -20,7 +20,7 @@ public class ShopItemData
 public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     private const string PURCHASED_KEY = "PurchasedItems";
-    
+
     [Header("Testing (Inspector‑only)")]
     public int testCurrency = -1;
 
@@ -28,6 +28,7 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject shopPanel;
     public Button openShopButton;
     public Button resetShopButton;
+    public GameObject resetPanel;
 
     [Header("Message Settings")]
     public float messageDuration = 5f;
@@ -39,6 +40,8 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     public List<ShopItemData> storeItems;
 
     [Header("Currency & Totals")]
+    // Make public so other scripts can read
+    public int currentCurrency;
     public TextMeshProUGUI currencyText;
     public TextMeshProUGUI totalCostText;
     public TextMeshProUGUI messageText;
@@ -47,7 +50,7 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("References")]
     public EnvironmentSettingsManager environmentSettingsManager;
 
-    private int currentCurrency;
+    // Purchased and selected IDs
     public HashSet<string> currentPurchasedIds = new HashSet<string>();
     private HashSet<string> selectedIds = new HashSet<string>();
     private int runningTotal = 0;
@@ -55,18 +58,14 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     // Required empty implementation
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        // Empty but required for PhotonView observation
+        // Empty but required
     }
 
     void Start()
     {
-        // Ensure PhotonView exists on this GameObject
         if (GetComponent<PhotonView>() == null)
-        {
             gameObject.AddComponent<PhotonView>();
-        }
 
-        // Testing override
         if (testCurrency >= 0)
         {
             PlayerPrefs.SetInt("PlayerCurrency", testCurrency);
@@ -78,7 +77,6 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
         checkoutButton.interactable = false;
         openShopButton.onClick.AddListener(ToggleShop);
         checkoutButton.onClick.AddListener(OnCheckout);
-
         if (resetShopButton != null)
             resetShopButton.onClick.AddListener(ResetShop);
 
@@ -92,19 +90,13 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
             if (PhotonNetwork.IsMasterClient)
             {
                 LoadLocalData();
-                Debug.Log($"Master loaded {currentPurchasedIds.Count} purchased items");
                 SyncDataToClients();
-            
-                // Force immediate environment update
                 environmentSettingsManager.RefreshEnvironment();
             }
         }
         else
         {
             LoadLocalData();
-            Debug.Log($"Offline loaded {currentPurchasedIds.Count} purchased items");
-        
-            // Directly trigger environment refresh
             environmentSettingsManager.RefreshEnvironment();
         }
     }
@@ -131,29 +123,24 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-void SyncShopDataRPC(int currency, string purchasedJson)
-{
-    currentCurrency = currency;
-    currentPurchasedIds = new HashSet<string>(
-        JsonUtility.FromJson<Serialization<string>>(purchasedJson).ToList()
-    );
-    UpdateUI();
-    
-    // Add this line to force environment refresh
-    if (environmentSettingsManager != null)
+    void SyncShopDataRPC(int currency, string purchasedJson)
     {
+        currentCurrency = currency;
+        currentPurchasedIds = new HashSet<string>(
+            JsonUtility.FromJson<Serialization<string>>(purchasedJson).ToList()
+        );
+        UpdateUI();
         environmentSettingsManager.RefreshEnvironment();
         if (PhotonNetwork.IsConnected)
-        {
             environmentSettingsManager.photonView.RPC("RefreshEnvironmentRPC", RpcTarget.Others);
-        }
     }
-}
 
     void SyncDataToClients()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
+        var fishGM = FindObjectOfType<FishingGameManager>();
+        if (fishGM != null) fishGM.UpdateCurrencyUI(currentCurrency);
 
+        if (!PhotonNetwork.IsMasterClient) return;
         var wrapper = new Serialization<string>(currentPurchasedIds.ToList());
         string json = JsonUtility.ToJson(wrapper);
         photonView.RPC("SyncShopDataRPC", RpcTarget.OthersBuffered, currentCurrency, json);
@@ -164,14 +151,9 @@ void SyncShopDataRPC(int currency, string purchasedJson)
         bool open = !shopPanel.activeSelf;
         shopPanel.SetActive(open);
         checkoutButton.interactable = open;
-
-        if (messageCoroutine != null)
-            StopCoroutine(messageCoroutine);
+        if (messageCoroutine != null) StopCoroutine(messageCoroutine);
         messageText.gameObject.SetActive(false);
-
-        selectedIds.Clear();
-        runningTotal = 0;
-
+        selectedIds.Clear(); runningTotal = 0;
         if (open)
         {
             PopulateShop();
@@ -187,11 +169,9 @@ void SyncShopDataRPC(int currency, string purchasedJson)
     void PopulateShop()
     {
         foreach (Transform t in shopListContent) Destroy(t.gameObject);
-
         var sorted = storeItems
             .OrderBy(item => currentPurchasedIds.Contains(item.id))
             .ThenBy(item => item.price);
-
         foreach (var item in sorted)
         {
             var rowObj = Instantiate(shopItemPrefab, shopListContent);
@@ -204,30 +184,20 @@ void SyncShopDataRPC(int currency, string purchasedJson)
     public void SelectItem(string id, int price)
     {
         if (currentPurchasedIds.Contains(id)) return;
-        if (selectedIds.Add(id))
-        {
-            runningTotal += price;
-            UpdateTotalCostDisplay();
-        }
+        if (selectedIds.Add(id)) { runningTotal += price; UpdateTotalCostDisplay(); }
     }
 
     public void DeselectItem(string id, int price)
     {
-        if (selectedIds.Remove(id))
-        {
-            runningTotal -= price;
-            UpdateTotalCostDisplay();
-        }
+        if (selectedIds.Remove(id)) { runningTotal -= price; UpdateTotalCostDisplay(); }
     }
 
     void UpdateTotalCostDisplay()
     {
         int balance = currentCurrency;
         int total = runningTotal;
-        string colorTag = (balance >= total) ? "green" : "red";
-        string costStr = $"{total} Coins";
-        string coloredCost = $"<color=\"{colorTag}\">{costStr}</color>";
-        totalCostText.text = $"Total: \n{coloredCost}";
+        string color = (balance >= total) ? "green" : "red";
+        totalCostText.text = $"Total:\n<color={color}>{total} Coins</color>";
     }
 
     public void OnCheckout()
@@ -237,19 +207,12 @@ void SyncShopDataRPC(int currency, string purchasedJson)
             ShowMessage("Please select an item first.", Color.yellow);
             return;
         }
-
         if (PhotonNetwork.IsConnected)
         {
             if (PhotonNetwork.IsMasterClient)
-            {
                 ProcessPurchase();
-            }
             else
-            {
-                // Convert array to comma-separated string
-                string itemsString = string.Join(",", selectedIds.ToArray());
-                photonView.RPC("RequestPurchaseRPC", RpcTarget.MasterClient, itemsString);
-            }
+                photonView.RPC("RequestPurchaseRPC", RpcTarget.MasterClient, string.Join(",", selectedIds));
         }
         else
         {
@@ -260,17 +223,14 @@ void SyncShopDataRPC(int currency, string purchasedJson)
     [PunRPC]
     void RequestPurchaseRPC(string itemsString)
     {
-        // Convert back to array
-        string[] itemIds = itemsString.Split(',');
-
-        int total = itemIds.Sum(id => storeItems.Find(i => i.id == id).price);
+        if (!PhotonNetwork.IsMasterClient) return;
+        string[] ids = itemsString.Split(',');
+        int total = ids.Sum(id => storeItems.Find(i => i.id == id).price);
         if (currentCurrency >= total)
         {
             currentCurrency -= total;
-            foreach (string id in itemIds) currentPurchasedIds.Add(id);
+            foreach (var id in ids) currentPurchasedIds.Add(id);
             SaveLocalData();
-        
-            // Send success response
             photonView.RPC("PurchaseSuccessRPC", RpcTarget.All, itemsString);
             SyncDataToClients();
         }
@@ -287,15 +247,10 @@ void SyncShopDataRPC(int currency, string purchasedJson)
         if (currentCurrency >= total)
         {
             currentCurrency -= total;
-            foreach (var id in selectedIds)
-                currentPurchasedIds.Add(id);
-        
+            foreach (var id in selectedIds) currentPurchasedIds.Add(id);
             SaveLocalData();
             SyncDataToClients();
-        
-            // Convert to string for RPC
-            string itemsString = string.Join(",", selectedIds.ToArray());
-            photonView.RPC("PurchaseSuccessRPC", RpcTarget.All, itemsString);
+            photonView.RPC("PurchaseSuccessRPC", RpcTarget.All, string.Join(",", selectedIds));
         }
         else
         {
@@ -307,17 +262,8 @@ void SyncShopDataRPC(int currency, string purchasedJson)
     [PunRPC]
     void PurchaseSuccessRPC(string purchasedItems)
     {
-        // Clear selection for all clients
-        selectedIds.Clear();
-        runningTotal = 0;
-    
-        // Update local state
-        string[] itemIds = purchasedItems.Split(',');
-        foreach (string id in itemIds)
-        {
-            currentPurchasedIds.Add(id);
-        }
-    
+        selectedIds.Clear(); runningTotal = 0;
+        foreach (var id in purchasedItems.Split(',')) currentPurchasedIds.Add(id);
         ShowMessage("Purchase successful!", Color.green);
         UpdateUI();
         environmentSettingsManager.RefreshEnvironment();
@@ -327,6 +273,7 @@ void SyncShopDataRPC(int currency, string purchasedJson)
     void PurchaseFailedRPC(string message)
     {
         ShowMessage(message, Color.red);
+        selectedIds.Clear(); runningTotal = 0;
         UpdateUI();
     }
 
@@ -337,7 +284,7 @@ void SyncShopDataRPC(int currency, string purchasedJson)
         UpdateTotalCostDisplay();
     }
 
-    void UpdateCurrencyDisplay()
+    public void UpdateCurrencyDisplay()
     {
         currencyText.text = $"Coins: {currentCurrency}";
     }
@@ -347,9 +294,7 @@ void SyncShopDataRPC(int currency, string purchasedJson)
         messageText.text = msg;
         messageText.color = color;
         messageText.gameObject.SetActive(true);
-
-        if (messageCoroutine != null)
-            StopCoroutine(messageCoroutine);
+        if (messageCoroutine != null) StopCoroutine(messageCoroutine);
         messageCoroutine = StartCoroutine(HideMessageAfterDelay());
     }
 
@@ -361,46 +306,29 @@ void SyncShopDataRPC(int currency, string purchasedJson)
 
     public void ResetShop()
     {
-        // Only MasterClient (host) can reset when connected
         if (PhotonNetwork.IsConnected && !PhotonNetwork.IsMasterClient)
         {
             ShowMessage("Only the host can reset the shop.", Color.red);
             return;
         }
-
-        // Clear local data
-        currentPurchasedIds.Clear();
-        currentCurrency = 0;
-        selectedIds.Clear();
-        runningTotal = 0;
-
-        // Reset PlayerPrefs
+        currentPurchasedIds.Clear(); currentCurrency = 0; selectedIds.Clear(); runningTotal = 0;
         PlayerPrefs.DeleteKey(PURCHASED_KEY);
         PlayerPrefs.DeleteKey("PlayerCurrency");
         PlayerPrefs.Save();
-
         if (PhotonNetwork.IsConnected)
         {
-            // Sync cleared data to all clients
-            photonView.RPC("SyncShopDataRPC", RpcTarget.AllBuffered, 
+            photonView.RPC("SyncShopDataRPC", RpcTarget.AllBuffered,
                 currentCurrency,
-                JsonUtility.ToJson(new Serialization<string>(new List<string>()))
-            );
-        
-            // Refresh environment for all players
+                JsonUtility.ToJson(new Serialization<string>(new List<string>())))
+            ;
             photonView.RPC("RefreshAllEnvironment", RpcTarget.All);
         }
         else
         {
-            // Singleplayer refresh
-            UpdateUI();
-            environmentSettingsManager.RefreshEnvironment();
+            UpdateUI(); environmentSettingsManager.RefreshEnvironment();
         }
-
-        // Force UI rebuild
-        PopulateShop();
-        UpdateCurrencyDisplay();
-        UpdateTotalCostDisplay();
+        PopulateShop(); UpdateCurrencyDisplay(); UpdateTotalCostDisplay();
+        resetPanel.SetActive(false);
     }
 
     [PunRPC]
@@ -410,9 +338,35 @@ void SyncShopDataRPC(int currency, string purchasedJson)
         environmentSettingsManager.RefreshEnvironment();
     }
 
-    [System.Serializable]
-    public class StringArray
+    // === NEW Multiplayer Currency RPCs ===
+    [PunRPC]
+    private void RequestAddCurrencyRPC(int amount, PhotonMessageInfo info)
     {
-        public string[] items;
+        if (!PhotonNetwork.IsMasterClient) return;
+        currentCurrency += amount;
+        SaveLocalData();
+        SyncDataToClients();
+        photonView.RPC("CurrencyAddedConfirmationRPC", RpcTarget.Others, amount);
     }
+
+    [PunRPC]
+    private void CurrencyAddedConfirmationRPC(int amount)
+    {
+        ShowMessage($"Gained {amount} Coins!", Color.green);
+        UpdateUI();
+    }
+
+    // Public helper for host to add currency
+    public void AddCurrency(int amount)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            currentCurrency += amount;
+            SaveLocalData();
+            SyncDataToClients();
+        }
+    }
+
+    [System.Serializable]
+    public class StringArray { public string[] items; }
 }

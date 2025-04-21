@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Photon.Pun;
 
 public enum GameState
 {
@@ -13,7 +14,7 @@ public enum GameState
 public class FishingGameManager : MonoBehaviour
 {
     [Header("Game Settings")]
-    public float gameDuration = 30f;  // how long the player can fish
+    public float gameDuration = 30f;
     private float timeRemaining;
     public GameState currentState = GameState.Idle;
 
@@ -21,16 +22,17 @@ public class FishingGameManager : MonoBehaviour
     public int currentScore = 0;
 
     [Header("UI References")]
-    public GameObject startButton;      // Button to start the game
-    public GameObject startGamePanel; 
-    public GameObject grabRodPrompt;    // UI panel or text that says "Grab the rod"
+    public GameObject startButton;
+    public GameObject startGamePanel;
+    public GameObject fishingRod;
+    public GameObject Bait;
     public TextMeshProUGUI countdownText;
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI highScoreText;
     public TextMeshProUGUI currencyText;
-    public GameObject endGamePanel;     // Panel that shows after game ends
-    public GameObject GameUI; 
+    public GameObject endGamePanel;
+    public GameObject GameUI;
     public TextMeshProUGUI endScoreText;
     public Button playAgainButton;
     public Button exitButton;
@@ -38,18 +40,25 @@ public class FishingGameManager : MonoBehaviour
     public AudioClip gameEndSound;
     public AudioSource audioPlayer;
 
+    [Header("References")]
+    public ShopManager shopManager;
+
     private void Start()
     {
         // Initial UI states
         currentState = GameState.Idle;
         countdownText.gameObject.SetActive(false);
-        grabRodPrompt.SetActive(false);
+        DisableFishingRod();
         endGamePanel.SetActive(false);
         GameUI.SetActive(false);
 
-        // Display currency on start
-        currencyText.text    = $"Coins: {CurrencyManager.GetCurrency()}";
+        // Find ShopManager if not assigned
+        if (shopManager == null)
+            shopManager = FindObjectOfType<ShopManager>();
 
+        // Display currency on start
+        int startingCoins = shopManager != null ? shopManager.currentCurrency : 0;
+        currencyText.text = $"Coins: {startingCoins}";
 
         // Hook up button events
         startButton.GetComponent<Button>().onClick.AddListener(OnStartButtonClicked);
@@ -62,35 +71,26 @@ public class FishingGameManager : MonoBehaviour
         switch (currentState)
         {
             case GameState.Countdown:
-                // Countdown handled via coroutine or a separate routine
-                UpdateGameTimer();
-                break;
-
             case GameState.Playing:
                 UpdateGameTimer();
                 break;
-
             case GameState.GameOver:
-                // Nothing in particular each frame
                 break;
         }
     }
 
     private void OnStartButtonClicked()
     {
-        // Hide start button, show "Grab the rod" prompt
         startGamePanel.SetActive(false);
-        grabRodPrompt.SetActive(true);
-        Debug.Log("Startbtn clicked");
+        EnableFishingRod();
         StartCountdown();
     }
 
     public void OnRodGrabbed()
     {
-        // Called from a script that detects the user picking up the rod
         if (currentState == GameState.Idle)
         {
-            grabRodPrompt.SetActive(false);
+            DisableFishingRod();
             StartCountdown();
         }
     }
@@ -102,12 +102,10 @@ public class FishingGameManager : MonoBehaviour
         countdownText.gameObject.SetActive(true);
         GameUI.SetActive(true);
         StartCoroutine(DoCountdownRoutine());
-        Debug.Log("Countdown started");
     }
 
     private System.Collections.IEnumerator DoCountdownRoutine()
     {
-        // 3-2-1 countdown
         for (int i = 3; i > 0; i--)
         {
             countdownText.text = i.ToString();
@@ -122,7 +120,6 @@ public class FishingGameManager : MonoBehaviour
         currentState = GameState.Playing;
         timeRemaining = gameDuration;
         UpdateUI();
-         Debug.Log("Game started");
     }
 
     private void UpdateGameTimer()
@@ -141,35 +138,67 @@ public class FishingGameManager : MonoBehaviour
 
     public void SaveHighScore(int currentScore)
     {
-        // Get the stored highscore, defaulting to 0 if not set
         int storedHighScore = PlayerPrefs.GetInt("HighScore", 0);
-
-        // If the current score is higher, update the highscore
         if (currentScore > storedHighScore)
         {
             PlayerPrefs.SetInt("HighScore", currentScore);
-            PlayerPrefs.Save(); // Saves the changes to disk
+            PlayerPrefs.Save();
         }
     }
 
-
     private void EndGame()
     {
-        currentState = GameState.GameOver;
+        DisableFishingRod();
+        GameUI.SetActive(false);
 
+        currentState = GameState.GameOver;
         PlaySound(gameEndSound, 0.7f);
 
         // 1) Save high score
         SaveHighScore(currentScore);
 
-        // 2) Deposit this session’s points into the persistent currency
-        CurrencyManager.ModifyCurrency(currentScore);
+        // 2) Add earned coins via ShopManager
+        if (shopManager != null)
+        {
+            if (PhotonNetwork.IsConnected)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                    shopManager.AddCurrency(currentScore);
+                else
+                    shopManager.photonView.RPC("RequestAddCurrencyRPC", RpcTarget.MasterClient, currentScore);
+            }
+            else
+            {
+                shopManager.AddCurrency(currentScore);
+            }
 
-        // 3) Show end‑game UI
+            DisableFishingRod();
+        }
+
+        // 3) Show end-game UI
         endGamePanel.SetActive(true);
-        endScoreText.text    = $"Your Score: {currentScore}";
-        highScoreText.text   = $"High Score: {PlayerPrefs.GetInt("HighScore", 0)}";
-        currencyText.text    = $"Coins:\n{CurrencyManager.GetCurrency()}";
+        endScoreText.text = $"Your Score: {currentScore}";
+        highScoreText.text = $"High Score: {PlayerPrefs.GetInt("HighScore", 0)}";
+
+        int updatedCoins = shopManager != null ? shopManager.currentCurrency : 0;
+        currencyText.text = $"Coins:\n{updatedCoins}";
+    }
+
+    public void EnableFishingRod()
+	{
+		fishingRod.SetActive(true);
+        Bait.SetActive(true);
+	}
+
+    public void DisableFishingRod()
+	{
+		fishingRod.SetActive(false);
+        Bait.SetActive(false);
+	}
+
+    public void UpdateCurrencyUI(int coins)
+    {
+        currencyText.text = $"Coins: {coins}";
     }
 
     private void UpdateUI()
@@ -178,7 +207,6 @@ public class FishingGameManager : MonoBehaviour
         scoreText.text = "Score: " + currentScore;
     }
 
-    // Called by FishingArea or other scripts to add score
     public void AddScore(int amount)
     {
         if (currentState == GameState.Playing)
@@ -190,12 +218,11 @@ public class FishingGameManager : MonoBehaviour
 
     private void OnPlayAgainButtonClicked()
     {
-        // Reload the scene or reset states to start a new round
-        // For simplicity, we’ll just reset everything
         currentScore = 0;
         currentState = GameState.Countdown;
         endGamePanel.SetActive(false);
         startButton.SetActive(true);
+        EnableFishingRod();
         timerText.text = "";
         scoreText.text = "Score: 0";
         StartCountdown();
@@ -207,11 +234,9 @@ public class FishingGameManager : MonoBehaviour
         currentState = GameState.Idle;
         endGamePanel.SetActive(false);
         startGamePanel.SetActive(true);
-        GameUI.SetActive(false);
         timerText.text = "";
         scoreText.text = "Score: 0";
-        Debug.Log("Exiting Fishing Game...");
-        grabRodPrompt.SetActive(false);
+        DisableFishingRod();
     }
 
     private void PlaySound(AudioClip clip, float volumeScale = 1.0f)
@@ -219,5 +244,4 @@ public class FishingGameManager : MonoBehaviour
         if (audioPlayer != null && clip != null)
             audioPlayer.PlayOneShot(clip, volumeScale);
     }
-
 }
