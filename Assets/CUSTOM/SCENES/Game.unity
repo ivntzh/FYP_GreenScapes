@@ -5,8 +5,8 @@ OcclusionCullingSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_OcclusionBakeSettings:
-    smallestOccluder: 5
-    smallestHole: 0.25
+    smallestOccluder: 1
+    smallestHole: 0.5
     backfaceThreshold: 100
   m_SceneGUID: 983e1ffb74e90ed45812e89871aab4dc
   m_OcclusionCullingData: {fileID: 36300000, guid: dcc0386c192fd4e418e547b24b13c7a6, type: 2}
@@ -15,11 +15,11 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_FogMode: 3
-  m_FogDensity: 0.005
-  m_LinearFogStart: 0
-  m_LinearFogEnd: 300
+  m_FogColor: {r: 0.754717, g: 0.65859735, b: 0.65859735, a: 1}
+  m_FogMode: 1
+  m_FogDensity: 1
+  m_LinearFogStart: 30
+  m_LinearFogEnd: 50
   m_AmbientSkyColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -28,7 +28,7 @@ RenderSettings:
   m_SubtractiveShadowColor: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
-  m_FlareStrength: 1
+  m_FlareStrength: 0
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
@@ -50343,6 +50343,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1145433811635402803, guid: e9f1f6847d063d5449e80affe2e54206, type: 3}
+      propertyPath: <ConvaiPlayerDataSO>k__BackingField
+      value: 
+      objectReference: {fileID: 11400000, guid: 35a243f3afe510c4b9149f7130ba54c0, type: 2}
     - target: {fileID: 3239781267876749323, guid: e9f1f6847d063d5449e80affe2e54206, type: 3}
       propertyPath: m_RenderMode
       value: 0
@@ -50429,7 +50433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8545355491975920612, guid: e9f1f6847d063d5449e80affe2e54206, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -59964,13 +59968,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5039449913547900973, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 5039449913547900973, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.21
+      objectReference: {fileID: 0}
     - target: {fileID: 5477562775688245289, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
       propertyPath: sceneViewId
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5731685395677134978, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
       propertyPath: far clip plane
-      value: 1000
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5731685395677134978, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
       propertyPath: near clip plane
