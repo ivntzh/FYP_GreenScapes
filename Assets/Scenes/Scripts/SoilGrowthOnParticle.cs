@@ -37,6 +37,14 @@ public class SoilGrowthOnParticle : MonoBehaviour
     private bool isReadyForFinalStage = false;
     private bool isFinalStageWatering = false;
 
+    [Header("UI Panels")]
+    public GameObject waterUI;
+    public GameObject timer1UI;
+    public GameObject timer2UI;
+    public GameObject timer3UI;
+
+    private bool hasShownWaterUI = false;
+
     void Update()
     {
         if (isWatering)
@@ -50,27 +58,51 @@ public class SoilGrowthOnParticle : MonoBehaviour
 
                 if (!hasSeedGrown)
                 {
-                    // Stage 1
                     WetSoil();
+
+                    // ✅ Show water UI (first time only)
+                    if (!hasShownWaterUI && waterUI != null)
+                    {
+                        waterUI.SetActive(true);
+                        hasShownWaterUI = true;
+                    }
+
+                    // ✅ Disable water UI and show first timer
+                    if (waterUI != null) waterUI.SetActive(false);
+                    if (timer1UI != null) timer1UI.SetActive(true);
+
+                    // ✅ Delay grow
                     Invoke(nameof(GrowSmallPlant), timeToSmallPlant);
                 }
                 else if (isReadyForStage2 && !isStage2Watering)
                 {
-                    // Stage 2
                     isStage2Watering = true;
                     WetSoil();
+
+                    // ✅ Disable water UI and show second timer
+                    if (waterUI != null) waterUI.SetActive(false);
+                    if (timer1UI != null) timer1UI.SetActive(false);
+                    if (timer2UI != null) timer2UI.SetActive(true);
+
                     Invoke(nameof(GrowMediumPlant), timeToMediumPlant);
                 }
                 else if (isReadyForFinalStage && !isFinalStageWatering)
                 {
-                    // Final Stage
                     isFinalStageWatering = true;
                     WetSoil();
+
+                    // ✅ Disable all previous UIs and show final timer
+                    if (waterUI != null) waterUI.SetActive(false);
+                    if (timer2UI != null) timer2UI.SetActive(false);
+                    if (timer3UI != null) timer3UI.SetActive(true);
+
                     Invoke(nameof(ReplaceWithFinalPlant), timeToFinalReplace);
                 }
             }
         }
     }
+        
+    
 
     private void OnTriggerEnter(Collider other)
     {

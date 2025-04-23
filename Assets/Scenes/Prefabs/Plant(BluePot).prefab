@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 7548479701193686148}
   - component: {fileID: 7986987329378378603}
   - component: {fileID: 7829198683278506514}
+  - component: {fileID: 6291185487246462523}
   - component: {fileID: 4265681565896122082}
   m_Layer: 0
   m_Name: Plant(BluePot)
@@ -113,7 +114,7 @@ MonoBehaviour:
   m_InteractionManager: {fileID: 0}
   m_Colliders: []
   m_InteractionLayers:
-    m_Bits: 1
+    m_Bits: 5
   m_DistanceCalculationMode: 1
   m_SelectMode: 1
   m_FocusMode: 1
@@ -256,8 +257,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e41662e928b7674cae6be3c5e9e27d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soilAndPlantPrefab: {fileID: 1392908957678402329, guid: e56fdb35fc118f6458e05f058cd2ba6a, type: 3}
-  spawnPoint: {fileID: 7763621359963462484, guid: 5a8f7bd6f01ca844bb110c385c90a414, type: 3}
+  potPrefab: {fileID: 1392908957678402329, guid: e56fdb35fc118f6458e05f058cd2ba6a, type: 3}
+--- !u!114 &6291185487246462523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1887544697057397891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3e561de8ffe27141afcc5c360ebbfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  plantID: Plant
 --- !u!64 &4265681565896122082
 MeshCollider:
   m_ObjectHideFlags: 0

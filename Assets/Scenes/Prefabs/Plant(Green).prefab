@@ -199,6 +199,7 @@ GameObject:
   - component: {fileID: 3085813576401144749}
   - component: {fileID: 4082921251283788422}
   - component: {fileID: 6796213043454045445}
+  - component: {fileID: 7794340106797327210}
   - component: {fileID: -1652740397423093588}
   m_Layer: 0
   m_Name: Plant(Green)
@@ -269,7 +270,7 @@ MonoBehaviour:
   m_InteractionManager: {fileID: 0}
   m_Colliders: []
   m_InteractionLayers:
-    m_Bits: 1
+    m_Bits: 5
   m_DistanceCalculationMode: 1
   m_SelectMode: 1
   m_FocusMode: 1
@@ -422,6 +423,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: -1
   m_Mesh: {fileID: -762084363578938321, guid: 571146e28831f458a97a0dcc62ea1709, type: 3}
+--- !u!114 &7794340106797327210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3119199871134239501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3e561de8ffe27141afcc5c360ebbfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  plantID: Cactus
 --- !u!114 &-1652740397423093588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -434,8 +448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e41662e928b7674cae6be3c5e9e27d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soilAndPlantPrefab: {fileID: 7599702552738659652, guid: 0063c37c788e16a46b7f6a5bf9665482, type: 3}
-  spawnPoint: {fileID: 8561765951350038024, guid: c6db2577610a11d42861bff3a1056ef8, type: 3}
+  potPrefab: {fileID: 7599702552738659652, guid: 0063c37c788e16a46b7f6a5bf9665482, type: 3}
 --- !u!1 &3568327007724547884
 GameObject:
   m_ObjectHideFlags: 0
