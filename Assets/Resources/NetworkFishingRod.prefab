@@ -142,3 +142,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c51c54ea15bb624c9c4626afdc7581f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkPrefabName: NetworkFishingRod
+  followTarget: {fileID: 0}
