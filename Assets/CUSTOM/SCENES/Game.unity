@@ -664,6 +664,7 @@ GameObject:
   - component: {fileID: 23823210}
   - component: {fileID: 23823209}
   - component: {fileID: 23823208}
+  - component: {fileID: 23823211}
   m_Layer: 0
   m_Name: Xylo_key 7
   m_TagString: Untagged
@@ -747,6 +748,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0019733305, y: 0.00015445382, z: 0.00006248156}
   m_Center: {x: -0.000014171649, y: 0.0000009228846, z: -0.00027221002}
+--- !u!114 &23823211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 23823206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 26
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &25877386
 GameObject:
   m_ObjectHideFlags: 0
@@ -12221,6 +12244,7 @@ GameObject:
   - component: {fileID: 348625055}
   - component: {fileID: 348625054}
   - component: {fileID: 348625053}
+  - component: {fileID: 348625056}
   m_Layer: 0
   m_Name: Xylo_key 9
   m_TagString: Untagged
@@ -12304,6 +12328,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0021663737, y: 0.0001252446, z: 0.00006480014}
   m_Center: {x: -0.000011511772, y: 0.00000014138293, z: -0.00027105247}
+--- !u!114 &348625056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348625051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 25
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &350688241
 GameObject:
   m_ObjectHideFlags: 0
@@ -12571,6 +12617,7 @@ GameObject:
   - component: {fileID: 363658667}
   - component: {fileID: 363658666}
   - component: {fileID: 363658665}
+  - component: {fileID: 363658668}
   m_Layer: 0
   m_Name: Xylo_key 4
   m_TagString: Untagged
@@ -12654,6 +12701,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0017780054, y: 0.0001525022, z: 0.000034062043}
   m_Center: {x: -0.00000007562239, y: -0.000018494582, z: -0.00028641865}
+--- !u!114 &363658668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363658663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 24
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &365807345
 GameObject:
   m_ObjectHideFlags: 0
@@ -13021,7 +13090,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &394305716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13395,6 +13464,7 @@ GameObject:
   - component: {fileID: 417798262}
   - component: {fileID: 417798261}
   - component: {fileID: 417798260}
+  - component: {fileID: 417798263}
   m_Layer: 0
   m_Name: Xylo_key 12
   m_TagString: Untagged
@@ -13478,6 +13548,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0024626625, y: 0.00014853741, z: 0.00006241409}
   m_Center: {x: -0.000041367985, y: -0.000004189548, z: -0.0002722437}
+--- !u!114 &417798263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417798258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 23
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &420666251
 GameObject:
   m_ObjectHideFlags: 0
@@ -13490,6 +13582,7 @@ GameObject:
   - component: {fileID: 420666255}
   - component: {fileID: 420666254}
   - component: {fileID: 420666253}
+  - component: {fileID: 420666256}
   m_Layer: 0
   m_Name: Xylo_key 2
   m_TagString: Untagged
@@ -13573,6 +13666,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0016319405, y: 0.000189371, z: 0.000049162136}
   m_Center: {x: -0.000009339899, y: -0.000021718703, z: -0.00027886961}
+--- !u!114 &420666256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 420666251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 22
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &423513372
 GameObject:
   m_ObjectHideFlags: 0
@@ -15558,7 +15673,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &506038811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24617,6 +24732,7 @@ GameObject:
   - component: {fileID: 724939622}
   - component: {fileID: 724939621}
   - component: {fileID: 724939620}
+  - component: {fileID: 724939623}
   m_Layer: 0
   m_Name: Xylo_key 11
   m_TagString: Untagged
@@ -24700,6 +24816,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0022413116, y: 0.00015191408, z: 0.00006429339}
   m_Center: {x: -0.000023743927, y: -0.000013094054, z: -0.00027130437}
+--- !u!114 &724939623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724939618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 21
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &725229187
 GameObject:
   m_ObjectHideFlags: 0
@@ -25747,7 +25885,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &754193931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26987,6 +27125,7 @@ GameObject:
   - component: {fileID: 818694329}
   - component: {fileID: 818694328}
   - component: {fileID: 818694327}
+  - component: {fileID: 818694330}
   m_Layer: 0
   m_Name: Xylo_key 13
   m_TagString: Untagged
@@ -27070,6 +27209,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0024626625, y: 0.0001553373, z: 0.00006767561}
   m_Center: {x: -0.000041367985, y: -0.000015479833, z: -0.00026961305}
+--- !u!114 &818694330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818694325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 20
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &820496043
 GameObject:
   m_ObjectHideFlags: 0
@@ -30424,7 +30585,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &963660069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32813,7 +32974,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &1056937812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37402,6 +37563,7 @@ GameObject:
   - component: {fileID: 1316418132}
   - component: {fileID: 1316418131}
   - component: {fileID: 1316418130}
+  - component: {fileID: 1316418133}
   m_Layer: 0
   m_Name: Xylo_key 1
   m_TagString: XKey1
@@ -37485,6 +37647,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Xylo_AudioClip: {fileID: 8300000, guid: 8fc13fbd208c7054cb95b6434d87cf13, type: 3}
+--- !u!114 &1316418133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316418128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 19
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1319147341
 GameObject:
   m_ObjectHideFlags: 0
@@ -39013,7 +39197,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &1343088096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46406,6 +46590,7 @@ GameObject:
   - component: {fileID: 1668295106}
   - component: {fileID: 1668295105}
   - component: {fileID: 1668295104}
+  - component: {fileID: 1668295107}
   m_Layer: 0
   m_Name: Xylo_key 6
   m_TagString: Untagged
@@ -46489,6 +46674,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0019733305, y: 0.00016363586, z: 0.00004817071}
   m_Center: {x: -0.000014171649, y: -0.00001287798, z: -0.000279366}
+--- !u!114 &1668295107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1668295102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 18
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1671007285
 GameObject:
   m_ObjectHideFlags: 0
@@ -51046,6 +51253,7 @@ GameObject:
   - component: {fileID: 1815177524}
   - component: {fileID: 1815177523}
   - component: {fileID: 1815177522}
+  - component: {fileID: 1815177525}
   m_Layer: 0
   m_Name: Xylo_key 5
   m_TagString: Untagged
@@ -51129,6 +51337,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.001924889, y: 0.00016118202, z: 0.000038753373}
   m_Center: {x: -0.00001990726, y: -0.0000068166264, z: -0.00028407338}
+--- !u!114 &1815177525
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1815177520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 17
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1816338426
 GameObject:
   m_ObjectHideFlags: 0
@@ -53465,6 +53695,7 @@ GameObject:
   - component: {fileID: 1916929917}
   - component: {fileID: 1916929916}
   - component: {fileID: 1916929915}
+  - component: {fileID: 1916929918}
   m_Layer: 0
   m_Name: Xylo_key 3
   m_TagString: Untagged
@@ -53548,6 +53779,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0016920009, y: 0.00016790476, z: 0.000022148097}
   m_Center: {x: -0.000039370003, y: -0.0000029636474, z: -0.0002923756}
+--- !u!114 &1916929918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1916929913}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 16
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1918428291
 GameObject:
   m_ObjectHideFlags: 0
@@ -53769,6 +54022,7 @@ GameObject:
   - component: {fileID: 1935152941}
   - component: {fileID: 1935152940}
   - component: {fileID: 1935152939}
+  - component: {fileID: 1935152942}
   m_Layer: 0
   m_Name: Xylo_key 8
   m_TagString: Untagged
@@ -53852,6 +54106,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0019733305, y: 0.00014974407, z: 0.000048252612}
   m_Center: {x: -0.000014171649, y: -0.0000061149603, z: -0.00027932465}
+--- !u!114 &1935152942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1935152937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 15
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!114 &1941436996 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8596391284276543738, guid: d62fe48bd64eb1c48a75c496f0371a88, type: 3}
@@ -59508,6 +59784,7 @@ GameObject:
   - component: {fileID: 1989705320}
   - component: {fileID: 1989705319}
   - component: {fileID: 1989705318}
+  - component: {fileID: 1989705321}
   m_Layer: 0
   m_Name: Xylo_key 10
   m_TagString: Untagged
@@ -59591,6 +59868,28 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0022413116, y: 0.00014895588, z: 0.000056701752}
   m_Center: {x: -0.000023743927, y: -0.000010622829, z: -0.00027510076}
+--- !u!114 &1989705321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1989705316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 14
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2001025575
 GameObject:
   m_ObjectHideFlags: 0
@@ -61730,7 +62029,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &2105274489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231132,7 +231431,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!114 &8934442582307864868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231833,7 +232132,7 @@ MonoBehaviour:
   m_StartingSingleGrabTransformers: []
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
-  m_FarAttachMode: 0
+  m_FarAttachMode: 1
 --- !u!1 &8977443131201544088
 GameObject:
   m_ObjectHideFlags: 0
