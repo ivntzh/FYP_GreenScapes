@@ -1,38 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun; // Add Photon namespace
 
-public class Xylophone_audio : MonoBehaviour
+public class Xylophone_audio : MonoBehaviourPun // Inherit from MonoBehaviourPun
 {
-    public AudioClip Xylo_AudioClip;       // Reference to the AudioClip
-
-    // This method is called when a collision happens
+    public AudioClip Xylo_AudioClip;
+    
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("OnCollisionEnter triggered with " + collision.gameObject.name);
-        if (collision.gameObject.CompareTag("baqueta"))
+        if (!collision.gameObject.CompareTag("baqueta")) return;
+    
+        if (photonView.IsMine) // Only the local player triggers
         {
-            Debug.Log("Collision with baqueta detected!");
-            PlaySound(); // Play the sound effect
-        }
-        else
-        {
-            Debug.Log("Collision not detected with a baqueta object.");
+            // Play locally immediately for responsiveness
+            LocalPlaySound();
+        
+            // Tell others to play it
+            photonView.RPC("PlaySoundRPC", RpcTarget.Others);
         }
     }
 
-    private void PlaySound()
+    [PunRPC]
+    private void PlaySoundRPC()
+    {
+        // Only remote clients execute this
+        if (!photonView.IsMine)
+        {
+            LocalPlaySound();
+        }
+    }
+
+    private void LocalPlaySound()
     {
         if (Xylo_AudioClip == null)
         {
             Debug.LogError("Audioclip missing!");
-            return; // Exit early if nothing to play.
+            return;
         }
         
-        // Play the clip at the current transform position.
         AudioSource.PlayClipAtPoint(Xylo_AudioClip, transform.position);
     }
-
-
-
 }
