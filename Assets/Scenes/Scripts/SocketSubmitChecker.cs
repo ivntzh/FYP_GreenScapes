@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using Photon.Pun; 
 
 public class SocketSubmitChecker : MonoBehaviour
 {
@@ -37,7 +38,32 @@ public class SocketSubmitChecker : MonoBehaviour
             {
                 Debug.Log("✅ Correct plant submitted! Rewarding player.");
                 if (shopManager != null)
-                    shopManager.AddCurrency(rewardAmount);
+                {
+                    var shopView = shopManager.GetComponent<PhotonView>();
+
+                    if (PhotonNetwork.IsConnected)
+                    {
+                        if (PhotonNetwork.IsMasterClient)
+                        {
+                            // we’re the host, just add directly
+                            shopManager.AddCurrency(rewardAmount);
+                        }
+                        else
+                        {
+                            // we’re a client: ask the host to add coins
+                            shopView.RPC(
+                                nameof(ShopManager.RequestAddCurrencyRPC),
+                                RpcTarget.MasterClient,
+                                rewardAmount
+                            );
+                        }
+                    }
+                    else
+                    {
+                        // offline mode
+                        shopManager.AddCurrency(rewardAmount);
+                    }
+                }
 
                 // ✅ Generate new order only if correct
                 orderManager.GenerateNewOrder();

@@ -1,11 +1,12 @@
 using UnityEngine;
+using Photon.Pun;
 
-public class ShovelManager : MonoBehaviour
+public class ShovelManager : MonoBehaviourPun
 {
-    public GameObject dirtOnShovel;             // The small dirt on the shovel
-    public GameObject droppedDirtPrefab;        // The prefab to spawn
-    public ParticleSystem dirtPickupParticles;  // Particle FX to play when scooping
-    public AudioSource pickupSound;             // Sound FX to play when scooping
+    public GameObject dirtOnShovel;
+    public GameObject droppedDirtPrefab;
+    public ParticleSystem dirtPickupParticles;
+    public AudioSource pickupSound;
 
     private bool hasDirt = false;
 
@@ -17,38 +18,91 @@ public class ShovelManager : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DirtPile") && !hasDirt)
+        if (!hasDirt && other.CompareTag("DirtPile"))
         {
-            dirtOnShovel.SetActive(true);
-            hasDirt = true;
-
-            // Play particle effect
-            if (dirtPickupParticles != null)
-                dirtPickupParticles.Play();
-
-            // Play sound effect
-            if (pickupSound != null)
-                pickupSound.Play();
-
-            Debug.Log("Shovel picked up dirt.");
+            if (PhotonNetwork.IsConnected)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                    ProcessPickup();
+                else
+                    photonView.RPC(nameof(RequestPickupRPC), RpcTarget.MasterClient);
+            }
+            else
+            {
+                ProcessPickup();
+            }
         }
     }
 
+    [PunRPC]
+    private void RequestPickupRPC(PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        ProcessPickup();
+        photonView.RPC(nameof(SyncPickupRPC), RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    private void SyncPickupRPC()
+    {
+        ProcessPickup();
+    }
+
+    private void ProcessPickup()
+    {
+        hasDirt = true;
+        if (dirtOnShovel != null)
+            dirtOnShovel.SetActive(true);
+        dirtPickupParticles?.Play();
+        pickupSound?.Play();
+        Debug.Log("Shovel picked up dirt.");
+    }
+
+    // Call this when the user uses the shovel to drop dirt
     public void OnActivate()
     {
-        if (hasDirt && dirtOnShovel != null)
-        {
-            if (droppedDirtPrefab != null)
-            {
-                Instantiate(
-                    droppedDirtPrefab,
-                    dirtOnShovel.transform.position,
-                    dirtOnShovel.transform.rotation
-                );
-            }
+        if (!hasDirt) return;
 
-            dirtOnShovel.SetActive(false);
-            hasDirt = false;
+        if (PhotonNetwork.IsConnected)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                ProcessDrop();
+            else
+                photonView.RPC(nameof(RequestDropRPC), RpcTarget.MasterClient);
+        }
+        else
+        {
+            ProcessDrop();
+        }
+    }
+
+    [PunRPC]
+    private void RequestDropRPC(PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        ProcessDrop();
+        photonView.RPC(nameof(SyncDropRPC), RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    private void SyncDropRPC()
+    {
+        ProcessDrop();
+    }
+
+    private void ProcessDrop()
+    {
+        hasDirt = false;
+        dirtOnShovel?.SetActive(false);
+
+        if (droppedDirtPrefab != null)
+        {
+            // use networked instantiate so others see it too
+            PhotonNetwork.Instantiate(
+                droppedDirtPrefab.name,
+                transform.position,
+                transform.rotation
+            );
         }
     }
 }

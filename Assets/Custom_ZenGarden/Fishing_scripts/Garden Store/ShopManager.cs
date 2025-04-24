@@ -340,7 +340,7 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
 
     // === NEW Multiplayer Currency RPCs ===
     [PunRPC]
-    private void RequestAddCurrencyRPC(int amount, PhotonMessageInfo info)
+    public void RequestAddCurrencyRPC(int amount, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
         currentCurrency += amount;

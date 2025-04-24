@@ -1,31 +1,52 @@
 using UnityEngine;
+using Photon.Pun;
 
-public class Dirt : MonoBehaviour
+public class Dirt : MonoBehaviourPun
 {
-    public GameObject flatDirt; // The flat dirt to hide
-    public GameObject mixedDirt; // The final dirt to show
-    public MonoBehaviour PotManager; // Script to disable
-    public AudioSource mixSound; // Sound to play when mixing
+    public GameObject flatDirt;
+    public GameObject mixedDirt;
+    public MonoBehaviour potManager;
+    public AudioSource mixSound;
     private bool isMixed = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isMixed) return;
+        if (isMixed || !other.CompareTag("Rake")) return;
 
-        if (other.CompareTag("Rake"))
+        if (PhotonNetwork.IsConnected)
         {
-            Debug.Log("Rake triggered soil mixing!");
-
-            if (flatDirt != null) flatDirt.SetActive(false);
-            if (mixedDirt != null) mixedDirt.SetActive(true);
-
-            if (PotManager != null)
-                PotManager.enabled = false;
-
-            if (mixSound != null)
-                mixSound.Play(); // Play the sound effect
-
-            isMixed = true;
+            if (PhotonNetwork.IsMasterClient)
+                ProcessMix();
+            else
+                photonView.RPC(nameof(RequestMixRPC), RpcTarget.MasterClient);
         }
+        else
+        {
+            ProcessMix();
+        }
+    }
+
+    [PunRPC]
+    private void RequestMixRPC(PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        ProcessMix();
+        photonView.RPC(nameof(SyncMixRPC), RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    private void SyncMixRPC()
+    {
+        ProcessMix();
+    }
+
+    private void ProcessMix()
+    {
+        isMixed = true;
+        flatDirt?.SetActive(false);
+        mixedDirt?.SetActive(true);
+        if (potManager != null) potManager.enabled = false;
+        mixSound?.Play();
+        Debug.Log("Soil mixed (tilled).");
     }
 }

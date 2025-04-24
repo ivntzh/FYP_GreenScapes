@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
+using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class PotSpawner : MonoBehaviour
+public class PotSpawner : MonoBehaviourPun
 {
-    public GameObject potPrefab;       // This same prefab or new version
+    public GameObject potPrefab;
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
     private bool hasSpawnedNew = false;
 
     void Start()
     {
-        // Cache the original spawn position & rotation
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
     }
@@ -19,9 +19,37 @@ public class PotSpawner : MonoBehaviour
     {
         if (hasSpawnedNew || potPrefab == null) return;
 
-        Debug.Log("🪴 Pot grabbed — spawning new one");
+        if (PhotonNetwork.IsConnected)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                SpawnPot();
+            else
+                photonView.RPC(nameof(RequestSpawnPotRPC), RpcTarget.MasterClient);
+        }
+        else
+        {
+            SpawnPot();
+        }
+    }
 
-        Instantiate(potPrefab, spawnPosition, spawnRotation);
+    [PunRPC]
+    private void RequestSpawnPotRPC(PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        SpawnPot();
+        photonView.RPC(nameof(SyncSpawnPotRPC), RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    private void SyncSpawnPotRPC()
+    {
+        SpawnPot();
+    }
+
+    private void SpawnPot()
+    {
         hasSpawnedNew = true;
+        PhotonNetwork.Instantiate(potPrefab.name, spawnPosition, spawnRotation);
+        Debug.Log("Pot spawned for next use.");
     }
 }

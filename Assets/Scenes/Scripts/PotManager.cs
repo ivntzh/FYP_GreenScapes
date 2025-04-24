@@ -1,31 +1,56 @@
 using UnityEngine;
+using Photon.Pun;
 
-public class PotManager : MonoBehaviour
+public class PotManager : MonoBehaviourPun
 {
-    public GameObject flatDirt; // Assign this in Inspector
-    public AudioSource dirtDropSound; // Assign this in Inspector
+    public GameObject flatDirt;
+    public AudioSource dirtDropSound;
+    private bool hasSoil = false;
 
-    private void Start()
+    void Start()
     {
-        if (flatDirt != null)
-            flatDirt.SetActive(false); // Make sure it's hidden at start
+        flatDirt?.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DroppedDirt"))
+        if (!hasSoil && other.CompareTag("DroppedDirt"))
         {
-            Debug.Log("Dirt detected in pot!");
-
-            if (flatDirt != null)
-                flatDirt.SetActive(true); // Show the flat dirt
-
-            if (dirtDropSound != null)
-                dirtDropSound.Play(); // Play sound on trigger
-
-            Destroy(other.gameObject); // Optional: destroy dropped dirt
-
-            this.enabled = false; // Disable script after triggered
+            if (PhotonNetwork.IsConnected)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                    ProcessSoilDrop();
+                else
+                    photonView.RPC(nameof(RequestSoilDropRPC), RpcTarget.MasterClient);
+            }
+            else
+            {
+                ProcessSoilDrop();
+            }
         }
+    }
+
+    [PunRPC]
+    private void RequestSoilDropRPC(PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        ProcessSoilDrop();
+        photonView.RPC(nameof(SyncSoilDropRPC), RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    private void SyncSoilDropRPC()
+    {
+        ProcessSoilDrop();
+    }
+
+    private void ProcessSoilDrop()
+    {
+        hasSoil = true;
+        flatDirt?.SetActive(true);
+        dirtDropSound?.Play();
+        Debug.Log("Dirt added to pot.");
+        Destroy(GameObject.FindWithTag("DroppedDirt"));
+        this.enabled = false; // disable further triggers
     }
 }

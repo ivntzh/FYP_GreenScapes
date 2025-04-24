@@ -1,17 +1,16 @@
 using UnityEngine;
+using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class SeedRespawner : MonoBehaviour
+public class SeedRespawner : MonoBehaviourPun
 {
-    public GameObject seedPrefab;   // Reference to this same prefab
+    public GameObject seedPrefab;
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
-
     private bool hasSpawnedNew = false;
 
     void Start()
     {
-        // Record the original position and rotation
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
     }
@@ -20,7 +19,38 @@ public class SeedRespawner : MonoBehaviour
     {
         if (hasSpawnedNew || seedPrefab == null) return;
 
-        Instantiate(seedPrefab, spawnPosition, spawnRotation);
-        hasSpawnedNew = true; // Prevents multiple spawns
+        if (PhotonNetwork.IsConnected)
+        {
+            if (PhotonNetwork.IsMasterClient)
+                SpawnSeed();
+            else
+                photonView.RPC(nameof(RequestSpawnSeedRPC), RpcTarget.MasterClient);
+        }
+        else
+        {
+            SpawnSeed();
+        }
+    }
+
+    [PunRPC]
+    private void RequestSpawnSeedRPC(PhotonMessageInfo info)
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+        SpawnSeed();
+        photonView.RPC(nameof(SyncSpawnSeedRPC), RpcTarget.OthersBuffered);
+    }
+
+    [PunRPC]
+    private void SyncSpawnSeedRPC()
+    {
+        SpawnSeed();
+    }
+
+    private void SpawnSeed()
+    {
+        hasSpawnedNew = true;
+        // use PhotonNetwork.Instantiate if seedPrefab is a registered network prefab
+        PhotonNetwork.Instantiate(seedPrefab.name, spawnPosition, spawnRotation);
+        Debug.Log("Seed respawned.");
     }
 }
