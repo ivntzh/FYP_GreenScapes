@@ -31,7 +31,7 @@ public class PotManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void RequestSoilDropRPC(PhotonMessageInfo info)
+    public void RequestSoilDropRPC(PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
         ProcessSoilDrop();
@@ -39,7 +39,7 @@ public class PotManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void SyncSoilDropRPC()
+    public void SyncSoilDropRPC()
     {
         ProcessSoilDrop();
     }

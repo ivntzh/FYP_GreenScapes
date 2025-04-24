@@ -8885,7 +8885,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 398175997}
   sceneViewId: 37
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -32954,6 +32955,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 42
       objectReference: {fileID: 0}
+    - target: {fileID: 8464440143572414230, guid: 6af7230b7f8a6014e89838c47c919a3e, type: 3}
+      propertyPath: sceneViewId
+      value: 46
+      objectReference: {fileID: 0}
     - target: {fileID: 9004274645918595240, guid: 6af7230b7f8a6014e89838c47c919a3e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -60.47
@@ -41842,6 +41847,10 @@ PrefabInstance:
     - target: {fileID: 472341877113836256, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
       propertyPath: m_Name
       value: Planting Station 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3175536220366841727, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
+      propertyPath: sceneViewId
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 3204502704458796259, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -150281,8 +150290,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 0
-  m_TeleportEnabled: 0
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
 --- !u!23 &4943599175018085275
 MeshRenderer:
@@ -162509,20 +162518,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2571906767101224193}
   m_Mesh: {fileID: -6937930372470056984, guid: 719fe3a9def11a54b8fd1cf06fc7eb89, type: 3}
---- !u!114 &5504726845889154926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7522523554344557272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7174d079a0cd5a84a885964ec5411144, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flatDirt: {fileID: 1161878173150801696}
-  dirtDropSound: {fileID: 4342964991345368059}
 --- !u!1 &5505003172131205553
 GameObject:
   m_ObjectHideFlags: 0
@@ -200956,6 +200951,7 @@ GameObject:
   - component: {fileID: 7332552791494144744}
   - component: {fileID: 7332552791494144743}
   - component: {fileID: 7332552791494144742}
+  - component: {fileID: 7332552791494144745}
   m_Layer: 0
   m_Name: BluePot
   m_TagString: Untagged
@@ -201119,10 +201115,25 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 7332552791494144743}
   sceneViewId: 36
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &7332552791494144745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7332552791494144741}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7174d079a0cd5a84a885964ec5411144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flatDirt: {fileID: 1161878173150801696}
+  dirtDropSound: {fileID: 4342964991345368059}
 --- !u!4 &7336319443230597276
 Transform:
   m_ObjectHideFlags: 0
@@ -203833,7 +203844,6 @@ GameObject:
   - component: {fileID: 1338799578926564943}
   - component: {fileID: 1161722761586385092}
   - component: {fileID: 8039088789134485866}
-  - component: {fileID: 5504726845889154926}
   m_Layer: 0
   m_Name: PotSmall
   m_TagString: Untagged
