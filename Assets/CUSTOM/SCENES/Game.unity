@@ -25406,8 +25406,38 @@ PrefabInstance:
     - {fileID: 988502174135550378, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5370425175872420073, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1163273116}
   m_SourcePrefab: {fileID: 100100000, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+--- !u!1 &1163273115 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5370425175872420073, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+  m_PrefabInstance: {fileID: 1163273114}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1163273116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163273115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 47
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1168547927
 GameObject:
   m_ObjectHideFlags: 0
@@ -54902,6 +54932,7 @@ GameObject:
   - component: {fileID: 5869833369711861206}
   - component: {fileID: 2366674076710257502}
   - component: {fileID: 7661745123949247017}
+  - component: {fileID: 7661745123949247018}
   m_Layer: 6
   m_Name: SeedSocket
   m_TagString: Untagged
@@ -65098,9 +65129,9 @@ GameObject:
   - component: {fileID: 1970303758901670302}
   - component: {fileID: 4942325241812291034}
   - component: {fileID: 585777728358433410}
-  - component: {fileID: 4942325241812291037}
   - component: {fileID: 4942325241812291036}
   - component: {fileID: 4942325241812291035}
+  - component: {fileID: 4942325241812291037}
   m_Layer: 0
   m_Name: Rake
   m_TagString: Rake
@@ -75240,7 +75271,7 @@ GameObject:
   - component: {fileID: 2505382099929489923}
   - component: {fileID: 7969084334613969755}
   - component: {fileID: 7969084334613969754}
-  - component: {fileID: 7969084334613969753}
+  - component: {fileID: 7969084334613969756}
   m_Layer: 0
   m_Name: Shovel
   m_TagString: Untagged
@@ -114188,7 +114219,7 @@ GameObject:
   - component: {fileID: 4901254610566647019}
   - component: {fileID: 7723852949190688010}
   - component: {fileID: 7723852949190688009}
-  - component: {fileID: 7723852949190688008}
+  - component: {fileID: 7723852949190688011}
   m_Layer: 0
   m_Name: seed
   m_TagString: Seed
@@ -150286,13 +150317,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 740297664890424782}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 1
-  m_TeleportEnabled: 1
-  m_TeleportIfDistanceGreaterThan: 3
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!23 &4943599175018085275
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -161038,7 +161069,7 @@ GameObject:
   - component: {fileID: 6711377171896343374}
   - component: {fileID: 8398165545669315867}
   - component: {fileID: 8398165545669315869}
-  - component: {fileID: 8398165545669315868}
+  - component: {fileID: 8398165545669315870}
   m_Layer: 0
   m_Name: WaterCan
   m_TagString: Untagged
@@ -179662,6 +179693,7 @@ GameObject:
   - component: {fileID: 2415123131764513927}
   - component: {fileID: 7349505058816070206}
   - component: {fileID: 7915418980825382392}
+  - component: {fileID: 7988563351038920257}
   m_Layer: 6
   m_Name: EarthHill
   m_TagString: Untagged
@@ -205284,6 +205316,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7661745123949247018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356256431314179412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 48
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!33 &7662217555733117954
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -205885,22 +205939,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7723852949190688008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2987596162039027686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 1
-  m_TeleportEnabled: 1
-  m_TeleportIfDistanceGreaterThan: 3
 --- !u!114 &7723852949190688009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205920,7 +205958,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 7723852949190688008}
+  - {fileID: 7723852949190688011}
   sceneViewId: 33
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -206058,6 +206096,22 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
+--- !u!114 &7723852949190688011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2987596162039027686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!33 &7728969363163464768
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -208481,22 +208535,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7969084334613969753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1518627829363994403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 1
-  m_TeleportEnabled: 1
-  m_TeleportIfDistanceGreaterThan: 3
 --- !u!114 &7969084334613969754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208516,7 +208554,7 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 7969084334613969753}
+  - {fileID: 7969084334613969756}
   sceneViewId: 12
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -208654,6 +208692,22 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
+--- !u!114 &7969084334613969756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1518627829363994403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!23 &7972433925216050095
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -208890,6 +208944,28 @@ Transform:
   - {fileID: 2104788244972224290}
   m_Father: {fileID: 5111423168049362963}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7988563351038920257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6430904042929490454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 49
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!33 &7990190549857939538
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -213369,22 +213445,6 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
---- !u!114 &8398165545669315868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5418221736676862978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 1
-  m_TeleportEnabled: 1
-  m_TeleportIfDistanceGreaterThan: 3
 --- !u!114 &8398165545669315869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213404,10 +213464,26 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 8398165545669315868}
+  - {fileID: 8398165545669315870}
   sceneViewId: 39
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &8398165545669315870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5418221736676862978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!4 &8400448034030850791
 Transform:
   m_ObjectHideFlags: 0
