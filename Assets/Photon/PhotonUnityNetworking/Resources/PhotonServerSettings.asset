@@ -54,6 +54,20 @@ MonoBehaviour:
   - CurrencyAddedConfirmationRPC
   - RequestAddCurrencyRPC
   - PlaySoundRPC
+  - GenerateOrderRPC
+  - RequestDropRPC
+  - RequestMixRPC
+  - RequestPickupRPC
+  - RequestSoilDropRPC
+  - RequestSpawnPotRPC
+  - RequestSpawnSeedRPC
+  - SyncDropRPC
+  - SyncMixRPC
+  - SyncOrderRPC
+  - SyncPickupRPC
+  - SyncSoilDropRPC
+  - SyncSpawnPotRPC
+  - SyncSpawnSeedRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
