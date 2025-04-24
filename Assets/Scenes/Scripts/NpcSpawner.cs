@@ -102,12 +102,13 @@ public class NpcSpawner : MonoBehaviour
     {
         SpawnTime = true;
         Spawn();
-        Hide();
         lightManager.SetActive(true);
     }
 
     public void Begin()
     {
+        Hide();
+
         if (zeppelin != null && zeppelinDestination != null)
         {
             StartCoroutine(FlyInZeppelin());

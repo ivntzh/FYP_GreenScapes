@@ -26672,7 +26672,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   zeppelin: {fileID: 2748348740382209088}
   zeppelinDestination: {fileID: 715239299}
-  flyInDuration: 10
+  flyInDuration: 6
   flyInCurve:
     serializedVersion: 2
     m_Curve:
@@ -26685,6 +26685,15 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.66969997
+      value: 0.94652057
+      inSlope: 0.49168998
+      outSlope: 0.49168998
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.22529691
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1
