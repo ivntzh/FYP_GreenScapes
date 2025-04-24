@@ -27,7 +27,7 @@ public class Dirt : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void RequestMixRPC(PhotonMessageInfo info)
+    public void RequestMixRPC(PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
         ProcessMix();
@@ -35,7 +35,7 @@ public class Dirt : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void SyncMixRPC()
+    public void SyncMixRPC()
     {
         ProcessMix();
     }

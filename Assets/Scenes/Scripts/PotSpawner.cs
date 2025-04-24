@@ -33,7 +33,7 @@ public class PotSpawner : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void RequestSpawnPotRPC(PhotonMessageInfo info)
+    public void RequestSpawnPotRPC(PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
         SpawnPot();
@@ -41,7 +41,7 @@ public class PotSpawner : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void SyncSpawnPotRPC()
+    public void SyncSpawnPotRPC()
     {
         SpawnPot();
     }

@@ -35,7 +35,7 @@ public class ShovelManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void RequestPickupRPC(PhotonMessageInfo info)
+    public void RequestPickupRPC(PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
         ProcessPickup();
@@ -43,7 +43,7 @@ public class ShovelManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void SyncPickupRPC()
+    public void SyncPickupRPC()
     {
         ProcessPickup();
     }
@@ -77,7 +77,7 @@ public class ShovelManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void RequestDropRPC(PhotonMessageInfo info)
+    public void RequestDropRPC(PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
         ProcessDrop();
@@ -85,7 +85,7 @@ public class ShovelManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void SyncDropRPC()
+    public void SyncDropRPC()
     {
         ProcessDrop();
     }

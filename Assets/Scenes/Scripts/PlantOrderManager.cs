@@ -36,7 +36,7 @@ public class PlantOrderManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void GenerateOrderRPC(PhotonMessageInfo info)
+    public void GenerateOrderRPC(PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
         GenerateAndSyncOrder();
@@ -49,7 +49,7 @@ public class PlantOrderManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    private void SyncOrderRPC(string id)
+    public void SyncOrderRPC(string id)
     {
         currentOrderID = id;
         if (orderText != null)
