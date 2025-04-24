@@ -3,18 +3,25 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class PotSpawner : MonoBehaviour
 {
-    public GameObject soilAndPlantPrefab;       // Prefab to spawn
-    public Transform spawnPoint;                // Scene object for position & rotation
+    public GameObject potPrefab;       // This same prefab or new version
+    private Vector3 spawnPosition;
+    private Quaternion spawnRotation;
+    private bool hasSpawnedNew = false;
 
-    private bool hasSpawned = false;
+    void Start()
+    {
+        // Cache the original spawn position & rotation
+        spawnPosition = transform.position;
+        spawnRotation = transform.rotation;
+    }
 
     public void OnGrab(SelectEnterEventArgs args)
     {
-        if (hasSpawned || soilAndPlantPrefab == null || spawnPoint == null) return;
+        if (hasSpawnedNew || potPrefab == null) return;
 
-        Debug.Log("🌾 Plant grabbed — spawning new soil plot");
+        Debug.Log("🪴 Pot grabbed — spawning new one");
 
-        Instantiate(soilAndPlantPrefab, spawnPoint.position, spawnPoint.rotation);
-        hasSpawned = true;
+        Instantiate(potPrefab, spawnPosition, spawnRotation);
+        hasSpawnedNew = true;
     }
 }
