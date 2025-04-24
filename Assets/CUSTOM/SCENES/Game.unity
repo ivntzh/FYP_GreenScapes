@@ -149653,7 +149653,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 886c054df05c3674ba80a2238c777e38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seedPrefab: {fileID: 2987596162039027686}
+  seedPrefab: {fileID: 8506543071911847749, guid: d13706bf217825449be64b5490ac7b94, type: 3}
 --- !u!33 &4902521588184738507
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -208513,7 +208513,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 7969084334613969753}
