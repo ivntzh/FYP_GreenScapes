@@ -1,26 +1,54 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+using Photon.Pun;
 
-public class SeedRespawner : MonoBehaviour
+public class SeedRespawner : MonoBehaviourPun
 {
-    public GameObject seedPrefab;   // Reference to this same prefab
-    private Vector3 spawnPosition;
-    private Quaternion spawnRotation;
+    [Tooltip("Must match a prefab in Resources/")]
+    public string seedPrefabName;
 
+    private Vector3   spawnPosition;
+    private Quaternion spawnRotation;
     private bool hasSpawnedNew = false;
 
     void Start()
     {
-        // Record the original position and rotation
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
     }
 
+    // Hook this up in the Inspector to XRGrabInteractable ¡ú On Select Entered
     public void OnGrab(SelectEnterEventArgs args)
     {
-        if (hasSpawnedNew || seedPrefab == null) return;
+        if (hasSpawnedNew) return;
 
-        Instantiate(seedPrefab, spawnPosition, spawnRotation);
-        hasSpawnedNew = true; // Prevents multiple spawns
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // Host spawns it
+            photonView.RPC(nameof(RPC_DoSpawnSeed), RpcTarget.AllBuffered);
+        }
+        else
+        {
+            // Clients ask host
+            photonView.RPC(nameof(RPC_RequestSpawnSeed), RpcTarget.MasterClient);
+        }
+    }
+
+    [PunRPC]
+    void RPC_RequestSpawnSeed(PhotonMessageInfo info)
+    {
+        // Only master should handle
+        if (!PhotonNetwork.IsMasterClient) return;
+        photonView.RPC(nameof(RPC_DoSpawnSeed), RpcTarget.AllBuffered);
+    }
+
+    [PunRPC]
+    void RPC_DoSpawnSeed()
+    {
+        // Instantiate the seed prefab for everyone
+        Instantiate(Resources.Load<GameObject>(seedPrefabName),
+                    spawnPosition,
+                    spawnRotation);
+        hasSpawnedNew = true;
     }
 }

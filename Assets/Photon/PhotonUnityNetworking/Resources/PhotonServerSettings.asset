@@ -54,6 +54,15 @@ MonoBehaviour:
   - CurrencyAddedConfirmationRPC
   - RequestAddCurrencyRPC
   - PlaySoundRPC
+  - RPC_DoSpawnSeed
+  - RPC_RequestSpawnSeed
+  - EnableDirt
+  - RPC_GrowFinal
+  - RPC_GrowMedium
+  - RPC_GrowSmall
+  - SyncOrderToClients
+  - RequestBeginWatering
+  - RequestStopWatering
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

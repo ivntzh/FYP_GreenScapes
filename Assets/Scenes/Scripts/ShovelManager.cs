@@ -1,11 +1,12 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class ShovelManager : MonoBehaviour
+public class ShovelManager : MonoBehaviourPun
 {
-    public GameObject dirtOnShovel;             // The small dirt on the shovel
-    public GameObject droppedDirtPrefab;        // The prefab to spawn
-    public ParticleSystem dirtPickupParticles;  // Particle FX to play when scooping
-    public AudioSource pickupSound;             // Sound FX to play when scooping
+    public GameObject dirtOnShovel;
+    public GameObject droppedDirtPrefab;
+    public ParticleSystem dirtPickupParticles;
+    public AudioSource pickupSound;
 
     private bool hasDirt = false;
 
@@ -22,13 +23,8 @@ public class ShovelManager : MonoBehaviour
             dirtOnShovel.SetActive(true);
             hasDirt = true;
 
-            // Play particle effect
-            if (dirtPickupParticles != null)
-                dirtPickupParticles.Play();
-
-            // Play sound effect
-            if (pickupSound != null)
-                pickupSound.Play();
+            if (dirtPickupParticles != null) dirtPickupParticles.Play();
+            if (pickupSound != null) pickupSound.Play();
 
             Debug.Log("Shovel picked up dirt.");
         }
@@ -36,19 +32,11 @@ public class ShovelManager : MonoBehaviour
 
     public void OnActivate()
     {
-        if (hasDirt && dirtOnShovel != null)
-        {
-            if (droppedDirtPrefab != null)
-            {
-                Instantiate(
-                    droppedDirtPrefab,
-                    dirtOnShovel.transform.position,
-                    dirtOnShovel.transform.rotation
-                );
-            }
+        if (!hasDirt || droppedDirtPrefab == null) return;
 
-            dirtOnShovel.SetActive(false);
-            hasDirt = false;
-        }
+        PhotonNetwork.Instantiate(droppedDirtPrefab.name, dirtOnShovel.transform.position, dirtOnShovel.transform.rotation);
+
+        dirtOnShovel.SetActive(false);
+        hasDirt = false;
     }
 }
