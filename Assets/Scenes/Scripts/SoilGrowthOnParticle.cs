@@ -147,7 +147,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         {
             if (seedSocket.hasSelection)
             {
-                var seedGO = seedSocket.firstInteractableSelected?.gameObject;
+                var seedGO = seedSocket.firstInteractableSelected?.transform.gameObject;
                 if (seedGO != null && seedGO.CompareTag(seedTag))
                     PhotonNetwork.Destroy(seedGO);
             }
