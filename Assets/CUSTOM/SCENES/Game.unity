@@ -32985,6 +32985,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 42
       objectReference: {fileID: 0}
+    - target: {fileID: 8229599583546788288, guid: 6af7230b7f8a6014e89838c47c919a3e, type: 3}
+      propertyPath: photonView
+      value: 
+      objectReference: {fileID: 1520837497}
     - target: {fileID: 8464440143572414230, guid: 6af7230b7f8a6014e89838c47c919a3e, type: 3}
       propertyPath: sceneViewId
       value: 46
@@ -41878,6 +41882,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Planting Station 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1361173694591657442, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
+      propertyPath: photonView
+      value: 
+      objectReference: {fileID: 1820415398}
     - target: {fileID: 3175536220366841727, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
       propertyPath: sceneViewId
       value: 45
@@ -132662,7 +132670,7 @@ MonoBehaviour:
   droppedDirtPrefab: {fileID: 591563616285608881, guid: fdc01c12a2a48524587b889ba7054d9b, type: 3}
   dirtPickupParticles: {fileID: 573973659012671241}
   pickupSound: {fileID: 2505382099929489923}
-  photonView: {fileID: 0}
+  photonView: {fileID: 7969084334613969754}
 --- !u!33 &3557395974455563215
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -149733,7 +149741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seedPrefab: {fileID: 8506543071911847749, guid: d13706bf217825449be64b5490ac7b94, type: 3}
-  photonView: {fileID: 0}
+  photonView: {fileID: 7723852949190688009}
 --- !u!33 &4902521588184738507
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -184055,7 +184063,7 @@ MonoBehaviour:
   pourSound: {fileID: 6711377171896343374}
   pourThreshold: 60
   waterDetector: {fileID: 8667828313453711822}
-  photonView: {fileID: 0}
+  photonView: {fileID: 8398165545669315869}
 --- !u!23 &6798864194884608787
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -208702,7 +208710,7 @@ MonoBehaviour:
   m_SnapToColliderVolume: 1
   m_ReinitializeDynamicAttachEverySingleGrab: 1
   m_AttachEaseInTime: 0.15
-  m_MovementType: 0
+  m_MovementType: 2
   m_VelocityDamping: 1
   m_VelocityScale: 1
   m_AngularVelocityDamping: 1
@@ -208715,7 +208723,7 @@ MonoBehaviour:
   m_SmoothRotation: 0
   m_SmoothRotationAmount: 8
   m_TightenRotation: 0.1
-  m_TrackScale: 1
+  m_TrackScale: 0
   m_SmoothScale: 0
   m_SmoothScaleAmount: 8
   m_TightenScale: 0.1
