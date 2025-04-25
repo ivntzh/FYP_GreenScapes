@@ -5,9 +5,9 @@ using Photon.Pun;
 public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 {
     [Header("Growth Objects")]
-    public GameObject smallPlantObject;      // child under this transform
-    public GameObject mediumPlantObject;     // child under this transform
-    [Header("Final Plant Prefab (in Resources/)")]
+    public GameObject smallPlantObject;
+    public GameObject mediumPlantObject;
+    [Header("Final Plant Prefab (in Resources/PhotonPrefabs)")]
     public string finalPlantPrefabName;
 
     [Header("Soil Visuals")]
@@ -30,7 +30,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public GameObject timer2UI;
     public GameObject timer3UI;
 
-    // internal state (driven only on host)
+    // internal state (only master drives growth)
     private bool   isWatering        = false;
     private bool   hasGrowthStarted = false;
     private float  waterTimer       = 0f;
@@ -54,74 +54,54 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Water")) return;
-        if (PhotonNetwork.IsMasterClient)
-            BeginWateringLocal();
-        else
-            photonView.RPC(nameof(RequestBeginWatering), RpcTarget.MasterClient);
+        photonView.RPC(nameof(RPC_BeginWatering), RpcTarget.AllBuffered);
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Water")) return;
-        if (PhotonNetwork.IsMasterClient)
-            StopWateringLocal();
-        else
-            photonView.RPC(nameof(RequestStopWatering), RpcTarget.MasterClient);
+        photonView.RPC(nameof(RPC_StopWatering), RpcTarget.AllBuffered);
     }
 
     [PunRPC]
-    public void RequestBeginWatering(PhotonMessageInfo info)
+    public void RPC_BeginWatering(PhotonMessageInfo info)
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        BeginWateringLocal();
-    }
-
-    [PunRPC]
-    public void RequestStopWatering(PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-        StopWateringLocal();
-    }
-
-    void BeginWateringLocal()
-    {
-        isWatering        = true;
-        waterTimer        = 0f;
-        hasGrowthStarted  = false;
+        // show UI everywhere
         waterUI?.SetActive(true);
+        // only master updates timer
+        if (PhotonNetwork.IsMasterClient)
+        {
+            isWatering       = true;
+            hasGrowthStarted = false;
+            waterTimer       = 0f;
+        }
     }
 
-    void StopWateringLocal()
+    [PunRPC]
+    public void RPC_StopWatering(PhotonMessageInfo info)
     {
-        isWatering = false;
-        waterTimer = 0f;
         waterUI?.SetActive(false);
+        if (PhotonNetwork.IsMasterClient)
+            isWatering = false;
     }
 
     [PunRPC]
     public void RPC_GrowSmall()
     {
-        // Destroy the socketed seed
+        // remove socketed seed
         if (seedSocket.hasSelection && seedSocket.firstInteractableSelected != null)
         {
             var seedGO = seedSocket.firstInteractableSelected.transform.gameObject;
             if (seedGO.CompareTag(seedTag))
             {
-                var pv = seedGO.GetComponent<PhotonView>();
-                if (pv != null) PhotonNetwork.Destroy(seedGO);
-                else           Destroy(seedGO);
+                PhotonNetwork.Destroy(seedGO);
             }
         }
 
-        // Activate your small child
-        if (smallPlantObject != null) smallPlantObject.SetActive(true);
-
-        // Soil & UI
+        smallPlantObject?.SetActive(true);
         soilRenderer.material = wetSoilMaterial;
-        waterUI?.SetActive(false);
         timer1UI?.SetActive(true);
 
-        // Schedule medium growth
         if (PhotonNetwork.IsMasterClient)
             StartCoroutine(DelayedMedium());
     }
@@ -135,10 +115,8 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_GrowMedium()
     {
-        // Swap small → medium
         smallPlantObject?.SetActive(false);
-        if (mediumPlantObject != null) mediumPlantObject.SetActive(true);
-
+        mediumPlantObject?.SetActive(true);
         soilRenderer.material = wetSoilMaterial;
         timer1UI?.SetActive(false);
         timer2UI?.SetActive(true);
@@ -156,20 +134,14 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_GrowFinal()
     {
-        // Clean up any small/medium children
-        smallPlantObject?.SetActive(false);
         mediumPlantObject?.SetActive(false);
+        smallPlantObject?.SetActive(false);
 
-        // Instantiate the final plant prefab under this pot
-        var prefab = Resources.Load<GameObject>(finalPlantPrefabName);
-        if (prefab != null)
-            PhotonNetwork.Instantiate(
-                finalPlantPrefabName,
-                transform.position,
-                transform.rotation
-            );
-        else
-            Debug.LogError($"Missing Resources/{finalPlantPrefabName}");
+        PhotonNetwork.Instantiate(
+            finalPlantPrefabName,
+            transform.position,
+            transform.rotation
+        );
 
         soilRenderer.material = drySoilMaterial;
         timer2UI?.SetActive(false);

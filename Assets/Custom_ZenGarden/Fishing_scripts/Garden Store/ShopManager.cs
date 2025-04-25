@@ -350,7 +350,7 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-    private void CurrencyAddedConfirmationRPC(int amount)
+    public void CurrencyAddedConfirmationRPC(int amount)
     {
         ShowMessage($"Gained {amount} Coins!", Color.green);
         UpdateUI();

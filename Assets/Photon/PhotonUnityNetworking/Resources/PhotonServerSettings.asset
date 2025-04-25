@@ -63,6 +63,10 @@ MonoBehaviour:
   - SyncOrderToClients
   - RequestBeginWatering
   - RequestStopWatering
+  - RequestSubmitPlant
+  - RPC_BeginWatering
+  - RPC_StopWatering
+  - SyncGenerateNewOrder
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
