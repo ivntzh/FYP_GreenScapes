@@ -57,15 +57,13 @@ public class SocketSubmitChecker : MonoBehaviourPun
         if (submitPV == null) return;
 
         var plantGO = submitPV.gameObject;
-        var plant   = plantGO.GetComponent<PlantType>();
+        var plant = plantGO.GetComponent<PlantType>();
         bool correct = (plant != null) && orderManager.CheckPlantMatch(plant.plantID);
 
         if (correct)
         {
             Debug.Log("✅ Correct plant submitted! Rewarding player.");
-            // award currency on the host
             shopManager.AddCurrency(rewardAmount);
-            // notify all clients
             shopManager.photonView.RPC(
                 nameof(ShopManager.CurrencyAddedConfirmationRPC),
                 RpcTarget.All,
@@ -77,14 +75,8 @@ public class SocketSubmitChecker : MonoBehaviourPun
             Debug.Log("❌ Wrong plant submitted. No reward.");
         }
 
-        // only MasterClient does network destroy
         PhotonNetwork.Destroy(plantGO);
-
-        // generate new order for everyone
-        photonView.RPC(
-            nameof(SyncGenerateNewOrder),
-            RpcTarget.AllBuffered
-        );
+        photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.AllBuffered);
     }
 
     [PunRPC]

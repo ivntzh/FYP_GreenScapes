@@ -98,7 +98,11 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
             timer1UI.SetActive(false);
         }
         if (PhotonNetwork.IsMasterClient)
+        {
             isWatering = false;
+            hasGrowthStarted = false;
+            waterTimer = 0f;
+        }
     }
 
     [PunRPC]
@@ -192,11 +196,18 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         mediumPlantObject?.SetActive(false);
         smallPlantObject?.SetActive(false);
 
-        PhotonNetwork.Instantiate(
-            finalPlantPrefabName,
-            transform.position,
-            transform.rotation
-        );
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (!IsFinalPlantSpawned())
+            {
+                PhotonNetwork.Instantiate(
+                    finalPlantPrefabName,
+                    transform.position,
+                    transform.rotation
+                );
+                MarkFinalPlantAsSpawned();
+            }
+        }
 
         soilRenderer.material = drySoilMaterial;
 
@@ -210,5 +221,16 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
             }
             timer3UI.SetActive(false);
         }
+    }
+
+    private bool IsFinalPlantSpawned()
+    {
+        return PlayerPrefs.GetInt("FinalPlantSpawned", 0) == 1;
+    }
+
+    private void MarkFinalPlantAsSpawned()
+    {
+        PlayerPrefs.SetInt("FinalPlantSpawned", 1);
+        PlayerPrefs.Save();
     }
 }
