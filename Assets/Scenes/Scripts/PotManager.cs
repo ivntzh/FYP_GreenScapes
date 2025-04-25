@@ -26,7 +26,7 @@ public class PotManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void EnableDirt()
+    public void EnableDirt()
     {
         if (flatDirt != null)
             flatDirt.SetActive(true);
@@ -34,4 +34,12 @@ public class PotManager : MonoBehaviourPun
         if (dirtDropSound != null)
             dirtDropSound.Play();
     }
+
+    [PunRPC]
+    public void ResetPot()
+    {
+        flatDirt?.SetActive(false);
+        enabled = true;
+    }
+
 }

@@ -41,6 +41,11 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     private bool hasFinalSpawned = false;
     private bool hasGrowthStarted = false;
 
+    [Header("Other Pot Pieces")]
+    public PotManager potManager;      // drag your SmallPot here
+    public Dirt dirtScript;      // drag your FlatDirt child here
+
+
     void Start()
     {
         // hide everything at launch
@@ -243,5 +248,19 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         // Reset soil back to initial (dry) look
         if (soilRenderer!=null && drySoilMaterial!=null)
             soilRenderer.material = drySoilMaterial;
+
+        // Reset flat soil
+        if (potManager != null) {
+            potManager.flatDirt.SetActive(false);
+            potManager.enabled  = true;
+        }
+
+        potManager.photonView.RPC("EnableDirt", RpcTarget.All);
+
+        // Reset rake-mix state
+        if (dirtScript != null) {
+            dirtScript.ResetMix();  // you’ll add this helper below
+        }
+
     }
 }

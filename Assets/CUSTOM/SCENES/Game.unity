@@ -10898,10 +10898,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 874496569638738651, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: ObservedComponents.Array.size
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 874496569638738651, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: 'ObservedComponents.Array.data[0]'
+      value: 
+      objectReference: {fileID: 505375850}
+    - target: {fileID: 874496569638738651, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+      propertyPath: 'ObservedComponents.Array.data[1]'
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 934583865054468554, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
@@ -11122,23 +11126,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Height
-      value: 0.6400654
+      value: 0.92745674
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Radius
-      value: 0.28781253
+      value: 0.3735965
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Center.x
-      value: -1.312342e-16
+      value: -3.8635555e-17
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Center.y
-      value: 0.15503266
+      value: 0.011336896
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Center.z
-      value: 0
+      value: -0.085783966
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5944321904257026701, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
@@ -11169,9 +11173,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 740297664922853799, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       insertIndex: -1
       addedObject: {fileID: 472806720}
-    - targetCorrespondingSourceObject: {fileID: 7332552791460798092, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 505375853}
     - targetCorrespondingSourceObject: {fileID: 7522523554377119409, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       insertIndex: -1
       addedObject: {fileID: 190696718}
@@ -11188,11 +11189,17 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 505375857}
   m_SourcePrefab: {fileID: 100100000, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
---- !u!1 &505375850 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7332552791460798092, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+--- !u!114 &505375850 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2677852160006081619, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
   m_PrefabInstance: {fileID: 505375849}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &505375851 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5418221736912207979, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
@@ -11221,22 +11228,6 @@ MonoBehaviour:
   sceneViewId: 38
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &505375853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 505375850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 1
-  m_TeleportEnabled: 1
-  m_TeleportIfDistanceGreaterThan: 3
 --- !u!4 &505375854 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2648311931643303705, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
@@ -11297,7 +11288,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1266424621}
         m_TargetAssemblyTypeName: UnityEngine.Rigidbody, UnityEngine
-        m_MethodName: set_useGravity
+        m_MethodName: set_isKinematic
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11305,7 +11296,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
   m_SelectExited:
     m_PersistentCalls:

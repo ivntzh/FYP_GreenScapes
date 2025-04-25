@@ -28,4 +28,11 @@ public class Dirt : MonoBehaviour
             isMixed = true;
         }
     }
+    public void ResetMix()
+    {
+        isMixed = false;
+        if (flatDirt   != null) flatDirt.SetActive(true);
+        if (mixedDirt  != null) mixedDirt.SetActive(false);
+        if (PotManager != null) PotManager.enabled = true;
+    }
 }
