@@ -27,13 +27,13 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
     [Header("Timing Settings")]
     public float waterTimeRequired = 2f;
-    public float timeToMediumPlant  = 7f;
+    public float timeToMediumPlant = 7f;
     public float timeToFinalReplace = 10f;
 
     // internal state (only MasterClient drives growth)
-    private bool isWatering        = false;
+    private bool isWatering = false;
     private bool hasGrowthStarted = false;
-    private float waterTimer       = 0f;
+    private float waterTimer = 0f;
 
     void Update()
     {
@@ -42,7 +42,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         if (waterTimer >= waterTimeRequired && !hasGrowthStarted)
         {
             hasGrowthStarted = true;
-            waterTimer       = 0f;
+            waterTimer = 0f;
             photonView.RPC(nameof(RPC_GrowSmall), RpcTarget.AllBuffered);
         }
     }
@@ -62,33 +62,39 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_BeginWatering(PhotonMessageInfo info)
     {
-        // show water icon on all clients
+        Debug.Log("RPC_BeginWatering called");
         waterUI?.SetActive(true);
-        // start timer1 on all clients
         if (timer1UI != null)
         {
             timer1UI.SetActive(true);
             var t = timer1UI.GetComponent<Timer>();
-            if (t != null) t.StartTimer();
+            if (t != null)
+            {
+                t.StartTimer();
+                Debug.Log("Timer 1 started");
+            }
         }
         if (PhotonNetwork.IsMasterClient)
         {
-            isWatering        = true;
-            hasGrowthStarted  = false;
-            waterTimer        = 0f;
+            isWatering = true;
+            hasGrowthStarted = false;
+            waterTimer = 0f;
         }
     }
 
     [PunRPC]
     public void RPC_StopWatering(PhotonMessageInfo info)
     {
-        // hide water icon
+        Debug.Log("RPC_StopWatering called");
         waterUI?.SetActive(false);
-        // stop timer1
         if (timer1UI != null)
         {
             var t = timer1UI.GetComponent<Timer>();
-            if (t != null) t.StopTimer();
+            if (t != null)
+            {
+                t.StopTimer();
+                Debug.Log("Timer 1 stopped");
+            }
             timer1UI.SetActive(false);
         }
         if (PhotonNetwork.IsMasterClient)
@@ -98,7 +104,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_GrowSmall()
     {
-        // remove socketed seed on master
+        Debug.Log("RPC_GrowSmall called");
         if (PhotonNetwork.IsMasterClient && seedSocket.hasSelection)
         {
             var seedGO = seedSocket.firstInteractableSelected?.transform.gameObject;
@@ -106,20 +112,28 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                 PhotonNetwork.Destroy(seedGO);
         }
 
-        // show small plant
         smallPlantObject?.SetActive(true);
         soilRenderer.material = wetSoilMaterial;
 
-        // switch timers: stop 1, start 2
         if (timer1UI != null)
         {
-            var t1 = timer1UI.GetComponent<Timer>(); if (t1 != null) t1.StopTimer();
+            var t1 = timer1UI.GetComponent<Timer>();
+            if (t1 != null)
+            {
+                t1.StopTimer();
+                Debug.Log("Timer 1 stopped");
+            }
             timer1UI.SetActive(false);
         }
         if (timer2UI != null)
         {
             timer2UI.SetActive(true);
-            var t2 = timer2UI.GetComponent<Timer>(); if (t2 != null) t2.StartTimer();
+            var t2 = timer2UI.GetComponent<Timer>();
+            if (t2 != null)
+            {
+                t2.StartTimer();
+                Debug.Log("Timer 2 started");
+            }
         }
 
         if (PhotonNetwork.IsMasterClient)
@@ -135,20 +149,30 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_GrowMedium()
     {
+        Debug.Log("RPC_GrowMedium called");
         smallPlantObject?.SetActive(false);
         mediumPlantObject?.SetActive(true);
         soilRenderer.material = wetSoilMaterial;
 
-        // switch timers: stop 2, start 3
         if (timer2UI != null)
         {
-            var t2 = timer2UI.GetComponent<Timer>(); if (t2 != null) t2.StopTimer();
+            var t2 = timer2UI.GetComponent<Timer>();
+            if (t2 != null)
+            {
+                t2.StopTimer();
+                Debug.Log("Timer 2 stopped");
+            }
             timer2UI.SetActive(false);
         }
         if (timer3UI != null)
         {
             timer3UI.SetActive(true);
-            var t3 = timer3UI.GetComponent<Timer>(); if (t3 != null) t3.StartTimer();
+            var t3 = timer3UI.GetComponent<Timer>();
+            if (t3 != null)
+            {
+                t3.StartTimer();
+                Debug.Log("Timer 3 started");
+            }
         }
 
         if (PhotonNetwork.IsMasterClient)
@@ -164,10 +188,10 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_GrowFinal()
     {
+        Debug.Log("RPC_GrowFinal called");
         mediumPlantObject?.SetActive(false);
         smallPlantObject?.SetActive(false);
 
-        // instantiate final plant
         PhotonNetwork.Instantiate(
             finalPlantPrefabName,
             transform.position,
@@ -176,10 +200,14 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
         soilRenderer.material = drySoilMaterial;
 
-        // stop timer3
         if (timer3UI != null)
         {
-            var t3 = timer3UI.GetComponent<Timer>(); if (t3 != null) t3.StopTimer();
+            var t3 = timer3UI.GetComponent<Timer>();
+            if (t3 != null)
+            {
+                t3.StopTimer();
+                Debug.Log("Timer 3 stopped");
+            }
             timer3UI.SetActive(false);
         }
     }
