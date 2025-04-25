@@ -25,7 +25,7 @@ public class PlantOrderManager : MonoBehaviourPun
     }
 
     [PunRPC]
-    private void SyncOrderToClients(string newOrder)
+    public void SyncOrderToClients(string newOrder)
     {
         currentOrderID = newOrder;
         if (orderText != null)

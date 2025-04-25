@@ -35,7 +35,7 @@ public class SeedRespawner : MonoBehaviourPun
     }
 
     [PunRPC]
-    void RPC_RequestSpawnSeed(PhotonMessageInfo info)
+    public void RPC_RequestSpawnSeed(PhotonMessageInfo info)
     {
         // Only master should handle
         if (!PhotonNetwork.IsMasterClient) return;
@@ -43,7 +43,7 @@ public class SeedRespawner : MonoBehaviourPun
     }
 
     [PunRPC]
-    void RPC_DoSpawnSeed()
+    public void RPC_DoSpawnSeed()
     {
         // Instantiate the seed prefab for everyone
         Instantiate(Resources.Load<GameObject>(seedPrefabName),
