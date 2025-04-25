@@ -16817,6 +16817,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plant Order
       objectReference: {fileID: 0}
+    - target: {fileID: 4149069595755310747, guid: 25c341419756fa84688fdd10ef351d8d, type: 3}
+      propertyPath: photonView
+      value: 
+      objectReference: {fileID: 778384876}
     - target: {fileID: 6973187100895808749, guid: 25c341419756fa84688fdd10ef351d8d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
