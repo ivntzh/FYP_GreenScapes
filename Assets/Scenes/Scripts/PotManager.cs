@@ -1,62 +1,47 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class PotManager : MonoBehaviourPun
+public class PotManager : MonoBehaviour
 {
-    public GameObject flatDirt;
-    public AudioSource dirtDropSound;
-    private bool hasSoil = false;
+    public GameObject flatDirt; // Assign this in Inspector
+    public AudioSource dirtDropSound; // Assign this in Inspector
+    public PhotonView photonView; // Reference to PhotonView
+
+    private void Start()
+    {
+        if (flatDirt != null)
+            flatDirt.SetActive(false); // Make sure it's hidden at start
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (hasSoil || !other.CompareTag("DroppedDirt")) return;
+        if (other.CompareTag("DroppedDirt"))
+        {
+            if (photonView.IsMine)
+            {
+                Debug.Log("Dirt detected in pot!");
 
-        if (PhotonNetwork.IsConnected)
-        {
-            if (PhotonNetwork.IsMasterClient)
-                ProcessSoilDrop();
-            else
-                photonView.RPC(
-                    nameof(RequestSoilDropRPC),
-                    RpcTarget.MasterClient
-                );
-        }
-        else
-        {
-            ProcessSoilDrop();
+                if (flatDirt != null)
+                    flatDirt.SetActive(true); // Show the flat dirt
+
+                if (dirtDropSound != null)
+                    dirtDropSound.Play(); // Play sound on trigger
+
+                Destroy(other.gameObject); // Optional: destroy dropped dirt
+
+                this.enabled = false; // Disable script after triggered
+
+                // Notify other clients
+                photonView.RPC("RPC_DirtPlaced", RpcTarget.All);
+            }
         }
     }
 
     [PunRPC]
-    public void RequestSoilDropRPC(PhotonMessageInfo info)
+    private void RPC_DirtPlaced()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        ProcessSoilDrop();
-        photonView.RPC(
-          nameof(SyncSoilDropRPC),
-          RpcTarget.OthersBuffered
-        );
-    }
-
-    [PunRPC]
-    public void SyncSoilDropRPC()
-    {
-        ProcessSoilDrop();
-    }
-
-    private void ProcessSoilDrop()
-    {
-        hasSoil = true;
-        flatDirt?.SetActive(true);
-        dirtDropSound?.Play();
-        Debug.Log("Dirt added to pot.");
-
-        // Destroy only the one that triggered us, not any random one
-        // (Better: pass its viewID or instanceID via the RPC.)
-        // For now:
-        foreach (var d in GameObject.FindGameObjectsWithTag("DroppedDirt"))
-            Destroy(d);
-
-        enabled = false;
+        if (flatDirt != null)
+            flatDirt.SetActive(true);
+        this.enabled = false;
     }
 }

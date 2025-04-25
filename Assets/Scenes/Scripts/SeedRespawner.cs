@@ -1,16 +1,19 @@
 using UnityEngine;
-using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
+using Photon.Pun;
 
-public class SeedRespawner : MonoBehaviourPun
+public class SeedRespawner : MonoBehaviour
 {
-    public GameObject seedPrefab;
+    public GameObject seedPrefab;   // Reference to this same prefab
+    public PhotonView photonView;   // Reference to PhotonView
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
+
     private bool hasSpawnedNew = false;
 
     void Start()
     {
+        // Record the original position and rotation
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
     }
@@ -19,38 +22,20 @@ public class SeedRespawner : MonoBehaviourPun
     {
         if (hasSpawnedNew || seedPrefab == null) return;
 
-        if (PhotonNetwork.IsConnected)
+        if (photonView.IsMine)
         {
-            if (PhotonNetwork.IsMasterClient)
-                SpawnSeed();
-            else
-                photonView.RPC(nameof(RequestSpawnSeedRPC), RpcTarget.MasterClient);
-        }
-        else
-        {
-            SpawnSeed();
+            Instantiate(seedPrefab, spawnPosition, spawnRotation);
+            hasSpawnedNew = true; // Prevents multiple spawns
+
+            // Notify other clients
+            photonView.RPC("RPC_SpawnSeed", RpcTarget.All, spawnPosition, spawnRotation);
         }
     }
 
     [PunRPC]
-    private void RequestSpawnSeedRPC(PhotonMessageInfo info)
+    private void RPC_SpawnSeed(Vector3 position, Quaternion rotation)
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        SpawnSeed();
-        photonView.RPC(nameof(SyncSpawnSeedRPC), RpcTarget.OthersBuffered);
-    }
-
-    [PunRPC]
-    private void SyncSpawnSeedRPC()
-    {
-        SpawnSeed();
-    }
-
-    private void SpawnSeed()
-    {
+        Instantiate(seedPrefab, position, rotation);
         hasSpawnedNew = true;
-        // use PhotonNetwork.Instantiate if seedPrefab is a registered network prefab
-        PhotonNetwork.Instantiate(seedPrefab.name, spawnPosition, spawnRotation);
-        Debug.Log("Seed respawned.");
     }
 }

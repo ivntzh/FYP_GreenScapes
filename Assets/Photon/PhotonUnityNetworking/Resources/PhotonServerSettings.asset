@@ -68,6 +68,21 @@ MonoBehaviour:
   - SyncSoilDropRPC
   - SyncSpawnPotRPC
   - SyncSpawnSeedRPC
+  - AddDirtRPC
+  - DestroyPlantRPC
+  - DropDirtRPC
+  - GenerateNewOrderRPC
+  - MixDirtRPC
+  - PickupDirtRPC
+  - SetPouringStateRPC
+  - RPC_DirtPlaced
+  - RPC_DropDirt
+  - RPC_MixSoil
+  - RPC_PickupDirt
+  - RPC_SpawnSeed
+  - RPC_StartPouring
+  - RPC_StopPouring
+  - RPC_UpdateOrder
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

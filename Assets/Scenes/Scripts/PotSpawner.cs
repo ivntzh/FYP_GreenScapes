@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
+using Photon.Pun;
 
 public class PotSpawner : MonoBehaviourPun
 {
@@ -17,39 +17,9 @@ public class PotSpawner : MonoBehaviourPun
 
     public void OnGrab(SelectEnterEventArgs args)
     {
-        if (hasSpawnedNew || potPrefab == null) return;
+        if (hasSpawnedNew || potPrefab == null || !photonView.IsMine) return;
 
-        if (PhotonNetwork.IsConnected)
-        {
-            if (PhotonNetwork.IsMasterClient)
-                SpawnPot();
-            else
-                photonView.RPC(nameof(RequestSpawnPotRPC), RpcTarget.MasterClient);
-        }
-        else
-        {
-            SpawnPot();
-        }
-    }
-
-    [PunRPC]
-    public void RequestSpawnPotRPC(PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-        SpawnPot();
-        photonView.RPC(nameof(SyncSpawnPotRPC), RpcTarget.OthersBuffered);
-    }
-
-    [PunRPC]
-    public void SyncSpawnPotRPC()
-    {
-        SpawnPot();
-    }
-
-    private void SpawnPot()
-    {
-        hasSpawnedNew = true;
         PhotonNetwork.Instantiate(potPrefab.name, spawnPosition, spawnRotation);
-        Debug.Log("Pot spawned for next use.");
+        hasSpawnedNew = true;
     }
 }

@@ -1,64 +1,33 @@
 ﻿using UnityEngine;
-using TMPro;
 using Photon.Pun;
+using TMPro;
 
-public class PlantOrderManager : MonoBehaviourPunCallbacks
+public class PlantOrderManager : MonoBehaviour
 {
-    public string[] possibleOrders = { "Plant", "Cactus" };
+    public string[] possibleOrders = { "Plant", "Cactus"};
     public string currentOrderID;
     public TextMeshProUGUI orderText;
+    public PhotonView photonView; // Reference to PhotonView
 
     void Start()
     {
-        if (PhotonNetwork.IsConnected)
-        {
-            if (PhotonNetwork.IsMasterClient)
-                GenerateAndSyncOrder();
-        }
-        else
-        {
-            GenerateNewOrder();
-        }
-    }
-
-    public void RequestNewOrder()
-    {
-        if (!PhotonNetwork.IsConnected)
-        {
-            GenerateNewOrder();
-            return;
-        }
-
-        if (PhotonNetwork.IsMasterClient)
-            GenerateAndSyncOrder();
-        else
-            photonView.RPC(nameof(GenerateOrderRPC), RpcTarget.MasterClient);
-    }
-
-    [PunRPC]
-    public void GenerateOrderRPC(PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-        GenerateAndSyncOrder();
-    }
-
-    private void GenerateAndSyncOrder()
-    {
         GenerateNewOrder();
-        photonView.RPC(nameof(SyncOrderRPC), RpcTarget.OthersBuffered, currentOrderID);
-    }
-
-    [PunRPC]
-    public void SyncOrderRPC(string id)
-    {
-        currentOrderID = id;
-        if (orderText != null)
-            orderText.text = $"📝 Order: {currentOrderID}";
     }
 
     public void GenerateNewOrder()
     {
         currentOrderID = possibleOrders[Random.Range(0, possibleOrders.Length)];
+        if (orderText != null)
+            orderText.text = $"📝 Order: {currentOrderID}";
+
+        // Notify other clients
+        photonView.RPC("RPC_UpdateOrder", RpcTarget.All, currentOrderID);
+    }
+
+    [PunRPC]
+    private void RPC_UpdateOrder(string newOrderID)
+    {
+        currentOrderID = newOrderID;
         if (orderText != null)
             orderText.text = $"📝 Order: {currentOrderID}";
     }

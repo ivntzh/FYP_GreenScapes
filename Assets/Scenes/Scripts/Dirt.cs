@@ -1,52 +1,47 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class Dirt : MonoBehaviourPun
+public class Dirt : MonoBehaviour
 {
-    public GameObject flatDirt;
-    public GameObject mixedDirt;
-    public MonoBehaviour potManager;
-    public AudioSource mixSound;
+    public GameObject flatDirt; // The flat dirt to hide
+    public GameObject mixedDirt; // The final dirt to show
+    public PotManager potManager; // Reference to PotManager script
+    public AudioSource mixSound; // Sound to play when mixing
+    public PhotonView photonView; // Reference to PhotonView
     private bool isMixed = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isMixed || !other.CompareTag("Rake")) return;
+        if (isMixed) return;
 
-        if (PhotonNetwork.IsConnected)
+        if (other.CompareTag("Rake"))
         {
-            if (PhotonNetwork.IsMasterClient)
-                ProcessMix();
-            else
-                photonView.RPC(nameof(RequestMixRPC), RpcTarget.MasterClient);
-        }
-        else
-        {
-            ProcessMix();
+            if (photonView.IsMine)
+            {
+                Debug.Log("Rake triggered soil mixing!");
+
+                if (flatDirt != null) flatDirt.SetActive(false);
+                if (mixedDirt != null) mixedDirt.SetActive(true);
+
+                if (potManager != null)
+                    potManager.enabled = false;
+
+                if (mixSound != null)
+                    mixSound.Play(); // Play the sound effect
+
+                isMixed = true;
+
+                // Notify other clients
+                photonView.RPC("RPC_MixSoil", RpcTarget.All);
+            }
         }
     }
 
     [PunRPC]
-    public void RequestMixRPC(PhotonMessageInfo info)
+    private void RPC_MixSoil()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        ProcessMix();
-        photonView.RPC(nameof(SyncMixRPC), RpcTarget.OthersBuffered);
-    }
-
-    [PunRPC]
-    public void SyncMixRPC()
-    {
-        ProcessMix();
-    }
-
-    private void ProcessMix()
-    {
+        if (flatDirt != null) flatDirt.SetActive(false);
+        if (mixedDirt != null) mixedDirt.SetActive(true);
         isMixed = true;
-        flatDirt?.SetActive(false);
-        mixedDirt?.SetActive(true);
-        if (potManager != null) potManager.enabled = false;
-        mixSound?.Play();
-        Debug.Log("Soil mixed (tilled).");
     }
 }
