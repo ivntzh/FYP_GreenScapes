@@ -17,7 +17,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public Material drySoilMaterial;
 
     [Header("Seed Setup")]
-    public XRSocketInteractor seedSocket;
+    public XRSocketInteractor seedSocket;    // child under earthhill
     public string seedTag = "Seed";
 
     [Header("UI & Timers")]
@@ -33,8 +33,8 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public float timer3Duration     = 7f;
 
     [Header("External Pot Pieces")]
-    public PotManager potManager;
-    public Dirt       dirtScript;
+    public PotManager potManager;  // FlatDirt handler
+    public Dirt       dirtScript;  // MixedDirt handler
 
     private int   growthStage = 0;
     private bool  isWatering  = false;
@@ -42,7 +42,11 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
     void Start()
     {
+        // initialize all visuals/UI
         ResetVisuals();
+        // ensure flatDirt and mixedDirt are off
+        potManager?.flatDirt?.SetActive(false);
+        dirtScript?.ResetToInitial();
     }
 
     void ResetVisuals()
@@ -116,15 +120,15 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         switch (stage)
         {
             case 1:
-                ActivateTimer(timer1UI, timer1UI?.GetComponent<Timer>());
+                ActivateTimer(timer1UI, timer1UI.GetComponent<Timer>());
                 if (PhotonNetwork.IsMasterClient) StartCoroutine(DelayedGrowStage(1, timer1Duration));
                 break;
             case 2:
-                ActivateTimer(timer2UI, timer2UI?.GetComponent<Timer>());
+                ActivateTimer(timer2UI, timer2UI.GetComponent<Timer>());
                 if (PhotonNetwork.IsMasterClient) StartCoroutine(DelayedGrowStage(2, timer2Duration));
                 break;
             case 3:
-                ActivateTimer(timer3UI, timer3UI?.GetComponent<Timer>());
+                ActivateTimer(timer3UI, timer3UI.GetComponent<Timer>());
                 if (PhotonNetwork.IsMasterClient) StartCoroutine(DelayedGrowStage(3, timer3Duration));
                 break;
         }
@@ -148,42 +152,36 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         switch (stage)
         {
             case 1:
-                timer1UI?.GetComponent<Timer>()?.StopTimer();
-                timer1UI?.SetActive(false);
-                smallPlantObject?.SetActive(true);
+                timer1UI.GetComponent<Timer>().StopTimer();
+                timer1UI.SetActive(false);
+                smallPlantObject.SetActive(true);
+                // Destroy any seed under socket
                 DestroySeedInSocket();
                 if (soilRenderer != null && wetSoilMaterial != null)
                     soilRenderer.material = wetSoilMaterial;
                 break;
             case 2:
-                timer2UI?.GetComponent<Timer>()?.StopTimer();
-                timer2UI?.SetActive(false);
-                mediumPlantObject?.SetActive(true);
+                timer2UI.GetComponent<Timer>().StopTimer();
+                timer2UI.SetActive(false);
+                mediumPlantObject.SetActive(true);
                 if (soilRenderer != null && wetSoilMaterial != null)
                     soilRenderer.material = wetSoilMaterial;
                 break;
             case 3:
-                timer3UI?.GetComponent<Timer>()?.StopTimer();
-                timer3UI?.SetActive(false);
-                mediumPlantObject?.SetActive(false);
+                timer3UI.GetComponent<Timer>().StopTimer();
+                timer3UI.SetActive(false);
+                mediumPlantObject.SetActive(false);
                 if (soilRenderer != null && drySoilMaterial != null)
                     soilRenderer.material = drySoilMaterial;
                 if (PhotonNetwork.IsMasterClient)
                     PhotonNetwork.Instantiate(finalPlantPrefabName, transform.position, transform.rotation);
-
-                // reset soil visuals
+                // Full reset after plant spawn
                 ResetVisuals();
-
-                // reset dirt & flat
-                if (potManager != null)
-                {
-                    potManager.flatDirt?.SetActive(false);
-                    potManager.enabled = true;
-                }
+                // Reset dirt
+                potManager?.flatDirt.SetActive(false);
                 dirtScript?.ResetToInitial();
                 break;
         }
-
         growthStage = stage;
         if (stage < 3)
             photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.All);
@@ -192,15 +190,17 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     void DestroySeedInSocket()
     {
         if (seedSocket == null) return;
-        foreach (var child in seedSocket.transform.GetComponentsInChildren<Transform>(true))
+        foreach (Transform child in seedSocket.transform)
         {
-            if (!child.CompareTag(seedTag)) continue;
-            var go = child.gameObject;
-            var pv = go.GetComponent<PhotonView>();
-            if (pv != null && PhotonNetwork.IsMasterClient)
-                PhotonNetwork.Destroy(go);
-            else if (pv == null)
-                Destroy(go);
+            if (child.CompareTag(seedTag))
+            {
+                var go = child.gameObject;
+                var pv = go.GetComponent<PhotonView>();
+                if (pv != null && PhotonNetwork.IsMasterClient)
+                    PhotonNetwork.Destroy(go);
+                else if (pv == null)
+                    Destroy(go);
+            }
         }
     }
 }

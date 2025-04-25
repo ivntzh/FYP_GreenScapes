@@ -11,27 +11,21 @@ public class Dirt : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (isMixed || !other.CompareTag("Rake")) return;
-        if (flatDirt != null)    flatDirt.SetActive(false);
-        if (mixedDirt != null)   mixedDirt.SetActive(true);
-        if (PotManager != null)  PotManager.enabled = false;
-        if (mixSound != null)    mixSound.Play();
-
-        // enable earthhill
-        var eh = transform.root.Find("earthhill");
-        if (eh != null) eh.gameObject.SetActive(true);
-
+        // Mix soil
+        flatDirt.SetActive(false);
+        mixedDirt.SetActive(true);
+        PotManager.enabled = false;
+        mixSound.Play();
         isMixed = true;
     }
 
+    /// <summary>
+    /// Disable mixed dirt, leave flatDirt off (PotManager resets it).
+    /// </summary>
     public void ResetToInitial()
     {
         isMixed = false;
-        if (flatDirt != null)  flatDirt.SetActive(false);
-        if (mixedDirt != null) mixedDirt.SetActive(false);
-        if (PotManager != null) PotManager.enabled = true;
-
-        // disable earthhill
-        var eh = transform.root.Find("earthhill");
-        if (eh != null) eh.gameObject.SetActive(false);
+        mixedDirt.SetActive(false);
+        PotManager.enabled = true;
     }
 }

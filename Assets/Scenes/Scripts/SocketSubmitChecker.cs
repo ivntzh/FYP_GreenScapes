@@ -26,7 +26,6 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         var pv = go.GetComponent<PhotonView>();
         if (pv == null) return;
 
-        // ask MasterClient to process and destroy
         photonView.RPC(nameof(RequestSubmitPlant), RpcTarget.MasterClient, pv.ViewID);
 
         if (socket.GetOldestInteractableSelected() == args.interactableObject)
@@ -53,7 +52,6 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
             Debug.Log("❌ Wrong plant. No points awarded.");
         }
 
-        // MasterClient does destroy
         PhotonNetwork.Destroy(plantGO);
     }
 }
