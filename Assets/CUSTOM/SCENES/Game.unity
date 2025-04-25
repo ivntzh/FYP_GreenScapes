@@ -6541,7 +6541,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 317711986}
-  - component: {fileID: 317711987}
   m_Layer: 0
   m_Name: RecyclingManager
   m_TagString: Untagged
@@ -6564,24 +6563,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 610634347}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &317711987
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 317711985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c8165a200f68984298055a584f24ac0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shopManager: {fileID: 1055273094}
-  plantOrderManager: {fileID: 778384871}
-  shovelManager: {fileID: 3557247833139130083}
-  potManager: {fileID: 7332552791494144745}
-  wateringCan: {fileID: 6798065794237138003}
-  socketSubmitChecker: {fileID: 1163273117}
 --- !u!1 &324359985
 GameObject:
   m_ObjectHideFlags: 0
@@ -16875,7 +16856,7 @@ PrefabInstance:
     - target: {fileID: 4149069595755310747, guid: 25c341419756fa84688fdd10ef351d8d, type: 3}
       propertyPath: recyclingManager
       value: 
-      objectReference: {fileID: 317711987}
+      objectReference: {fileID: 0}
     - target: {fileID: 6973187100895808749, guid: 25c341419756fa84688fdd10ef351d8d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -25410,6 +25391,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 610634347}
     m_Modifications:
     - target: {fileID: 1735037418969426049, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: photonView
+      value: 
+      objectReference: {fileID: 1163273116}
+    - target: {fileID: 1735037418969426049, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
       propertyPath: shopManager
       value: 
       objectReference: {fileID: 1055273094}
@@ -25417,6 +25402,10 @@ PrefabInstance:
       propertyPath: orderManager
       value: 
       objectReference: {fileID: 778384871}
+    - target: {fileID: 1735037418969426049, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: recyclingManager
+      value: 
+      objectReference: {fileID: 934583864754271652}
     - target: {fileID: 6958032442180518158, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -60.914
@@ -54890,6 +54879,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 934583864754271651}
+  - component: {fileID: 934583864754271652}
   m_Layer: 0
   m_Name: Planting Station 1
   m_TagString: Untagged
@@ -68187,6 +68177,24 @@ Transform:
   - {fileID: 1480824825111735984}
   m_Father: {fileID: 610634347}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &934583864754271652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340303867288491510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c8165a200f68984298055a584f24ac0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shopManager: {fileID: 1055273094}
+  plantOrderManager: {fileID: 778384871}
+  shovelManager: {fileID: 3557247833139130083}
+  potManager: {fileID: 7332552791494144745}
+  wateringCan: {fileID: 6798065794237138003}
+  socketSubmitChecker: {fileID: 1163273117}
 --- !u!4 &934698452816848850
 Transform:
   m_ObjectHideFlags: 0
@@ -132740,7 +132748,7 @@ MonoBehaviour:
   droppedDirtPrefab: {fileID: 591563616285608881, guid: fdc01c12a2a48524587b889ba7054d9b, type: 3}
   dirtPickupParticles: {fileID: 573973659012671241}
   pickupSound: {fileID: 2505382099929489923}
-  recyclingManager: {fileID: 317711987}
+  recyclingManager: {fileID: 934583864754271652}
 --- !u!33 &3557395974455563215
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -149811,7 +149819,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seedPrefab: {fileID: 8506543071911847749, guid: d13706bf217825449be64b5490ac7b94, type: 3}
-  recyclingManager: {fileID: 317711987}
+  recyclingManager: {fileID: 934583864754271652}
 --- !u!33 &4902521588184738507
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -150362,7 +150370,7 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_AttachTransform: {fileID: 8070069035262673385}
+  m_AttachTransform: {fileID: 0}
   m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 0
   m_MatchAttachPosition: 1
@@ -150370,7 +150378,7 @@ MonoBehaviour:
   m_SnapToColliderVolume: 1
   m_ReinitializeDynamicAttachEverySingleGrab: 1
   m_AttachEaseInTime: 0.15
-  m_MovementType: 0
+  m_MovementType: 2
   m_VelocityDamping: 1
   m_VelocityScale: 1
   m_AngularVelocityDamping: 1
@@ -184133,7 +184141,7 @@ MonoBehaviour:
   pourSound: {fileID: 6711377171896343374}
   pourThreshold: 60
   waterDetector: {fileID: 8667828313453711822}
-  recyclingManager: {fileID: 317711987}
+  recyclingManager: {fileID: 934583864754271652}
   photonView: {fileID: 8398165545669315869}
 --- !u!23 &6798864194884608787
 MeshRenderer:
@@ -201295,7 +201303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flatDirt: {fileID: 1161878173150801696}
   dirtDropSound: {fileID: 4342964991345368059}
-  recyclingManager: {fileID: 317711987}
+  recyclingManager: {fileID: 0}
   photonView: {fileID: 7332552791494144744}
 --- !u!4 &7336319443230597276
 Transform:
@@ -208775,7 +208783,7 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_AttachTransform: {fileID: 6122023587740607679}
+  m_AttachTransform: {fileID: 0}
   m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 0
   m_MatchAttachPosition: 1
@@ -213567,8 +213575,8 @@ MonoBehaviour:
   m_StartingHoverFilters: []
   m_StartingSelectFilters: []
   m_StartingInteractionStrengthFilters: []
-  m_AttachTransform: {fileID: 8483345808034820518}
-  m_SecondaryAttachTransform: {fileID: 2648311932013542256}
+  m_AttachTransform: {fileID: 0}
+  m_SecondaryAttachTransform: {fileID: 0}
   m_UseDynamicAttach: 0
   m_MatchAttachPosition: 1
   m_MatchAttachRotation: 1
