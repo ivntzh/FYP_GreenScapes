@@ -26,6 +26,7 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         var pv = go.GetComponent<PhotonView>();
         if (pv == null) return;
 
+        // ask MasterClient to process and destroy
         photonView.RPC(nameof(RequestSubmitPlant), RpcTarget.MasterClient, pv.ViewID);
 
         if (socket.GetOldestInteractableSelected() == args.interactableObject)
@@ -38,7 +39,6 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         if (!PhotonNetwork.IsMasterClient) return;
         var submitPV = PhotonView.Find(plantViewID);
         if (submitPV == null) return;
-
         var plantGO = submitPV.gameObject;
         var type = plantGO.GetComponent<PlantType>();
         bool correct = type != null && orderManager.CheckPlantMatch(type.plantID);
@@ -46,17 +46,14 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         if (correct)
         {
             shopManager.AddCurrency(rewardAmount);
-            shopManager.photonView.RPC(
-                nameof(ShopManager.CurrencyAddedConfirmationRPC),
-                RpcTarget.All,
-                rewardAmount
-            );
+            shopManager.photonView.RPC(nameof(ShopManager.CurrencyAddedConfirmationRPC), RpcTarget.Others, rewardAmount);
         }
         else
         {
             Debug.Log("❌ Wrong plant. No points awarded.");
         }
 
+        // MasterClient does destroy
         PhotonNetwork.Destroy(plantGO);
     }
 }

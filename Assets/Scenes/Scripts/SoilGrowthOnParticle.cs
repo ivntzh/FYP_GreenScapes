@@ -4,13 +4,11 @@ using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-[RequireComponent(typeof(MeshRenderer))]
 public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 {
     [Header("Growth Objects")]
     public GameObject smallPlantObject;
     public GameObject mediumPlantObject;
-    [Header("Final Prefab (in Resources/PhotonPrefabs)")]
     public string finalPlantPrefabName;
 
     [Header("Soil Visuals")]
@@ -19,7 +17,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public Material drySoilMaterial;
 
     [Header("Seed Setup")]
-    public XRSocketInteractor seedSocket;    // child under earthhill
+    public XRSocketInteractor seedSocket;
     public string seedTag = "Seed";
 
     [Header("UI & Timers")]
@@ -35,8 +33,8 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public float timer3Duration     = 7f;
 
     [Header("External Pot Pieces")]
-    public PotManager potManager;  // FlatDirt handler
-    public Dirt       dirtScript;  // MixedDirt handler
+    public PotManager potManager;
+    public Dirt       dirtScript;
 
     private int   growthStage = 0;
     private bool  isWatering  = false;
@@ -44,11 +42,9 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        // initialize when earthhill is first enabled
         ResetVisuals();
     }
 
-    // Called after spawning final plant to return to initial state
     void ResetVisuals()
     {
         waterUI?.SetActive(false);
@@ -60,8 +56,8 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         if (soilRenderer != null && drySoilMaterial != null)
             soilRenderer.material = drySoilMaterial;
         growthStage = 0;
-        isWatering  = false;
-        waterTimer  = 0f;
+        isWatering = false;
+        waterTimer = 0f;
     }
 
     void Update()
@@ -121,18 +117,15 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         {
             case 1:
                 ActivateTimer(timer1UI, timer1UI?.GetComponent<Timer>());
-                if (PhotonNetwork.IsMasterClient)
-                    StartCoroutine(DelayedGrowStage(1, timer1Duration));
+                if (PhotonNetwork.IsMasterClient) StartCoroutine(DelayedGrowStage(1, timer1Duration));
                 break;
             case 2:
                 ActivateTimer(timer2UI, timer2UI?.GetComponent<Timer>());
-                if (PhotonNetwork.IsMasterClient)
-                    StartCoroutine(DelayedGrowStage(2, timer2Duration));
+                if (PhotonNetwork.IsMasterClient) StartCoroutine(DelayedGrowStage(2, timer2Duration));
                 break;
             case 3:
                 ActivateTimer(timer3UI, timer3UI?.GetComponent<Timer>());
-                if (PhotonNetwork.IsMasterClient)
-                    StartCoroutine(DelayedGrowStage(3, timer3Duration));
+                if (PhotonNetwork.IsMasterClient) StartCoroutine(DelayedGrowStage(3, timer3Duration));
                 break;
         }
     }
@@ -177,19 +170,20 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                     soilRenderer.material = drySoilMaterial;
                 if (PhotonNetwork.IsMasterClient)
                     PhotonNetwork.Instantiate(finalPlantPrefabName, transform.position, transform.rotation);
-                // Reset entire pot
+
+                // reset soil visuals
                 ResetVisuals();
-                // Reset external pieces
+
+                // reset dirt & flat
                 if (potManager != null)
                 {
                     potManager.flatDirt?.SetActive(false);
                     potManager.enabled = true;
                 }
                 dirtScript?.ResetToInitial();
-                // Disable earthhill until next mix
-                gameObject.SetActive(false);
                 break;
         }
+
         growthStage = stage;
         if (stage < 3)
             photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.All);
