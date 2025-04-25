@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
 public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
@@ -34,17 +35,16 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public float timer3Duration     = 7f;
 
     [Header("External Pot Pieces")]
-    public PotManager potManager; // your SmallPot’s PotManager
-    public Dirt       dirtScript; // your FlatDirt child’s Dirt script
+    public PotManager potManager;
+    public Dirt       dirtScript;
 
     // internal state
-    int   growthStage = 0;  // 0=none,1=small,2=medium,3=final
+    int   growthStage = 0;
     bool  isWatering  = false;
     float waterTimer  = 0f;
 
     void Start()
     {
-        // hide all visuals/UI at launch
         waterUI?.SetActive(false);
         timer1UI?.SetActive(false);
         timer2UI?.SetActive(false);
@@ -52,17 +52,15 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         smallPlantObject?.SetActive(false);
         mediumPlantObject?.SetActive(false);
 
-        // reset soil to dry
         if (soilRenderer != null && drySoilMaterial != null)
             soilRenderer.material = drySoilMaterial;
 
-        // sanity-check inspector refs
         if (soilRenderer    == null) Debug.LogError("SoilGrowthOnParticle: soilRenderer not set");
         if (wetSoilMaterial == null) Debug.LogError("SoilGrowthOnParticle: wetSoilMaterial not set");
         if (drySoilMaterial == null) Debug.LogError("SoilGrowthOnParticle: drySoilMaterial not set");
         if (waterUI         == null) Debug.LogError("SoilGrowthOnParticle: waterUI not set");
-        if (potManager      == null) Debug.LogWarning("SoilGrowthOnParticle: potManager not assigned — flat dirt won’t reset");
-        if (dirtScript      == null) Debug.LogWarning("SoilGrowthOnParticle: dirtScript not assigned — mixed dirt won’t reset");
+        if (potManager      == null) Debug.LogWarning("PotManager not assigned — flat dirt won’t reset");
+        if (dirtScript      == null) Debug.LogWarning("Dirt script not assigned — mixed dirt won’t reset");
     }
 
     void Update()
@@ -82,7 +80,6 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Water")) return;
-
         if (PhotonNetwork.IsMasterClient)
         {
             BeginWatering();
@@ -97,7 +94,6 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Water") || !PhotonNetwork.IsMasterClient) return;
-
         isWatering = false;
         waterTimer = 0f;
         photonView.RPC(nameof(RPC_HideWaterUI), RpcTarget.All);
@@ -161,12 +157,10 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                 timer1UI?.GetComponent<Timer>()?.StopTimer();
                 timer1UI?.SetActive(false);
                 smallPlantObject?.SetActive(true);
-                // ensure seed is removed once small plant appears
                 DestroySeedInPot();
                 if (soilRenderer != null && wetSoilMaterial != null)
                     soilRenderer.material = wetSoilMaterial;
                 break;
-
             case 2:
                 timer2UI?.GetComponent<Timer>()?.StopTimer();
                 timer2UI?.SetActive(false);
@@ -174,37 +168,26 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                 if (soilRenderer != null && wetSoilMaterial != null)
                     soilRenderer.material = wetSoilMaterial;
                 break;
-
             case 3:
                 timer3UI?.GetComponent<Timer>()?.StopTimer();
                 timer3UI?.SetActive(false);
                 mediumPlantObject?.SetActive(false);
                 if (soilRenderer != null && drySoilMaterial != null)
                     soilRenderer.material = drySoilMaterial;
-
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    PhotonNetwork.Instantiate(
-                        finalPlantPrefabName,
-                        transform.position,
-                        transform.rotation
-                    );
+                    PhotonNetwork.Instantiate(finalPlantPrefabName, transform.position, transform.rotation);
                 }
-
-                // reset the whole pot immediately
                 photonView.RPC(nameof(RPC_ResetGrowth), RpcTarget.All);
                 break;
         }
-
         growthStage = stage;
-
         if (stage < 3)
             photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.All);
     }
 
     void DestroySeedInPot()
     {
-        // search all descendants for any seed
         foreach (Transform child in transform.GetComponentsInChildren<Transform>(true))
         {
             if (child.CompareTag(seedTag))
@@ -216,13 +199,9 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                 else
                     Destroy(go);
 
-                // if socket still holds selection, clear it
-                if (seedSocket != null)
-                {
-                    var selected = seedSocket.GetOldestInteractableSelected() as XRBaseInteractable;
-                    if (selected != null && selected.transform == child)
-                        seedSocket.interactionManager.SelectExit(seedSocket, selected);
-                }
+                var selected = seedSocket?.GetOldestInteractableSelected();
+                if (selected != null && selected.transform == child)
+                    seedSocket.interactionManager.SelectExit(seedSocket, selected);
             }
         }
     }
@@ -233,23 +212,19 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         growthStage = 0;
         isWatering  = false;
         waterTimer  = 0f;
-
         waterUI?.SetActive(false);
         timer1UI?.SetActive(false);
         timer2UI?.SetActive(false);
         timer3UI?.SetActive(false);
         smallPlantObject?.SetActive(false);
         mediumPlantObject?.SetActive(false);
-
         if (soilRenderer != null && drySoilMaterial != null)
             soilRenderer.material = drySoilMaterial;
-
         if (potManager != null)
         {
             potManager.flatDirt?.SetActive(false);
             potManager.enabled = true;
         }
-
         if (dirtScript != null)
             dirtScript.ResetMix();
     }
