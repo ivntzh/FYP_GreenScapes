@@ -5,8 +5,9 @@ public class Dirt : MonoBehaviour
 {
     public GameObject flatDirt; // The flat dirt to hide
     public GameObject mixedDirt; // The final dirt to show
-    public PotManager potManager; // Reference to PotManager script
+    public PotManager potManager; // Reference to PotManager
     public AudioSource mixSound; // Sound to play when mixing
+    public RecyclingManager recyclingManager; // Reference to RecyclingManager
     public PhotonView photonView; // Reference to PhotonView
     private bool isMixed = false;
 
@@ -32,7 +33,10 @@ public class Dirt : MonoBehaviour
                 isMixed = true;
 
                 // Notify other clients
-                photonView.RPC("RPC_MixSoil", RpcTarget.All);
+                recyclingManager.photonView.RPC(
+                    nameof(RecyclingManager.RPC_MixSoil),
+                    RpcTarget.All
+                );
             }
         }
     }

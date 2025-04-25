@@ -5,10 +5,9 @@ using Photon.Pun;
 public class SeedRespawner : MonoBehaviour
 {
     public GameObject seedPrefab;   // Reference to this same prefab
-    public PhotonView photonView;   // Reference to PhotonView
+    public RecyclingManager recyclingManager; // Reference to RecyclingManager
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
-
     private bool hasSpawnedNew = false;
 
     void Start()
@@ -18,17 +17,27 @@ public class SeedRespawner : MonoBehaviour
         spawnRotation = transform.rotation;
     }
 
+    public void Initialize()
+    {
+        hasSpawnedNew = false;
+    }
+
     public void OnGrab(SelectEnterEventArgs args)
     {
         if (hasSpawnedNew || seedPrefab == null) return;
 
-        if (photonView.IsMine)
+        if (recyclingManager.photonView.IsMine)
         {
             Instantiate(seedPrefab, spawnPosition, spawnRotation);
             hasSpawnedNew = true; // Prevents multiple spawns
 
             // Notify other clients
-            photonView.RPC("RPC_SpawnSeed", RpcTarget.All, spawnPosition, spawnRotation);
+            recyclingManager.photonView.RPC(
+                nameof(RecyclingManager.RPC_SpawnSeed),
+                RpcTarget.All,
+                spawnPosition,
+                spawnRotation
+            );
         }
     }
 

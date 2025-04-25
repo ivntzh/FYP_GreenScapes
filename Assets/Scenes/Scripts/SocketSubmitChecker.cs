@@ -9,10 +9,18 @@ public class SocketSubmitChecker : MonoBehaviour
     public ShopManager shopManager;
     public int rewardAmount = 10;
     private XRSocketInteractor socket;
+    public RecyclingManager recyclingManager; // Reference to RecyclingManager
+    public PhotonView photonView; // Reference to PhotonView
 
     private void Awake()
     {
         socket = GetComponent<XRSocketInteractor>();
+    }
+
+    public void Initialize()
+    {
+        // Initialize socket events
+        socket.selectEntered.AddListener(OnItemPlaced);
     }
 
     private void OnEnable()
@@ -38,39 +46,14 @@ public class SocketSubmitChecker : MonoBehaviour
             {
                 Debug.Log("✅ Correct plant submitted! Rewarding player.");
 
-                if (shopManager != null)
+                if (recyclingManager != null)
                 {
-                    if (PhotonNetwork.IsConnected)
-                    {
-                        if (PhotonNetwork.IsMasterClient)
-                        {
-                            // If this is the master client, directly add currency
-                            shopManager.AddCurrency(rewardAmount);
-                        }
-                        else
-                        {
-                            // If this is a client, request the master client to add currency
-                            shopManager.photonView.RPC(
-                                nameof(ShopManager.RequestAddCurrencyRPC),
-                                RpcTarget.MasterClient,
-                                rewardAmount
-                            );
-                        }
-                    }
-                    else
-                    {
-                        // If not connected to Photon (offline mode), add currency directly
-                        shopManager.AddCurrency(rewardAmount);
-                    }
+                    recyclingManager.SubmitPlant(plant.plantID);
                 }
-
-                // Generate new order only if correct
-                orderManager.GenerateNewOrder();
             }
             else
             {
                 Debug.Log("❌ Wrong plant submitted. No reward. Try again.");
-                // Keep same order
             }
 
             // Always destroy the plant

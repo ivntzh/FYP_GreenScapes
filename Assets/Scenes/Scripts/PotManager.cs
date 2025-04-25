@@ -5,12 +5,19 @@ public class PotManager : MonoBehaviour
 {
     public GameObject flatDirt; // Assign this in Inspector
     public AudioSource dirtDropSound; // Assign this in Inspector
+    public RecyclingManager recyclingManager; // Reference to RecyclingManager
     public PhotonView photonView; // Reference to PhotonView
 
     private void Start()
     {
         if (flatDirt != null)
             flatDirt.SetActive(false); // Make sure it's hidden at start
+    }
+
+    public void Initialize()
+    {
+        // Initialize pot manager
+        Debug.Log("PotManager initialized.");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -32,7 +39,10 @@ public class PotManager : MonoBehaviour
                 this.enabled = false; // Disable script after triggered
 
                 // Notify other clients
-                photonView.RPC("RPC_DirtPlaced", RpcTarget.All);
+                recyclingManager.photonView.RPC(
+                    nameof(RecyclingManager.RPC_DirtPlaced),
+                    RpcTarget.All
+                );
             }
         }
     }

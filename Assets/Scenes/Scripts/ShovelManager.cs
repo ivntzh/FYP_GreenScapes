@@ -7,11 +7,11 @@ public class ShovelManager : MonoBehaviour
     public GameObject droppedDirtPrefab;        // The prefab to spawn
     public ParticleSystem dirtPickupParticles;  // Particle FX to play when scooping
     public AudioSource pickupSound;             // Sound FX to play when scooping
-    public PhotonView photonView;               // Reference to PhotonView
+    public RecyclingManager recyclingManager;   // Reference to RecyclingManager
 
     private bool hasDirt = false;
 
-    void Start()
+    public void Initialize()
     {
         if (dirtOnShovel != null)
             dirtOnShovel.SetActive(false);
@@ -21,7 +21,7 @@ public class ShovelManager : MonoBehaviour
     {
         if (other.CompareTag("DirtPile") && !hasDirt)
         {
-            if (photonView.IsMine)
+            if (recyclingManager.photonView.IsMine)
             {
                 dirtOnShovel.SetActive(true);
                 hasDirt = true;
@@ -37,13 +37,16 @@ public class ShovelManager : MonoBehaviour
                 Debug.Log("Shovel picked up dirt.");
 
                 // Notify other clients
-                photonView.RPC("RPC_PickupDirt", RpcTarget.All);
+                recyclingManager.photonView.RPC(
+                    nameof(RecyclingManager.RPC_PickupDirt),
+                    RpcTarget.All
+                );
             }
         }
     }
 
     [PunRPC]
-    private void RPC_PickupDirt()
+    public void RPC_PickupDirt()
     {
         dirtOnShovel.SetActive(true);
         hasDirt = true;
@@ -53,7 +56,7 @@ public class ShovelManager : MonoBehaviour
     {
         if (hasDirt && dirtOnShovel != null)
         {
-            if (photonView.IsMine)
+            if (recyclingManager.photonView.IsMine)
             {
                 if (droppedDirtPrefab != null)
                 {
@@ -68,13 +71,16 @@ public class ShovelManager : MonoBehaviour
                 hasDirt = false;
 
                 // Notify other clients
-                photonView.RPC("RPC_DropDirt", RpcTarget.All);
+                recyclingManager.photonView.RPC(
+                    nameof(RecyclingManager.RPC_DropDirt),
+                    RpcTarget.All
+                );
             }
         }
     }
 
     [PunRPC]
-    private void RPC_DropDirt()
+    public void RPC_DropDirt()
     {
         dirtOnShovel.SetActive(false);
         hasDirt = false;

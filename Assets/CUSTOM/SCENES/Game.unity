@@ -6532,6 +6532,56 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 287473406}
   m_Mesh: {fileID: -9216810965846887918, guid: 9351726f203ccd9498512d8b2a32a92f, type: 3}
+--- !u!1 &317711985
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 317711986}
+  - component: {fileID: 317711987}
+  m_Layer: 0
+  m_Name: RecyclingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &317711986
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317711985}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 610634347}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &317711987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 317711985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c8165a200f68984298055a584f24ac0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shopManager: {fileID: 1055273094}
+  plantOrderManager: {fileID: 778384871}
+  shovelManager: {fileID: 3557247833139130083}
+  potManager: {fileID: 7332552791494144745}
+  wateringCan: {fileID: 6798065794237138003}
+  socketSubmitChecker: {fileID: 1163273117}
 --- !u!1 &324359985
 GameObject:
   m_ObjectHideFlags: 0
@@ -12912,6 +12962,7 @@ Transform:
   - {fileID: 830960695}
   - {fileID: 2014593907}
   - {fileID: 778384875}
+  - {fileID: 317711986}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &619197059
@@ -16821,6 +16872,10 @@ PrefabInstance:
       propertyPath: photonView
       value: 
       objectReference: {fileID: 778384876}
+    - target: {fileID: 4149069595755310747, guid: 25c341419756fa84688fdd10ef351d8d, type: 3}
+      propertyPath: recyclingManager
+      value: 
+      objectReference: {fileID: 317711987}
     - target: {fileID: 6973187100895808749, guid: 25c341419756fa84688fdd10ef351d8d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -25442,6 +25497,17 @@ MonoBehaviour:
   sceneViewId: 47
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &1163273117 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1735037418969426049, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+  m_PrefabInstance: {fileID: 1163273114}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163273115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f7d419eec66f794c84d3471e2f2e30f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1168547927
 GameObject:
   m_ObjectHideFlags: 0
@@ -132674,7 +132740,7 @@ MonoBehaviour:
   droppedDirtPrefab: {fileID: 591563616285608881, guid: fdc01c12a2a48524587b889ba7054d9b, type: 3}
   dirtPickupParticles: {fileID: 573973659012671241}
   pickupSound: {fileID: 2505382099929489923}
-  photonView: {fileID: 7969084334613969754}
+  recyclingManager: {fileID: 317711987}
 --- !u!33 &3557395974455563215
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -149745,7 +149811,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seedPrefab: {fileID: 8506543071911847749, guid: d13706bf217825449be64b5490ac7b94, type: 3}
-  photonView: {fileID: 7723852949190688009}
+  recyclingManager: {fileID: 317711987}
 --- !u!33 &4902521588184738507
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -184067,6 +184133,7 @@ MonoBehaviour:
   pourSound: {fileID: 6711377171896343374}
   pourThreshold: 60
   waterDetector: {fileID: 8667828313453711822}
+  recyclingManager: {fileID: 317711987}
   photonView: {fileID: 8398165545669315869}
 --- !u!23 &6798864194884608787
 MeshRenderer:
@@ -201228,7 +201295,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flatDirt: {fileID: 1161878173150801696}
   dirtDropSound: {fileID: 4342964991345368059}
-  photonView: {fileID: 0}
+  recyclingManager: {fileID: 317711987}
+  photonView: {fileID: 7332552791494144744}
 --- !u!4 &7336319443230597276
 Transform:
   m_ObjectHideFlags: 0
@@ -208355,6 +208423,7 @@ MonoBehaviour:
   mixedDirt: {fileID: 6430904042929490454}
   potManager: {fileID: 0}
   mixSound: {fileID: 4342964991345368059}
+  recyclingManager: {fileID: 0}
   photonView: {fileID: 0}
 --- !u!114 &7940837604471529007
 MonoBehaviour:

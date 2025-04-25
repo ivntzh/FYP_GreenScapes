@@ -7,9 +7,10 @@ public class PlantOrderManager : MonoBehaviour
     public string[] possibleOrders = { "Plant", "Cactus"};
     public string currentOrderID;
     public TextMeshProUGUI orderText;
+    public RecyclingManager recyclingManager; // Reference to RecyclingManager
     public PhotonView photonView; // Reference to PhotonView
 
-    void Start()
+    public void Initialize()
     {
         GenerateNewOrder();
     }
@@ -21,7 +22,11 @@ public class PlantOrderManager : MonoBehaviour
             orderText.text = $"📝 Order: {currentOrderID}";
 
         // Notify other clients
-        photonView.RPC("RPC_UpdateOrder", RpcTarget.All, currentOrderID);
+        photonView.RPC(
+            nameof(RPC_UpdateOrder),
+            RpcTarget.All,
+            currentOrderID
+        );
     }
 
     [PunRPC]

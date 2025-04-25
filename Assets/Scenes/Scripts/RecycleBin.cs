@@ -6,8 +6,9 @@ public class RecycleBin : MonoBehaviour
     public TrashCategory acceptedTrashType;
     public int rewardAmount = 1;
     public ShopManager shopManager;
-
+    public RecyclingManager recyclingManager; // Reference to RecyclingManager
     public AudioClip correctSound;
+    public PhotonView photonView; // Reference to PhotonView
 
     private void OnTriggerEnter(Collider other)
     {
@@ -34,7 +35,7 @@ public class RecycleBin : MonoBehaviour
 
     private void AwardCurrency()
     {
-        if (shopManager != null)
+        if (shopManager != null && recyclingManager != null)
         {
             if (PhotonNetwork.IsConnected)
             {
@@ -44,7 +45,11 @@ public class RecycleBin : MonoBehaviour
                 }
                 else
                 {
-                    shopManager.photonView.RPC("RequestAddCurrencyRPC", RpcTarget.MasterClient, rewardAmount);
+                    shopManager.photonView.RPC(
+                        nameof(ShopManager.RequestAddCurrencyRPC),
+                        RpcTarget.MasterClient,
+                        rewardAmount
+                    );
                 }
             }
             else

@@ -7,6 +7,7 @@ public class WateringCan : MonoBehaviour
     public AudioSource pourSound;           // Pouring sound
     public float pourThreshold = 60f;       // Tilt angle for pouring
     public GameObject waterDetector;        // GameObject to enable/disable
+    public RecyclingManager recyclingManager; // Reference to RecyclingManager
     public PhotonView photonView;           // Reference to PhotonView
 
     private bool isPouring = false;
@@ -41,7 +42,10 @@ public class WateringCan : MonoBehaviour
         Debug.Log("💧 Pouring started");
 
         // Notify other clients
-        photonView.RPC("RPC_StartPouring", RpcTarget.All);
+        recyclingManager.photonView.RPC(
+            nameof(RecyclingManager.RPC_StartPouring),
+            RpcTarget.All
+        );
     }
 
     [PunRPC]
@@ -63,7 +67,10 @@ public class WateringCan : MonoBehaviour
         Debug.Log("🚫 Pouring stopped");
 
         // Notify other clients
-        photonView.RPC("RPC_StopPouring", RpcTarget.All);
+        recyclingManager.photonView.RPC(
+            nameof(RecyclingManager.RPC_StopPouring),
+            RpcTarget.All
+        );
     }
 
     [PunRPC]
@@ -73,5 +80,11 @@ public class WateringCan : MonoBehaviour
         if (pourSound != null && pourSound.isPlaying) pourSound.Stop();
         if (waterDetector != null) waterDetector.SetActive(false);
         isPouring = false;
+    }
+
+    public void Initialize()
+    {
+        // Initialize watering can
+        Debug.Log("WateringCan initialized.");
     }
 }
