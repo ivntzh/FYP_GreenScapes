@@ -40,8 +40,11 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
             pv.ViewID
         );
 
-        // clear local selection
-        socket.interactionManager.SelectExit(socket, args.interactableObject);
+        // clear local selection only if socket currently holds this interactable
+        if (socket.hasSelection && socket.firstInteractableSelected == args.interactableObject)
+        {
+            socket.interactionManager.SelectExit(socket, args.interactableObject);
+        }
     }
 
     [PunRPC]
@@ -61,7 +64,7 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
             Debug.Log("✅ Correct plant submitted! Awarding coins.");
             // Host updates currency
             shopManager.AddCurrency(rewardAmount);
-            // Notify all clients
+            // Notify all clients of currency gain
             shopManager.photonView.RPC(
                 nameof(ShopManager.CurrencyAddedConfirmationRPC),
                 RpcTarget.All,
@@ -73,11 +76,13 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
             Debug.Log("❌ Wrong plant submitted. No reward.");
         }
 
-        // Destroy the plant across the network
-        if (plantGO != null)
+                // Destroy only if this is a PlantType (ignore other networked objects)
+        if (plant != null && plantGO != null)
+        {
             PhotonNetwork.Destroy(plantGO);
+        }
 
-        // Sync new order to all
+        // Sync new order to all clients
         photonView.RPC(
             nameof(SyncGenerateNewOrder),
             RpcTarget.AllBuffered

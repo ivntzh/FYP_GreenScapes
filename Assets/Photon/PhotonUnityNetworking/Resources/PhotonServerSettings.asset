@@ -72,6 +72,10 @@ MonoBehaviour:
   - RPC_ShowStage1
   - RPC_ShowStage2
   - RPC_ShowStopWatering
+  - RPC_GrowStage
+  - RPC_HideWaterUI
+  - RPC_ShowWaterUI
+  - RPC_StartTimerForStage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
