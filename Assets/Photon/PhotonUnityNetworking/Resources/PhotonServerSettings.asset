@@ -67,6 +67,11 @@ MonoBehaviour:
   - RPC_BeginWatering
   - RPC_StopWatering
   - SyncGenerateNewOrder
+  - RPC_ShowBeginWatering
+  - RPC_ShowFinal
+  - RPC_ShowStage1
+  - RPC_ShowStage2
+  - RPC_ShowStopWatering
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
