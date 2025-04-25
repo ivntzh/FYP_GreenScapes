@@ -33,18 +33,18 @@ public class SocketSubmitChecker : MonoBehaviourPun
         var pv = placedObject.GetComponent<PhotonView>();
         if (pv == null) return;  // only handle networked plants
 
-        // Ensure only the owner client triggers submission RPC
+        // Only the owner client should request submission
         if (PhotonNetwork.IsConnected && !pv.IsMine)
             return;
 
-                // ask the MasterClient to process submission
+        // ask the MasterClient to process submission
         photonView.RPC(
             nameof(RequestSubmitPlant),
             RpcTarget.MasterClient,
             pv.ViewID
         );
 
-        // clear selection locally
+        // clear local selection
         socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
 
