@@ -1,38 +1,33 @@
+// Dirt.cs
 using UnityEngine;
 
 public class Dirt : MonoBehaviour
 {
-    public GameObject flatDirt; // The flat dirt to hide
-    public GameObject mixedDirt; // The final dirt to show
-    public MonoBehaviour PotManager; // Script to disable
-    public AudioSource mixSound; // Sound to play when mixing
+    public GameObject flatDirt;
+    public GameObject mixedDirt;
+    public MonoBehaviour PotManager; 
+    public AudioSource mixSound;
     private bool isMixed = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isMixed) return;
+        if (isMixed || !other.CompareTag("Rake")) return;
 
-        if (other.CompareTag("Rake"))
-        {
-            Debug.Log("Rake triggered soil mixing!");
-
-            if (flatDirt != null) flatDirt.SetActive(false);
-            if (mixedDirt != null) mixedDirt.SetActive(true);
-
-            if (PotManager != null)
-                PotManager.enabled = false;
-
-            if (mixSound != null)
-                mixSound.Play(); // Play the sound effect
-
-            isMixed = true;
-        }
+        flatDirt?.SetActive(false);
+        mixedDirt?.SetActive(true);
+        PotManager?.enabled = false;
+        mixSound?.Play();
+        isMixed = true;
     }
+
+    /// <summary>
+    /// Call this to restore the pre-mixed state.
+    /// </summary>
     public void ResetMix()
     {
         isMixed = false;
-        if (flatDirt   != null) flatDirt.SetActive(true);
-        if (mixedDirt  != null) mixedDirt.SetActive(false);
-        if (PotManager != null) PotManager.enabled = true;
+        flatDirt?.SetActive(true);
+        mixedDirt?.SetActive(false);
+        PotManager?.enabled = true;
     }
 }

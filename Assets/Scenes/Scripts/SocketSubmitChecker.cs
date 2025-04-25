@@ -10,7 +10,6 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     [Header("References")]
     public PlantOrderManager   orderManager;
     public ShopManager         shopManager;
-    public SoilGrowthOnParticle growthManager;
     public int                 rewardAmount = 10;
 
     private XRSocketInteractor socket;
@@ -19,33 +18,26 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     {
         socket = GetComponent<XRSocketInteractor>();
         if (socket == null)
-            Debug.LogError("SocketSubmitChecker needs an XRSocketInteractor on the same GameObject");
+            Debug.LogError("SocketSubmitChecker needs an XRSocketInteractor");
     }
 
-    private void OnEnable()
-    {
-        socket?.selectEntered.AddListener(OnItemPlaced);
-    }
-
-    private void OnDisable()
-    {
-        socket?.selectEntered.RemoveListener(OnItemPlaced);
-    }
+    private void OnEnable()  => socket?.selectEntered.AddListener(OnItemPlaced);
+    private void OnDisable() => socket?.selectEntered.RemoveListener(OnItemPlaced);
 
     private void OnItemPlaced(SelectEnterEventArgs args)
     {
         var placedGO = args.interactableObject.transform.gameObject;
         var pv       = placedGO.GetComponent<PhotonView>();
-        if (pv == null) return;   // only networked plants
+        if (pv == null) return;
 
-        // — point 8: always use RPC to host, even if we're the host —
+        // always ask the MasterClient to process
         photonView.RPC(
             nameof(RequestSubmitPlant),
             RpcTarget.MasterClient,
             pv.ViewID
         );
 
-        // clear selection so it can be re-grabbed
+        // free the grab
         if (socket.GetOldestInteractableSelected() == args.interactableObject)
             socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
@@ -64,7 +56,6 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 
         if (correct)
         {
-            Debug.Log("✅ Correct plant submitted! Rewarding player.");
             shopManager.AddCurrency(rewardAmount);
             shopManager.photonView.RPC(
                 nameof(ShopManager.CurrencyAddedConfirmationRPC),
@@ -72,46 +63,25 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
                 rewardAmount
             );
         }
-        else
-        {
-            Debug.Log("❌ Wrong plant submitted. No reward.");
-        }
 
-        // 3) Authoritatively destroy the networked plant
+        // only MasterClient ever calls Destroy
         PhotonNetwork.Destroy(plantGO);
 
-        // 4) — point 9: only tell other clients to locally destroy —
+        // local-cleanup on others
         photonView.RPC(
             nameof(RPC_LocalDestroyPlant),
             RpcTarget.OthersBuffered,
             plantViewID
         );
 
-        // 5) Reset the pot & generate a new order (no buffering)
-        photonView.RPC(
-            nameof(SyncGenerateNewOrder),
-            RpcTarget.All
-        );
-        if (growthManager != null)
-        {
-            growthManager.photonView.RPC(
-                nameof(SoilGrowthOnParticle.RPC_ResetGrowth),
-                RpcTarget.All
-            );
-        }
+        // generate next order
+        orderManager.GenerateNewOrder();
     }
 
     [PunRPC]
     void RPC_LocalDestroyPlant(int plantViewID)
     {
         var pv = PhotonView.Find(plantViewID);
-        if (pv != null)
-            Destroy(pv.gameObject);
-    }
-
-    [PunRPC]
-    public void SyncGenerateNewOrder()
-    {
-        orderManager.GenerateNewOrder();
+        if (pv != null) Destroy(pv.gameObject);
     }
 }
