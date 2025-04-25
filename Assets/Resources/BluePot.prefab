@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 3492966957859697135}
   - component: {fileID: 4097973574814818544}
   - component: {fileID: -381614904979882162}
-  - component: {fileID: -936747101465991740}
   - component: {fileID: -7979822202541047085}
+  - component: {fileID: -3188747680337860154}
   m_Layer: 0
   m_Name: BluePot
   m_TagString: Untagged
@@ -88,26 +88,10 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: -936747101465991740}
+  - {fileID: -3188747680337860154}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &-936747101465991740
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1392908957678402329}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!114 &-7979822202541047085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,6 +214,22 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
+--- !u!114 &-3188747680337860154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1392908957678402329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 1
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1 &2230321859933016868
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,8 +740,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 932d34135acf0bb46a2ec559df180918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  smallPlantPrefabName: 
-  mediumPlantPrefabName: 
+  smallPlantObject: {fileID: 0}
+  mediumPlantObject: {fileID: 0}
   finalPlantPrefabName: 
   wetSoilMaterial: {fileID: 2100000, guid: 60b05d0019941824692d70f52e214bf0, type: 2}
   drySoilMaterial: {fileID: 2100000, guid: 9d6d61c87c79a5b4b9a377e426480d78, type: 2}
