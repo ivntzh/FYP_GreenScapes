@@ -3932,8 +3932,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 0
-  m_TeleportEnabled: 0
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
 --- !u!114 &163593550
 MonoBehaviour:
@@ -3951,7 +3951,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 163593549}
@@ -10258,7 +10258,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 472806720}
@@ -10278,8 +10278,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 0
-  m_TeleportEnabled: 0
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
 --- !u!1 &479982572
 GameObject:
@@ -10881,6 +10881,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 34
       objectReference: {fileID: 0}
+    - target: {fileID: 874496569638738651, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+      propertyPath: OwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 934583865054468554, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_LocalPosition.x
       value: -52.692
@@ -10938,8 +10942,12 @@ PrefabInstance:
       value: 33
       objectReference: {fileID: 0}
     - target: {fileID: 5811124948270685561, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+      propertyPath: OwnershipTransfer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5811124948270685561, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: ObservedComponents.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5811124948270685561, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: 'ObservedComponents.Array.data[0]'
@@ -11020,7 +11028,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 505375853}
@@ -32561,6 +32569,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Planting Station 3
       objectReference: {fileID: 0}
+    - target: {fileID: 3126345431915042737, guid: 6af7230b7f8a6014e89838c47c919a3e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3654784773015174710, guid: 6af7230b7f8a6014e89838c47c919a3e, type: 3}
       propertyPath: sceneViewId
       value: 29
@@ -40958,6 +40970,10 @@ PrefabInstance:
     - target: {fileID: 472341877113836256, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
       propertyPath: m_Name
       value: Planting Station 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 472341877113836256, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1409910934256808397, guid: 7e26df4225824794f83f21338c7cef6e, type: 3}
       propertyPath: onTimerEnd.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_BoolArgument
