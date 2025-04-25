@@ -31,16 +31,20 @@ public class SocketSubmitChecker : MonoBehaviourPun
     {
         var placedObject = args.interactableObject.transform.gameObject;
         var pv = placedObject.GetComponent<PhotonView>();
-        if (pv == null) return; // only handle networked plants
+        if (pv == null) return;  // only handle networked plants
 
-        // ask host to process submission
+        // Ensure only the owner client triggers submission RPC
+        if (PhotonNetwork.IsConnected && !pv.IsMine)
+            return;
+
+                // ask the MasterClient to process submission
         photonView.RPC(
             nameof(RequestSubmitPlant),
             RpcTarget.MasterClient,
             pv.ViewID
         );
 
-        // clear local selection
+        // clear selection locally
         socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
 
@@ -54,21 +58,26 @@ public class SocketSubmitChecker : MonoBehaviourPun
 
         var plantGO = submitPV.gameObject;
         var plant   = plantGO.GetComponent<PlantType>();
-        bool correct = plant != null && orderManager.CheckPlantMatch(plant.plantID);
+        bool correct = (plant != null) && orderManager.CheckPlantMatch(plant.plantID);
 
         if (correct)
         {
-            // award currency authoritatively
+            Debug.Log("✅ Correct plant submitted! Rewarding player.");
+            // award currency on the host
             shopManager.AddCurrency(rewardAmount);
-            // notify all clients of currency gain
+            // notify all clients
             shopManager.photonView.RPC(
                 nameof(ShopManager.CurrencyAddedConfirmationRPC),
                 RpcTarget.All,
                 rewardAmount
             );
         }
+        else
+        {
+            Debug.Log("❌ Wrong plant submitted. No reward.");
+        }
 
-        // destroy the submitted plant
+        // only MasterClient does network destroy
         PhotonNetwork.Destroy(plantGO);
 
         // generate new order for everyone

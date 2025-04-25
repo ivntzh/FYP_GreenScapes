@@ -30,7 +30,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public GameObject timer2UI;
     public GameObject timer3UI;
 
-    // internal state (only master drives growth)
+    // internal state (only the MasterClient drives growth)
     private bool   isWatering        = false;
     private bool   hasGrowthStarted = false;
     private float  waterTimer       = 0f;
@@ -66,14 +66,14 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_BeginWatering(PhotonMessageInfo info)
     {
-        // show UI everywhere
+        // show water UI on all clients
         waterUI?.SetActive(true);
-        // only master updates timer
+        // only MasterClient should track timer
         if (PhotonNetwork.IsMasterClient)
         {
-            isWatering       = true;
-            hasGrowthStarted = false;
-            waterTimer       = 0f;
+            isWatering        = true;
+            hasGrowthStarted  = false;
+            waterTimer        = 0f;
         }
     }
 
@@ -88,20 +88,20 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_GrowSmall()
     {
-        // remove socketed seed
+        // only MasterClient should destroy the seed network-wide
         if (seedSocket.hasSelection && seedSocket.firstInteractableSelected != null)
         {
             var seedGO = seedSocket.firstInteractableSelected.transform.gameObject;
-            if (seedGO.CompareTag(seedTag))
-            {
+            if (seedGO.CompareTag(seedTag) && PhotonNetwork.IsMasterClient)
                 PhotonNetwork.Destroy(seedGO);
-            }
         }
 
+        // activate small stage
         smallPlantObject?.SetActive(true);
         soilRenderer.material = wetSoilMaterial;
         timer1UI?.SetActive(true);
 
+        // schedule medium growth on master
         if (PhotonNetwork.IsMasterClient)
             StartCoroutine(DelayedMedium());
     }
