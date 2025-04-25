@@ -72,7 +72,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         {
             isWatering = false;
             waterTimer = 0f;
-            photonView.RPC(nameof(RPC_HideWaterUI), RpcTarget.All);
+            photonView.RPC(nameof(RPC_HideWaterUI), RpcTarget.AllBuffered);
             photonView.RPC(nameof(RPC_StartTimerForStage), RpcTarget.All, growthStage + 1);
         }
     }
@@ -83,7 +83,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             BeginWatering();
-            photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.All);
+            photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.AllBuffered);
         }
         else
             photonView.RPC(nameof(RequestBeginWatering), RpcTarget.MasterClient);
@@ -94,7 +94,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         if (!other.CompareTag("Water") || !PhotonNetwork.IsMasterClient) return;
         isWatering = false;
         waterTimer = 0f;
-        photonView.RPC(nameof(RPC_HideWaterUI), RpcTarget.All);
+        photonView.RPC(nameof(RPC_HideWaterUI), RpcTarget.AllBuffered);
     }
 
     [PunRPC]
@@ -102,7 +102,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     {
         if (!PhotonNetwork.IsMasterClient) return;
         BeginWatering();
-        photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.All);
+        photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.AllBuffered);
     }
 
     void BeginWatering()
@@ -168,6 +168,11 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                     soilRenderer.material = wetSoilMaterial;
                 break;
             case 3:
+                DestroySeedInSocket();
+                ResetVisuals();
+                potManager?.flatDirt?.SetActive(false);
+                dirtScript?.ResetToInitial();
+                break;
                 timer3UI.GetComponent<Timer>().StopTimer();
                 timer3UI.SetActive(false);
                 mediumPlantObject.SetActive(false);
@@ -184,17 +189,18 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         }
         growthStage = stage;
         if (stage < 3)
-            photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.All);
+            photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.AllBuffered);
     }
 
     void DestroySeedInSocket()
     {
-        if (seedSocket == null) return;
-        foreach (Transform child in seedSocket.transform)
+        // Find **any** child under this pot with the seedTag
+        var allChildren = GetComponentsInChildren<Transform>(includeInactive: true);
+        foreach (var t in allChildren)
         {
-            if (child.CompareTag(seedTag))
+            if (t.CompareTag(seedTag))
             {
-                var go = child.gameObject;
+                var go = t.gameObject;
                 var pv = go.GetComponent<PhotonView>();
                 if (pv != null && PhotonNetwork.IsMasterClient)
                     PhotonNetwork.Destroy(go);
