@@ -3,12 +3,12 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using Photon.Pun;
 
-public class SocketSubmitChecker : MonoBehaviourPun
+public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 {
     [Header("References")]
     public PlantOrderManager orderManager;
-    public ShopManager       shopManager;
-    public int               rewardAmount = 10;
+    public ShopManager shopManager;
+    public int rewardAmount = 10;
 
     private XRSocketInteractor socket;
 
@@ -63,7 +63,9 @@ public class SocketSubmitChecker : MonoBehaviourPun
         if (correct)
         {
             Debug.Log("✅ Correct plant submitted! Rewarding player.");
+            // award currency on the host
             shopManager.AddCurrency(rewardAmount);
+            // notify all clients
             shopManager.photonView.RPC(
                 nameof(ShopManager.CurrencyAddedConfirmationRPC),
                 RpcTarget.All,
@@ -75,8 +77,17 @@ public class SocketSubmitChecker : MonoBehaviourPun
             Debug.Log("❌ Wrong plant submitted. No reward.");
         }
 
-        PhotonNetwork.Destroy(plantGO);
-        photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.AllBuffered);
+        // only MasterClient does network destroy
+        if (plantGO != null)
+        {
+            PhotonNetwork.Destroy(plantGO);
+        }
+
+        // generate new order for everyone
+        photonView.RPC(
+            nameof(SyncGenerateNewOrder),
+            RpcTarget.AllBuffered
+        );
     }
 
     [PunRPC]
