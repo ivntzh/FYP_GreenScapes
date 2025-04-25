@@ -8,9 +8,9 @@ using Photon.Pun;
 public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 {
     [Header("References")]
-    public PlantOrderManager   orderManager;
-    public ShopManager         shopManager;
-    public int                 rewardAmount = 10;
+    public PlantOrderManager orderManager;
+    public ShopManager       shopManager;
+    public int               rewardAmount = 10;
 
     private XRSocketInteractor socket;
 
@@ -74,7 +74,7 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
             plantViewID
         );
 
-        // generate next order
+        // immediately generate next order
         orderManager.GenerateNewOrder();
     }
 

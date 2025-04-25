@@ -5,29 +5,31 @@ public class Dirt : MonoBehaviour
 {
     public GameObject flatDirt;
     public GameObject mixedDirt;
-    public MonoBehaviour PotManager; 
+    public MonoBehaviour PotManager;
     public AudioSource mixSound;
+
     private bool isMixed = false;
 
     private void OnTriggerEnter(Collider other)
     {
         if (isMixed || !other.CompareTag("Rake")) return;
 
-        flatDirt?.SetActive(false);
-        mixedDirt?.SetActive(true);
-        PotManager?.enabled = false;
+        if (flatDirt   != null) flatDirt.SetActive(false);
+        if (mixedDirt  != null) mixedDirt.SetActive(true);
+        if (PotManager != null) PotManager.enabled = false;
         mixSound?.Play();
+
         isMixed = true;
     }
 
     /// <summary>
-    /// Call this to restore the pre-mixed state.
+    /// Restores the pre-mixed state.
     /// </summary>
     public void ResetMix()
     {
         isMixed = false;
-        flatDirt?.SetActive(true);
-        mixedDirt?.SetActive(false);
-        PotManager?.enabled = true;
+        if (flatDirt   != null) flatDirt.SetActive(true);
+        if (mixedDirt  != null) mixedDirt.SetActive(false);
+        if (PotManager != null) PotManager.enabled = true;
     }
 }
