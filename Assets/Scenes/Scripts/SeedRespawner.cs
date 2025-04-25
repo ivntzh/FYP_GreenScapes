@@ -45,10 +45,11 @@ public class SeedRespawner : MonoBehaviourPun
     [PunRPC]
     public void RPC_DoSpawnSeed()
     {
-        // Instantiate the seed prefab for everyone
-        Instantiate(Resources.Load<GameObject>(seedPrefabName),
-                    spawnPosition,
-                    spawnRotation);
+        PhotonNetwork.Instantiate(
+            seedPrefabName,        // must match the seed prefab¡¯s filename
+            spawnPosition,
+            spawnRotation
+        );
         hasSpawnedNew = true;
     }
 }

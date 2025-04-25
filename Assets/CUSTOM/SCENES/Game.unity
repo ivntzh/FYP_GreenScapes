@@ -6606,7 +6606,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents: []
   sceneViewId: 29
@@ -25356,6 +25356,42 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 610634347}
     m_Modifications:
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 313614213}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 313614213}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_HoverEntered.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1362185865974116758, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1735037418969426049, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
       propertyPath: shopManager
       value: 
@@ -25364,6 +25400,10 @@ PrefabInstance:
       propertyPath: orderManager
       value: 
       objectReference: {fileID: 778384871}
+    - target: {fileID: 5370425175872420073, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6958032442180518158, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
       propertyPath: m_LocalPosition.x
       value: -60.914
@@ -25407,6 +25447,10 @@ PrefabInstance:
     - target: {fileID: 7315025571934654134, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
       propertyPath: m_Name
       value: Rift
+      objectReference: {fileID: 0}
+    - target: {fileID: 8778226137233561630, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 988502174135550378, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
