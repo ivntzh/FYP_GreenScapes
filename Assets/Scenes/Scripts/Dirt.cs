@@ -1,4 +1,3 @@
-// Dirt.cs
 using UnityEngine;
 
 public class Dirt : MonoBehaviour
@@ -7,29 +6,28 @@ public class Dirt : MonoBehaviour
     public GameObject mixedDirt;
     public MonoBehaviour PotManager;
     public AudioSource mixSound;
-
     private bool isMixed = false;
 
     private void OnTriggerEnter(Collider other)
     {
         if (isMixed || !other.CompareTag("Rake")) return;
 
-        if (flatDirt   != null) flatDirt.SetActive(false);
-        if (mixedDirt  != null) mixedDirt.SetActive(true);
-        if (PotManager != null) PotManager.enabled = false;
-        mixSound?.Play();
+        if (flatDirt != null)    flatDirt.SetActive(false);
+        if (mixedDirt != null)   mixedDirt.SetActive(true);
+        if (PotManager != null)  PotManager.enabled = false;
+        if (mixSound != null)    mixSound.Play();
 
         isMixed = true;
     }
 
     /// <summary>
-    /// Restores the pre-mixed state.
+    /// Restore to initial, pre-mixed state (no flat or mixed dirt).
     /// </summary>
-    public void ResetMix()
+    public void ResetToInitial()
     {
         isMixed = false;
-        if (flatDirt   != null) flatDirt.SetActive(false);
-        if (mixedDirt  != null) mixedDirt.SetActive(false);
-        if (PotManager != null) PotManager.enabled = true;
+        if (flatDirt != null)    flatDirt.SetActive(false);
+        if (mixedDirt != null)   mixedDirt.SetActive(false);
+        if (PotManager != null)  PotManager.enabled = true;
     }
 }

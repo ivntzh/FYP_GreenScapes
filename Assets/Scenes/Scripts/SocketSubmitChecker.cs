@@ -1,5 +1,4 @@
-﻿// SocketSubmitChecker.cs
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using Photon.Pun;
@@ -7,37 +6,28 @@ using Photon.Pun;
 [RequireComponent(typeof(XRSocketInteractor))]
 public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 {
-    [Header("References")]
     public PlantOrderManager orderManager;
     public ShopManager       shopManager;
     public int               rewardAmount = 10;
 
     private XRSocketInteractor socket;
 
-    private void Awake()
+    void Awake()
     {
         socket = GetComponent<XRSocketInteractor>();
-        if (socket == null)
-            Debug.LogError("SocketSubmitChecker needs an XRSocketInteractor");
     }
 
-    private void OnEnable()  => socket?.selectEntered.AddListener(OnItemPlaced);
-    private void OnDisable() => socket?.selectEntered.RemoveListener(OnItemPlaced);
+    void OnEnable() => socket.selectEntered.AddListener(OnItemPlaced);
+    void OnDisable() => socket.selectEntered.RemoveListener(OnItemPlaced);
 
-    private void OnItemPlaced(SelectEnterEventArgs args)
+    void OnItemPlaced(SelectEnterEventArgs args)
     {
-        var placedGO = args.interactableObject.transform.gameObject;
-        var pv       = placedGO.GetComponent<PhotonView>();
+        var go = args.interactableObject.transform.gameObject;
+        var pv = go.GetComponent<PhotonView>();
         if (pv == null) return;
 
-        // always ask the MasterClient to process
-        photonView.RPC(
-            nameof(RequestSubmitPlant),
-            RpcTarget.MasterClient,
-            pv.ViewID
-        );
+        photonView.RPC(nameof(RequestSubmitPlant), RpcTarget.MasterClient, pv.ViewID);
 
-        // free the grab
         if (socket.GetOldestInteractableSelected() == args.interactableObject)
             socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
@@ -46,13 +36,12 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     public void RequestSubmitPlant(int plantViewID, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient) return;
-
         var submitPV = PhotonView.Find(plantViewID);
         if (submitPV == null) return;
 
         var plantGO = submitPV.gameObject;
-        var plant   = plantGO.GetComponent<PlantType>();
-        bool correct = (plant != null) && orderManager.CheckPlantMatch(plant.plantID);
+        var type = plantGO.GetComponent<PlantType>();
+        bool correct = type != null && orderManager.CheckPlantMatch(type.plantID);
 
         if (correct)
         {
@@ -63,25 +52,11 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
                 rewardAmount
             );
         }
+        else
+        {
+            Debug.Log("❌ Wrong plant. No points awarded.");
+        }
 
-        // only MasterClient ever calls Destroy
         PhotonNetwork.Destroy(plantGO);
-
-        // local-cleanup on others
-        photonView.RPC(
-            nameof(RPC_LocalDestroyPlant),
-            RpcTarget.OthersBuffered,
-            plantViewID
-        );
-
-        // immediately generate next order
-        orderManager.GenerateNewOrder();
-    }
-
-    [PunRPC]
-    void RPC_LocalDestroyPlant(int plantViewID)
-    {
-        var pv = PhotonView.Find(plantViewID);
-        if (pv != null) Destroy(pv.gameObject);
     }
 }

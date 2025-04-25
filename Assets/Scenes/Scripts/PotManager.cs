@@ -1,3 +1,4 @@
+// PotManager.cs
 using Photon.Pun;
 using UnityEngine;
 
@@ -14,32 +15,16 @@ public class PotManager : MonoBehaviourPun
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DroppedDirt"))
-        {
-            Debug.Log("Dirt detected in pot!");
-
-            photonView.RPC("EnableDirt", RpcTarget.AllBuffered);
-
-            Destroy(other.gameObject);
-            this.enabled = false;
-        }
+        if (!other.CompareTag("DroppedDirt")) return;
+        photonView.RPC(nameof(EnableDirt), RpcTarget.AllBuffered);
+        Destroy(other.gameObject);
+        this.enabled = false;
     }
 
     [PunRPC]
-    public void EnableDirt()
+    private void EnableDirt()
     {
-        if (flatDirt != null)
-            flatDirt.SetActive(true);
-
-        if (dirtDropSound != null)
-            dirtDropSound.Play();
+        flatDirt?.SetActive(true);
+        dirtDropSound?.Play();
     }
-
-    [PunRPC]
-    public void ResetPot()
-    {
-        flatDirt?.SetActive(false);
-        enabled = true;
-    }
-
 }
