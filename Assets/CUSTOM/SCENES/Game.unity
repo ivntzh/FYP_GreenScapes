@@ -3832,10 +3832,34 @@ MonoBehaviour:
       m_Calls: []
   m_SelectEntered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 505375853}
+        m_TargetAssemblyTypeName: UnityEngine.Rigidbody, UnityEngine
+        m_MethodName: set_isKinematic
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   m_SelectExited:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 505375853}
+        m_TargetAssemblyTypeName: UnityEngine.Rigidbody, UnityEngine
+        m_MethodName: set_isKinematic
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_FirstFocusEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -10166,10 +10190,34 @@ MonoBehaviour:
       m_Calls: []
   m_SelectEntered:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 505375858}
+        m_TargetAssemblyTypeName: UnityEngine.Rigidbody, UnityEngine
+        m_MethodName: set_isKinematic
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   m_SelectExited:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 505375858}
+        m_TargetAssemblyTypeName: UnityEngine.Rigidbody, UnityEngine
+        m_MethodName: set_isKinematic
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_FirstFocusEntered:
     m_PersistentCalls:
       m_Calls: []
@@ -11126,7 +11174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Height
-      value: 0.92745674
+      value: 1.0070783
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Radius
@@ -11134,11 +11182,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Center.x
-      value: -3.8635555e-17
+      value: 1.8442247e-16
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Center.y
-      value: 0.011336896
+      value: -0.028473873
       objectReference: {fileID: 0}
     - target: {fileID: 9025328267700598626, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_Center.z
@@ -11228,6 +11276,11 @@ MonoBehaviour:
   sceneViewId: 38
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!54 &505375853 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 7969084334446794545, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+  m_PrefabInstance: {fileID: 505375849}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &505375854 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2648311931643303705, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
@@ -11400,6 +11453,11 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 1
   m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
+--- !u!54 &505375858 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 585777728594947819, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+  m_PrefabInstance: {fileID: 505375849}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &505674377
 GameObject:
   m_ObjectHideFlags: 0
