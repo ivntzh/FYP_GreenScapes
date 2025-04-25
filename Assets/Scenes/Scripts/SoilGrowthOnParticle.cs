@@ -4,6 +4,7 @@ using Photon.Pun;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
+[RequireComponent(typeof(MeshRenderer))]
 public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 {
     [Header("Growth Objects")]
@@ -18,7 +19,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public Material drySoilMaterial;
 
     [Header("Seed Setup")]
-    public XRSocketInteractor seedSocket;
+    public XRSocketInteractor seedSocket;    // child under earthhill
     public string seedTag = "Seed";
 
     [Header("UI & Timers")]
@@ -34,8 +35,8 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public float timer3Duration     = 7f;
 
     [Header("External Pot Pieces")]
-    public PotManager potManager;
-    public Dirt       dirtScript;
+    public PotManager potManager;  // FlatDirt handler
+    public Dirt       dirtScript;  // MixedDirt handler
 
     private int   growthStage = 0;
     private bool  isWatering  = false;
@@ -43,7 +44,13 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
     void Start()
     {
-        // initial state: everything off
+        // initialize when earthhill is first enabled
+        ResetVisuals();
+    }
+
+    // Called after spawning final plant to return to initial state
+    void ResetVisuals()
+    {
         waterUI?.SetActive(false);
         timer1UI?.SetActive(false);
         timer2UI?.SetActive(false);
@@ -52,6 +59,9 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         mediumPlantObject?.SetActive(false);
         if (soilRenderer != null && drySoilMaterial != null)
             soilRenderer.material = drySoilMaterial;
+        growthStage = 0;
+        isWatering  = false;
+        waterTimer  = 0f;
     }
 
     void Update()
@@ -167,7 +177,17 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                     soilRenderer.material = drySoilMaterial;
                 if (PhotonNetwork.IsMasterClient)
                     PhotonNetwork.Instantiate(finalPlantPrefabName, transform.position, transform.rotation);
-                photonView.RPC(nameof(RPC_ResetGrowth), RpcTarget.All);
+                // Reset entire pot
+                ResetVisuals();
+                // Reset external pieces
+                if (potManager != null)
+                {
+                    potManager.flatDirt?.SetActive(false);
+                    potManager.enabled = true;
+                }
+                dirtScript?.ResetToInitial();
+                // Disable earthhill until next mix
+                gameObject.SetActive(false);
                 break;
         }
         growthStage = stage;
@@ -188,31 +208,5 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
             else if (pv == null)
                 Destroy(go);
         }
-    }
-
-    [PunRPC]
-    public void RPC_ResetGrowth()
-    {
-        // reset visuals
-        growthStage = 0;
-        isWatering  = false;
-        waterTimer  = 0f;
-        waterUI?.SetActive(false);
-        timer1UI?.SetActive(false);
-        timer2UI?.SetActive(false);
-        timer3UI?.SetActive(false);
-        smallPlantObject?.SetActive(false);
-        mediumPlantObject?.SetActive(false);
-        if (soilRenderer != null && drySoilMaterial != null)
-            soilRenderer.material = drySoilMaterial;
-
-        // flat and mixed dirt back to initial
-        if (potManager != null)
-        {
-            potManager.flatDirt?.SetActive(false);
-            potManager.enabled = true;
-        }
-        if (dirtScript != null)
-            dirtScript.ResetToInitial();
     }
 }
