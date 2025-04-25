@@ -28,7 +28,7 @@ public class Dirt : MonoBehaviour
     public void ResetMix()
     {
         isMixed = false;
-        if (flatDirt   != null) flatDirt.SetActive(true);
+        if (flatDirt   != null) flatDirt.SetActive(false);
         if (mixedDirt  != null) mixedDirt.SetActive(false);
         if (PotManager != null) PotManager.enabled = true;
     }

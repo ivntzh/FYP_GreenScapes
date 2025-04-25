@@ -160,8 +160,9 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
             case 1:
                 timer1UI?.GetComponent<Timer>()?.StopTimer();
                 timer1UI?.SetActive(false);
-                if (PhotonNetwork.IsMasterClient) DestroySeedInPot();
                 smallPlantObject?.SetActive(true);
+                // ensure seed is removed once small plant appears
+                DestroySeedInPot();
                 if (soilRenderer != null && wetSoilMaterial != null)
                     soilRenderer.material = wetSoilMaterial;
                 break;
@@ -203,13 +204,25 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
     void DestroySeedInPot()
     {
-        foreach (Transform child in transform)
+        // search all descendants for any seed
+        foreach (Transform child in transform.GetComponentsInChildren<Transform>(true))
         {
             if (child.CompareTag(seedTag))
             {
-                var pv = child.GetComponent<PhotonView>();
-                if (pv != null) PhotonNetwork.Destroy(child.gameObject);
-                else           Destroy(child.gameObject);
+                var go = child.gameObject;
+                var pv = go.GetComponent<PhotonView>();
+                if (pv != null)
+                    PhotonNetwork.Destroy(go);
+                else
+                    Destroy(go);
+
+                // if socket still holds selection, clear it
+                if (seedSocket != null)
+                {
+                    var selected = seedSocket.GetOldestInteractableSelected() as XRBaseInteractable;
+                    if (selected != null && selected.transform == child)
+                        seedSocket.interactionManager.SelectExit(seedSocket, selected);
+                }
             }
         }
     }
@@ -231,14 +244,12 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         if (soilRenderer != null && drySoilMaterial != null)
             soilRenderer.material = drySoilMaterial;
 
-        // reset flat dirt
         if (potManager != null)
         {
             potManager.flatDirt?.SetActive(false);
             potManager.enabled = true;
         }
 
-        // reset mixed dirt
         if (dirtScript != null)
             dirtScript.ResetMix();
     }
