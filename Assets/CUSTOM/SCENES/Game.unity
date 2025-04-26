@@ -11104,6 +11104,10 @@ PrefabInstance:
       propertyPath: onTimerEnd.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_BoolArgument
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7522523554377119409, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7915418980521890193, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: dirtScript
       value: 
