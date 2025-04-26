@@ -16,14 +16,10 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     void Awake()
     {
         socket = GetComponent<XRSocketInteractor>();
-    }
-
-    void OnEnable()
-    {
         socket.selectEntered.AddListener(OnItemPlaced);
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
         socket.selectEntered.RemoveListener(OnItemPlaced);
     }
@@ -34,18 +30,14 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         var submitPV = go.GetComponent<PhotonView>();
         if (submitPV == null) return;
 
-        // 🔒 only the client that actually owns this plant should ask to submit
-        if (PhotonNetwork.IsConnected && !submitPV.IsMine)
-            return;
-
-        // send *one* request to the MasterClient
+        // Any client can place; ask the MasterClient to process it
         photonView.RPC(
-          nameof(RequestSubmitPlant),
-          RpcTarget.MasterClient,
-          submitPV.ViewID
+            nameof(RequestSubmitPlant),
+            RpcTarget.MasterClient,
+            submitPV.ViewID
         );
 
-        // un-select locally
+        // free the grab so hand can re-pick
         if (socket.GetOldestInteractableSelected() == args.interactableObject)
             socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
@@ -53,28 +45,39 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RequestSubmitPlant(int plantViewID, PhotonMessageInfo info)
     {
+        // only the MasterClient ever runs this
         if (!PhotonNetwork.IsMasterClient) return;
 
         var submitPV = PhotonView.Find(plantViewID);
         if (submitPV == null) return;
 
-        // 1) Make *sure* the MasterClient owns it
-        submitPV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
-
-        // 2) Award coins once
         var plantGO = submitPV.gameObject;
-        var plant   = plantGO.GetComponent<PlantType>();
-        if (plant != null && orderManager.CheckPlantMatch(plant.plantID))
+        var type    = plantGO.GetComponent<PlantType>();
+        bool correct = (type != null) && orderManager.CheckPlantMatch(type.plantID);
+
+        if (correct)
         {
+            // 1) Host applies the reward
             shopManager.AddCurrency(rewardAmount);
+
+            // 2) Broadcast the new authoritative state to everyone
             shopManager.SyncDataToClients();
+
+            // 3) Give instant feedback to ALL OTHER CLIENTS
+            shopManager.photonView.RPC(
+                nameof(ShopManager.CurrencyAddedConfirmationRPC),
+                RpcTarget.Others,
+                rewardAmount
+            );
+
+            // 4) Destroy and generate next order
+            PhotonNetwork.Destroy(plantGO);
+            photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.All);
         }
-
-        // 3) Now that we own it, destroy it network‐wide
-        PhotonNetwork.Destroy(plantGO);
-
-        // 4) New order for everyone
-        photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.AllBuffered);
+        else
+        {
+            Debug.Log("❌ Wrong plant. No points awarded.");
+        }
     }
 
     [PunRPC]
