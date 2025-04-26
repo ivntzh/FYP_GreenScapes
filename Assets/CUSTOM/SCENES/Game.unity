@@ -22518,8 +22518,8 @@ MonoBehaviour:
   messageText: {fileID: 627827577}
   checkoutButton: {fileID: 270679717}
   environmentSettingsManager: {fileID: 804597563}
-  correctSubmissionAudioClip: {fileID: 0}
-  wrongSubmissionAudioClip: {fileID: 0}
+  correctSubmissionAudioClip: {fileID: 8300000, guid: 3fb0f55241046704ba21e3c41cb80642, type: 3}
+  wrongSubmissionAudioClip: {fileID: 8300000, guid: 94d6e33c00022fa468b73d26cd2abaaf, type: 3}
 --- !u!114 &1055273095
 MonoBehaviour:
   m_ObjectHideFlags: 0
