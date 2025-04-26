@@ -231,15 +231,22 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     void DestroySeedInSocket()
     {
         if (seedSocket == null) return;
+
+        // Find every Transform under the socket (including inactive children)
         foreach (var t in seedSocket.transform.GetComponentsInChildren<Transform>(true))
         {
-            if (!t.CompareTag(seedTag)) continue;
+            if (!t.CompareTag(seedTag))
+                continue;
+
             var go = t.gameObject;
             var pv = go.GetComponent<PhotonView>();
+
+            // 1) If this is a networked object, ask PUN to destroy it everywhere
             if (pv != null && PhotonNetwork.IsMasterClient)
                 PhotonNetwork.Destroy(go);
-            else if (pv == null)
-                Destroy(go);
+
+            // 2) Always nuke the local copy immediately
+            Destroy(go);
         }
     }
 }
