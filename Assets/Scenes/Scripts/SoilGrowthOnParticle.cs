@@ -233,21 +233,18 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         if (seedSocket == null || !seedSocket.hasSelection)
             return;
 
-        // Grab the XRInteractable in the socket
-        var xrSelect = seedSocket.firstInteractableSelected;
-        if (xrSelect == null) return;
+        // 1) grab the current XRSelectInteractable
+        var xr = seedSocket.firstInteractableSelected;
+        // 2) clear the socket selection
+        seedSocket.interactionManager.SelectExit(seedSocket, xr);
 
-        var go = xrSelect.transform.gameObject;
+        // 3) then destroy the object itself
+        var go = xr.transform.gameObject;
         var pv = go.GetComponent<PhotonView>();
-
-        // 1) If networked, tell PUN to destroy it everywhere
         if (pv != null && PhotonNetwork.IsMasterClient)
             PhotonNetwork.Destroy(go);
-
-        // 2) Always destroy locally immediately
+        // always remove the local copy immediately too:
         Destroy(go);
-
         // 3) Clear the socket’s selection so it’s free next round
-        seedSocket.interactionManager.SelectExit(seedSocket, xrSelect);
     }
 }
