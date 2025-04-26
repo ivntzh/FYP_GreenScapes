@@ -1,42 +1,35 @@
 using UnityEngine;
-using Photon.Pun; // Add Photon namespace
+using Photon.Pun;
 
-public class Xylophone_audio : MonoBehaviourPun // Inherit from MonoBehaviourPun
+[RequireComponent(typeof(PhotonView))]
+public class XylophoneAudio : MonoBehaviourPun
 {
-    public AudioClip Xylo_AudioClip;
-    
+    [Tooltip("Assign your clang sound here")]
+    public AudioClip noteClip;
+
+    AudioSource _audio;
+
+    void Awake()
+    {
+        // Add an AudioSource so we can PlayOneShot in 3D space
+        _audio = gameObject.AddComponent<AudioSource>();
+        _audio.spatialBlend = 1f;    // full 3D
+        _audio.playOnAwake  = false;
+        _audio.clip         = noteClip;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (!collision.gameObject.CompareTag("baqueta")) return;
-    
-        if (photonView.IsMine) // Only the local player triggers
-        {
-            // Play locally immediately for responsiveness
-            LocalPlaySound();
-        
-            // Tell others to play it
-            photonView.RPC("PlaySoundRPC", RpcTarget.Others);
-        }
+
+        // Broadcast the note to everyone (including ourselves)
+        photonView.RPC(nameof(PlayNoteRPC), RpcTarget.All);
     }
 
     [PunRPC]
-    private void PlaySoundRPC()
+    void PlayNoteRPC()
     {
-        // Only remote clients execute this
-        if (!photonView.IsMine)
-        {
-            LocalPlaySound();
-        }
-    }
-
-    private void LocalPlaySound()
-    {
-        if (Xylo_AudioClip == null)
-        {
-            Debug.LogError("Audioclip missing!");
-            return;
-        }
-        
-        AudioSource.PlayClipAtPoint(Xylo_AudioClip, transform.position);
+        // Fire-and-forget; every client runs this
+        _audio.PlayOneShot(noteClip);
     }
 }
