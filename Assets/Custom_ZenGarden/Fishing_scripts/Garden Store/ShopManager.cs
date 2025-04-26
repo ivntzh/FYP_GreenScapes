@@ -135,7 +135,7 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
             environmentSettingsManager.photonView.RPC("RefreshEnvironmentRPC", RpcTarget.Others);
     }
 
-    void SyncDataToClients()
+    public void SyncDataToClients()
     {
         var fishGM = FindObjectOfType<FishingGameManager>();
         if (fishGM != null) fishGM.UpdateCurrencyUI(currentCurrency);
