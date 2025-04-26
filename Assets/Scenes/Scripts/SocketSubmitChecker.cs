@@ -34,18 +34,18 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         var submitPV = go.GetComponent<PhotonView>();
         if (submitPV == null) return;
 
-        // **1) Only the client who owns this particular plant** calls the RPC:
-        if (PhotonNetwork.IsConnected && !submitPV.IsMine)  
+        // 🔒 only the client that actually owns this plant should ask to submit
+        if (PhotonNetwork.IsConnected && !submitPV.IsMine)
             return;
 
-        // Ask the MasterClient to handle the submission
+        // send *one* request to the MasterClient
         photonView.RPC(
-            nameof(RequestSubmitPlant),
-            RpcTarget.MasterClient,
-            submitPV.ViewID
+          nameof(RequestSubmitPlant),
+          RpcTarget.MasterClient,
+          submitPV.ViewID
         );
 
-        // locally clear the socket so it’s free next time
+        // un-select locally
         if (socket.GetOldestInteractableSelected() == args.interactableObject)
             socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
@@ -53,34 +53,29 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RequestSubmitPlant(int plantViewID, PhotonMessageInfo info)
     {
-        // **2) Only the MasterClient actually runs game logic**
+        // Only the MasterClient runs this
         if (!PhotonNetwork.IsMasterClient) return;
 
         var submitPV = PhotonView.Find(plantViewID);
         if (submitPV == null) return;
 
-        // Transfer ownership so we can destroy it
-        submitPV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
-
+        // Evaluate and award exactly once
         var plantGO = submitPV.gameObject;
         var plant   = plantGO.GetComponent<PlantType>();
-        bool correct = plant != null && orderManager.CheckPlantMatch(plant.plantID);
-
-        if (correct)
+        if (plant != null && orderManager.CheckPlantMatch(plant.plantID))
         {
-            // Award once on the host
             shopManager.AddCurrency(rewardAmount);
-            // **3) Sync the host’s authoritative total** back to everyone
+            // push authoritative total to all clients
             shopManager.SyncDataToClients();
         }
 
-        // Remove it from the scene, network‐wide
+        // Now destroy the plant—MasterClient can because Ownership Transfer = Takeover
         PhotonNetwork.Destroy(plantGO);
 
-        // **4) Issue a new order for everyone**
+        // Generate the next order for everyone
         photonView.RPC(
-            nameof(SyncGenerateNewOrder),
-            RpcTarget.AllBuffered
+          nameof(SyncGenerateNewOrder),
+          RpcTarget.AllBuffered
         );
     }
 
