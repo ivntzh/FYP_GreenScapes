@@ -29,19 +29,21 @@ public class Dirt : MonoBehaviourPun
     [PunRPC]
     private void RPC_MixDirt()
     {
-        // 1) Hide the flat Dirt
+        // 1) Hide flat dirt, show mixed dirt
         flatDirt?.SetActive(false);
-        // 2) Show the mixed dirt (your ¡°earth hill¡± look)
         mixedDirt?.SetActive(true);
-        // 3) Enable the EarthHill root so the seed socket & soil script wake up
-        earthHillRoot?.SetActive(true);
 
-        // 4) Lock PotManager so you can't drop more until reset
+        // 2) Enable the EarthHill root so the soil-growth script runs
+        earthHillRoot?.SetActive(true);
+        // ¡ú *and* immediately turn its MeshRenderer back on:
+        var mr = earthHillRoot.GetComponent<MeshRenderer>();
+        if (mr != null) mr.enabled = true;
+
+        // 3) Disable PotManager so no more dirt spawns until reset
         potManager.enabled = false;
 
-        // 5) Play your mixing sound
+        // 4) Sound & flag
         mixSound?.Play();
-
         isMixed = true;
     }
 
