@@ -169,6 +169,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
         switch (stage)
         {
             case 1:
+                DestroySeedInSocket();
                 timer1UI?.GetComponent<Timer>()?.StopTimer();
                 timer1UI?.SetActive(false);
 
@@ -179,7 +180,6 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
                 }
 
                 smallPlantObject?.SetActive(true);
-                DestroySeedInSocket();
                 break;
 
             case 2:
@@ -230,23 +230,24 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
     void DestroySeedInSocket()
     {
-        if (seedSocket == null) return;
+        if (seedSocket == null || !seedSocket.hasSelection)
+            return;
 
-        // Find every Transform under the socket (including inactive children)
-        foreach (var t in seedSocket.transform.GetComponentsInChildren<Transform>(true))
-        {
-            if (!t.CompareTag(seedTag))
-                continue;
+        // Grab the XRInteractable in the socket
+        var xrSelect = seedSocket.firstInteractableSelected;
+        if (xrSelect == null) return;
 
-            var go = t.gameObject;
-            var pv = go.GetComponent<PhotonView>();
+        var go = xrSelect.transform.gameObject;
+        var pv = go.GetComponent<PhotonView>();
 
-            // 1) If this is a networked object, ask PUN to destroy it everywhere
-            if (pv != null && PhotonNetwork.IsMasterClient)
-                PhotonNetwork.Destroy(go);
+        // 1) If networked, tell PUN to destroy it everywhere
+        if (pv != null && PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(go);
 
-            // 2) Always nuke the local copy immediately
-            Destroy(go);
-        }
+        // 2) Always destroy locally immediately
+        Destroy(go);
+
+        // 3) Clear the socket’s selection so it’s free next round
+        seedSocket.interactionManager.SelectExit(seedSocket, xrSelect);
     }
 }
