@@ -45,39 +45,44 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RequestSubmitPlant(int plantViewID, PhotonMessageInfo info)
     {
-        // only the MasterClient ever runs this
+        // 1) Only the MasterClient ever runs this
         if (!PhotonNetwork.IsMasterClient) return;
 
         var submitPV = PhotonView.Find(plantViewID);
         if (submitPV == null) return;
-
         var plantGO = submitPV.gameObject;
-        var type    = plantGO.GetComponent<PlantType>();
+
+        // 2) Check correctness
+        var type = plantGO.GetComponent<PlantType>();
         bool correct = (type != null) && orderManager.CheckPlantMatch(type.plantID);
-
-        if (correct)
-        {
-            // 1) Host applies the reward
-            shopManager.AddCurrency(rewardAmount);
-
-            // 2) Broadcast the new authoritative state to everyone
-            shopManager.SyncDataToClients();
-
-            // 3) Give instant feedback to ALL OTHER CLIENTS
-            shopManager.photonView.RPC(
-                nameof(ShopManager.CurrencyAddedConfirmationRPC),
-                RpcTarget.Others,
-                rewardAmount
-            );
-
-            // 4) Destroy and generate next order
-            PhotonNetwork.Destroy(plantGO);
-            photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.All);
-        }
-        else
+        if (!correct)
         {
             Debug.Log("❌ Wrong plant. No points awarded.");
+            return;
         }
+
+        // 3) Award currency on host
+        shopManager.AddCurrency(rewardAmount);
+
+        // 4) Sync the authoritative shop state (currency, purchases) to all clients
+        shopManager.SyncDataToClients();
+
+        // 5) Show the “+X Coins!” toast on *everyone*, including the host
+        shopManager.photonView.RPC(
+            nameof(ShopManager.CurrencyAddedConfirmationRPC),
+            RpcTarget.All,
+            rewardAmount
+        );
+
+        // 6) Guarantee the MasterClient owns the plant before destroying it, so that
+        // after a host switch the new MasterClient can still kill it.
+        submitPV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
+
+        // 7) Now destroy network‐wide (always called on the MC)
+        PhotonNetwork.Destroy(plantGO);
+
+        // 8) Generate the next order on everyone
+        photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.All);
     }
 
     [PunRPC]
