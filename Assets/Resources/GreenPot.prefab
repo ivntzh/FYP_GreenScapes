@@ -201,18 +201,21 @@ MonoBehaviour:
   smallPlantObject: {fileID: 0}
   mediumPlantObject: {fileID: 0}
   finalPlantPrefabName: 
+  soilRenderer: {fileID: 469174170650013349}
   wetSoilMaterial: {fileID: 2100000, guid: 60b05d0019941824692d70f52e214bf0, type: 2}
   drySoilMaterial: {fileID: 2100000, guid: 9d6d61c87c79a5b4b9a377e426480d78, type: 2}
-  soilRenderer: {fileID: 469174170650013349}
   seedSocket: {fileID: 3340662291782799141}
   seedTag: Seed
-  waterTimeRequired: 2
-  timeToMediumPlant: 7
-  timeToFinalReplace: 10
   waterUI: {fileID: 0}
   timer1UI: {fileID: 0}
   timer2UI: {fileID: 0}
   timer3UI: {fileID: 0}
+  waterTimeRequired: 2
+  timer1Duration: 7
+  timer2Duration: 7
+  timer3Duration: 7
+  potManager: {fileID: 0}
+  dirtScript: {fileID: 0}
 --- !u!1 &1504528186778176112
 GameObject:
   m_ObjectHideFlags: 0
@@ -1762,7 +1765,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flatDirt: {fileID: 7834905353255611724}
   mixedDirt: {fileID: 1259850006889639452}
-  PotManager: {fileID: 3472894548358926117}
+  earthHillRoot: {fileID: 1259850006889639452}
+  potManager: {fileID: 3472894548358926117}
   mixSound: {fileID: 2095565555387863996}
 --- !u!1 &8683556455798218528
 GameObject:

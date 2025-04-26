@@ -8,6 +8,11 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 
+[Header("Audio Clips")]
+public AudioClip correctSubmissionAudioClip;
+public AudioClip wrongSubmissionAudioClip;
+
+
 [System.Serializable]
 public class ShopItemData
 {
@@ -365,6 +370,29 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
             SaveLocalData();
             SyncDataToClients();
         }
+    }
+
+    [PunRPC]
+    public void PlayCorrectSubmissionFeedbackRPC()
+    {
+        // Play correct sound
+        if (correctSubmissionAudioClip != null)
+            AudioSource.PlayClipAtPoint(correctSubmissionAudioClip, transform.position);
+
+        // Show success message
+        ShowMessage("+ " + rewardAmount + " coins!", Color.green);
+        UpdateUI();
+    }
+
+    [PunRPC]
+    public void PlayWrongSubmissionFeedbackRPC()
+    {
+        // Play wrong sound
+        if (wrongSubmissionAudioClip != null)
+            AudioSource.PlayClipAtPoint(wrongSubmissionAudioClip, transform.position);
+
+        // Show failure message
+        ShowMessage("Wrong plant!", Color.red);
     }
 
     [System.Serializable]
