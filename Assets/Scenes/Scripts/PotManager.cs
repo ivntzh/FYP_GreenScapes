@@ -8,7 +8,7 @@ public class PotManager : MonoBehaviourPun
 
     private void Start()
     {
-        flatDirt.SetActive(false);
+        flatDirt?.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -22,7 +22,7 @@ public class PotManager : MonoBehaviourPun
     [PunRPC]
     private void EnableDirt()
     {
-        flatDirt.SetActive(true);
-        dirtDropSound.Play();
+        flatDirt?.SetActive(true);
+        dirtDropSound?.Play();
     }
 }

@@ -41,17 +41,15 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         var plantGO = submitPV.gameObject;
         var type = plantGO.GetComponent<PlantType>();
         bool correct = type != null && orderManager.CheckPlantMatch(type.plantID);
-
         if (correct)
         {
             shopManager.AddCurrency(rewardAmount);
-            shopManager.photonView.RPC(nameof(ShopManager.CurrencyAddedConfirmationRPC), RpcTarget.Others, rewardAmount);
+            shopManager.photonView.RPC(nameof(ShopManager.CurrencyAddedConfirmationRPC), RpcTarget.All, rewardAmount);
         }
         else
         {
             Debug.Log("❌ Wrong plant. No points awarded.");
         }
-
         PhotonNetwork.Destroy(plantGO);
     }
 }
