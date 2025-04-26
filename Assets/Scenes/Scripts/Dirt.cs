@@ -1,34 +1,45 @@
+// Dirt.cs
 using UnityEngine;
+using Photon.Pun;
 
-public class Dirt : MonoBehaviour
+public class Dirt : MonoBehaviourPunCallbacks
 {
-    public GameObject flatDirt;
-    public GameObject mixedDirt;
-    public MonoBehaviour PotManager;
+    [Header("Flat vs Mixed Dirt")]
+    public GameObject flatDirt;    // Drag your ¡°flat dirt¡± child here
+    public GameObject mixedDirt;   // Drag your ¡°earthhill¡± child here
+
+    [Header("Dependencies")]
+    public PotManager potManager;  // The script that puts flatDirt in
     public AudioSource mixSound;
-    private bool isMixed = false;
+
+    bool isMixed = false;
 
     private void OnTriggerEnter(Collider other)
     {
         if (isMixed || !other.CompareTag("Rake")) return;
-        if (flatDirt != null)    flatDirt.SetActive(false);
-        if (mixedDirt != null)   mixedDirt.SetActive(true);
-        if (PotManager != null)  PotManager.enabled = false;
-        if (mixSound != null)    mixSound.Play();
+        // Do the mix on everyone (buffered)
+        photonView.RPC(nameof(RPC_MixDirt), RpcTarget.AllBuffered);
+    }
 
-        // enable earthhill root on mix
-        var earthHill = transform.root.Find("earthhill");
-        if (earthHill != null)  earthHill.gameObject.SetActive(true);
-
+    [PunRPC]
+    void RPC_MixDirt()
+    {
+        flatDirt?.SetActive(false);
+        mixedDirt?.SetActive(true);
+        potManager.enabled = false;    // disable dropping more dirt until reset
+        mixSound?.Play();
         isMixed = true;
     }
 
-    /// <summary>Restore to initial, pre-dirt state (no earth).</summary>
+    /// <summary>
+    /// Called by SoilGrowthOnParticle once final-plant cycle finishes.
+    /// Returns dirt to its un-mixed state.
+    /// </summary>
     public void ResetToInitial()
     {
         isMixed = false;
-        if (flatDirt != null)    flatDirt.SetActive(false);
-        if (mixedDirt != null)   mixedDirt.SetActive(false);
-        if (PotManager != null)  PotManager.enabled = true;
+        flatDirt?.SetActive(false);
+        mixedDirt?.SetActive(false);
+        potManager.enabled = true;
     }
 }

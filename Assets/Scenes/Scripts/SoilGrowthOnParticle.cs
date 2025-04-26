@@ -14,12 +14,12 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public string finalPlantPrefabName;
 
     [Header("Soil Visuals")]
-    public MeshRenderer soilRenderer;
+    public MeshRenderer soilRenderer;      
     public Material wetSoilMaterial;
     public Material drySoilMaterial;
 
     [Header("Seed Setup")]
-    public XRSocketInteractor seedSocket;    // child under earthhill
+    public XRSocketInteractor seedSocket;  
     public string seedTag = "Seed";
 
     [Header("UI & Timers")]
@@ -35,22 +35,22 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     public float timer3Duration     = 7f;
 
     [Header("External Pot Pieces")]
-    public PotManager potManager;  // FlatDirt handler
-    public Dirt       dirtScript;  // MixedDirt handler
+    public PotManager potManager;  
+    public Dirt       dirtScript;  
 
     // internal state
-    private int   growthStage = 0;   // 0=empty,1=small,2=medium,3=final
-    private bool  isWatering  = false;
-    private float waterTimer  = 0f;
+    int   growthStage = 0;   // 0=empty→1=small→2=medium→3=final
+    bool  isWatering  = false;
+    float waterTimer  = 0f;
 
-    void Start()
+    void OnEnable()
     {
-        // on scene start or Reset, hide everything
+        // When EarthHill is enabled by the rake, reset to “empty pot” visuals
         ResetVisuals();
     }
 
     /// <summary>
-    /// Hide all UI, plants, soil; reset state so the pot is completely empty.
+    /// Hide UI, plants & soil—pot appears completely empty.
     /// </summary>
     void ResetVisuals()
     {
@@ -75,17 +75,13 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        // Only MasterClient drives the watering countdown
         if (!PhotonNetwork.IsMasterClient || !isWatering) return;
 
         waterTimer += Time.deltaTime;
         if (waterTimer >= waterTimeRequired)
         {
-            // watering done for this cycle
             isWatering = false;
             waterTimer = 0f;
-
-            // hide the water prompt, start the next timer
             photonView.RPC(nameof(RPC_HideWaterUI), RpcTarget.AllBuffered);
             photonView.RPC(nameof(RPC_StartTimerForStage), RpcTarget.AllBuffered, growthStage + 1);
         }
@@ -109,7 +105,7 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     private void OnTriggerExit(Collider other)
     {
         if (!other.CompareTag("Water") || !PhotonNetwork.IsMasterClient) return;
-        // cancel watering if pulled out early
+
         isWatering = false;
         waterTimer = 0f;
         photonView.RPC(nameof(RPC_HideWaterUI), RpcTarget.AllBuffered);
@@ -170,18 +166,18 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RPC_GrowStage(int stage)
     {
-        // hide the timer for this stage
         switch (stage)
         {
             case 1:
                 timer1UI?.GetComponent<Timer>()?.StopTimer();
                 timer1UI?.SetActive(false);
-                // show soil + small plant
+
                 if (soilRenderer != null)
                 {
                     soilRenderer.enabled = true;
                     soilRenderer.material = wetSoilMaterial;
                 }
+
                 smallPlantObject?.SetActive(true);
                 DestroySeedInSocket();
                 break;
@@ -189,49 +185,49 @@ public class SoilGrowthOnParticle : MonoBehaviourPunCallbacks
             case 2:
                 timer2UI?.GetComponent<Timer>()?.StopTimer();
                 timer2UI?.SetActive(false);
-                // medium growth
+
                 if (soilRenderer != null)
                     soilRenderer.material = wetSoilMaterial;
+
                 mediumPlantObject?.SetActive(true);
                 break;
 
             case 3:
-                // final stage: hide timer3 & medium
                 timer3UI?.GetComponent<Timer>()?.StopTimer();
                 timer3UI?.SetActive(false);
+
                 mediumPlantObject?.SetActive(false);
-                // dry soil, but keep it hidden until reset
+
                 if (soilRenderer != null)
                 {
                     soilRenderer.material = drySoilMaterial;
                     soilRenderer.enabled = false;
                 }
-                // spawn the final prefab
+
                 if (PhotonNetwork.IsMasterClient)
                     PhotonNetwork.Instantiate(
                         finalPlantPrefabName,
                         transform.position,
                         transform.rotation
                     );
-                // clear everything and return to initial empty pot
+
+                // final harvest → fully clear and disable the hill again
                 DestroySeedInSocket();
                 ResetVisuals();
                 potManager?.flatDirt?.SetActive(false);
                 potManager.enabled = true;
                 dirtScript?.ResetToInitial();
+                // **disable EarthHill until next rake**
+                gameObject.SetActive(false);
                 break;
         }
 
         growthStage = stage;
 
-        // after each growth (except final), re-show the water prompt
         if (stage < 3)
             photonView.RPC(nameof(RPC_ShowWaterUI), RpcTarget.AllBuffered);
     }
 
-    /// <summary>
-    /// Destroys any seed GameObject under the socket (for reuse).
-    /// </summary>
     void DestroySeedInSocket()
     {
         if (seedSocket == null) return;
