@@ -4,10 +4,10 @@ using Photon.Pun;
 
 public class SeedRespawner : MonoBehaviourPun
 {
-    [Tooltip("Must match a prefab in Resources/")]
+    [Tooltip("Must match a prefab in Resources/PhotonPrefabs/")]
     public string seedPrefabName;
 
-    private Vector3   spawnPosition;
+    private Vector3 spawnPosition;
     private Quaternion spawnRotation;
     private bool hasSpawnedNew = false;
 
@@ -17,39 +17,31 @@ public class SeedRespawner : MonoBehaviourPun
         spawnRotation = transform.rotation;
     }
 
-    // Hook this up in the Inspector to XRGrabInteractable ¡ú On Select Entered
+    // Hook this in XRGrabInteractable ¡ú On Select Entered
     public void OnGrab(SelectEnterEventArgs args)
     {
         if (hasSpawnedNew) return;
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // Host spawns it
-            photonView.RPC(nameof(RPC_DoSpawnSeed), RpcTarget.AllBuffered);
-        }
-        else
-        {
-            // Clients ask host
-            photonView.RPC(nameof(RPC_RequestSpawnSeed), RpcTarget.MasterClient);
-        }
+        // No local instantiate! Always ask the MasterClient to handle it:
+        photonView.RPC(
+            nameof(RPC_RequestSpawnSeed),
+            RpcTarget.MasterClient
+        );
     }
 
     [PunRPC]
-    public void RPC_RequestSpawnSeed(PhotonMessageInfo info)
+    void RPC_RequestSpawnSeed(PhotonMessageInfo info)
     {
-        // Only master should handle
-        if (!PhotonNetwork.IsMasterClient) return;
-        photonView.RPC(nameof(RPC_DoSpawnSeed), RpcTarget.AllBuffered);
-    }
+        // Only the MasterClient ever spawns
+        if (!PhotonNetwork.IsMasterClient || hasSpawnedNew) return;
 
-    [PunRPC]
-    public void RPC_DoSpawnSeed()
-    {
+        // Network©\spawn the seed once
         PhotonNetwork.Instantiate(
-            seedPrefabName,        // must match the seed prefab¡¯s filename
+            seedPrefabName,
             spawnPosition,
             spawnRotation
         );
+
         hasSpawnedNew = true;
     }
 }

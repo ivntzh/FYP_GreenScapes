@@ -35,21 +35,31 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     [PunRPC]
     public void RequestSubmitPlant(int plantViewID, PhotonMessageInfo info)
     {
+        // Only the MasterClient does this
         if (!PhotonNetwork.IsMasterClient) return;
-        var submitPV = PhotonView.Find(plantViewID);
+
+        PhotonView submitPV = PhotonView.Find(plantViewID);
         if (submitPV == null) return;
+
+        // 1) Transfer ownership of the plant view to the MasterClient
+        //    so we become its owner and can destroy it
+        submitPV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
+
+        // 2) Evaluate correctness & award if needed…
         var plantGO = submitPV.gameObject;
-        var type = plantGO.GetComponent<PlantType>();
-        bool correct = type != null && orderManager.CheckPlantMatch(type.plantID);
+        var plant   = plantGO.GetComponent<PlantType>();
+        bool correct = plant != null && orderManager.CheckPlantMatch(plant.plantID);
         if (correct)
         {
             shopManager.AddCurrency(rewardAmount);
-            shopManager.photonView.RPC(nameof(ShopManager.CurrencyAddedConfirmationRPC), RpcTarget.All, rewardAmount);
+            shopManager.photonView.RPC(
+                nameof(ShopManager.CurrencyAddedConfirmationRPC),
+                RpcTarget.All,
+                rewardAmount
+            );
         }
-        else
-        {
-            Debug.Log("❌ Wrong plant. No points awarded.");
-        }
+
+        // 3) Now that the MasterClient *owns* it, we can destroy it network-wide
         PhotonNetwork.Destroy(plantGO);
     }
 }
