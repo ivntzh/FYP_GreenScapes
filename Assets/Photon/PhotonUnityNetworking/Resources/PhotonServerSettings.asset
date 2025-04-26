@@ -82,6 +82,7 @@ MonoBehaviour:
   - RPC_MixDirt
   - RPC_DropDirt
   - RPC_PickupDirt
+  - PlayNoteRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
