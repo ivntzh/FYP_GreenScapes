@@ -8,11 +8,6 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 
-[Header("Audio Clips")]
-public AudioClip correctSubmissionAudioClip;
-public AudioClip wrongSubmissionAudioClip;
-
-
 [System.Serializable]
 public class ShopItemData
 {
@@ -54,6 +49,10 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
 
     [Header("References")]
     public EnvironmentSettingsManager environmentSettingsManager;
+
+    [Header("Audio Clips")]
+    public AudioClip correctSubmissionAudioClip;
+    public AudioClip wrongSubmissionAudioClip;
 
     // Purchased and selected IDs
     public HashSet<string> currentPurchasedIds = new HashSet<string>();
@@ -373,14 +372,14 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-    public void PlayCorrectSubmissionFeedbackRPC()
+    public void PlayCorrectSubmissionFeedbackRPC(int amount)
     {
         // Play correct sound
         if (correctSubmissionAudioClip != null)
             AudioSource.PlayClipAtPoint(correctSubmissionAudioClip, transform.position);
 
         // Show success message
-        ShowMessage("+ " + rewardAmount + " coins!", Color.green);
+        ShowMessage($"+  {amount}  coins!", Color.green);
         UpdateUI();
     }
 

@@ -61,7 +61,7 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
             shopManager.SyncDataToClients();
             shopManager.photonView.RPC(
                 nameof(ShopManager.PlayCorrectSubmissionFeedbackRPC),
-                RpcTarget.All
+                RpcTarget.All,
                 rewardAmount
             );
         }
