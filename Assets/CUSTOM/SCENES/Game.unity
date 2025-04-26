@@ -11140,6 +11140,10 @@ PrefabInstance:
       propertyPath: potManager
       value: 
       objectReference: {fileID: 1002509828}
+    - target: {fileID: 7940829086741545461, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+      propertyPath: earthHillRoot
+      value: 
+      objectReference: {fileID: 1261919734}
     - target: {fileID: 8896867301806407734, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: m_InteractionLayers.m_Bits
       value: 3
