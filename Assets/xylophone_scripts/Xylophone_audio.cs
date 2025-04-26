@@ -20,10 +20,16 @@ public class XylophoneAudio : MonoBehaviourPun
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!collision.gameObject.CompareTag("baqueta")) return;
+        if (!collision.gameObject.CompareTag("baqueta")) 
+        {
+            Debug.Log("Baqueta not detected");
+            return;
+        }
+        
 
         // Broadcast the note to everyone (including ourselves)
         photonView.RPC(nameof(PlayNoteRPC), RpcTarget.All);
+        Debug.Log("RPC broadcasted to all");
     }
 
     [PunRPC]
@@ -31,5 +37,6 @@ public class XylophoneAudio : MonoBehaviourPun
     {
         // Fire-and-forget; every client runs this
         _audio.PlayOneShot(noteClip);
+        Debug.Log("Audio played");
     }
 }
