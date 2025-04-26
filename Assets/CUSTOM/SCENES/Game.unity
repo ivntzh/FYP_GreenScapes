@@ -11105,6 +11105,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7915418980521890193, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+      propertyPath: dirtScript
+      value: 
+      objectReference: {fileID: 1002509827}
+    - target: {fileID: 7915418980521890193, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+      propertyPath: potManager
+      value: 
+      objectReference: {fileID: 1002509828}
+    - target: {fileID: 7915418980521890193, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
       propertyPath: smallPlantObject
       value: 
       objectReference: {fileID: 639454400}
@@ -22070,6 +22078,28 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 998906987}
   m_Mesh: {fileID: 2245780606879523472, guid: 738e06adabf057a45b5ac8d9a16bbeab, type: 3}
+--- !u!114 &1002509827 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7940829086741545461, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+  m_PrefabInstance: {fileID: 505375849}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8e3be377ad51d040a919c5387732efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1002509828 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5504726846058062599, guid: 63dae689aa1de984487c758e8a3ed961, type: 3}
+  m_PrefabInstance: {fileID: 505375849}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190696712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7174d079a0cd5a84a885964ec5411144, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1002593550
 GameObject:
   m_ObjectHideFlags: 0
