@@ -22,11 +22,11 @@ public class Dirt : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void RPC_MixDirt()
+    private void RPC_MixDirt()
     {
         flatDirt?.SetActive(false);
         mixedDirt?.SetActive(true);
-        potManager.enabled = false;    // disable dropping more dirt until reset
+        potManager.enabled = false;  // lock out further dirt drops
         mixSound?.Play();
         isMixed = true;
     }
