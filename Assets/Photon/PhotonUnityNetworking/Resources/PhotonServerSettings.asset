@@ -90,6 +90,7 @@ MonoBehaviour:
   - RPC_Begin
   - RPC_PlayBinSound
   - RPC_ProcessTrash
+  - RPC_DestroyTrash
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

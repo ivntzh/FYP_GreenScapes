@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using Photon.Pun;
+using Photon.Realtime;
 
-[RequireComponent(typeof(XRSocketInteractor))]
+[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor))]
 public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 {
     [Header("References")]
@@ -11,12 +12,12 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     public ShopManager       shopManager;
     public int               rewardAmount = 10;
 
-    XRSocketInteractor socket;
-    bool isProcessing = false;   // ← guard flag
+    UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor socket;
+    bool isProcessing = false;   // guard flag
 
     void Awake()
     {
-        socket = GetComponent<XRSocketInteractor>();
+        socket = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor>();
         socket.selectEntered.AddListener(OnItemPlaced);
     }
 
@@ -27,7 +28,6 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 
     void OnItemPlaced(SelectEnterEventArgs args)
     {
-        // 1) If we’re already handling a placement, ignore
         if (isProcessing) return;
         isProcessing = true;
 
@@ -35,20 +35,19 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         var submitPV = go.GetComponent<PhotonView>();
         if (submitPV == null)
         {
-            isProcessing = false;  // nothing to do
+            isProcessing = false;
             return;
         }
 
-        // 2) Ask the MasterClient to submit
+        // 1) Ask MasterClient to check & schedule destruction
         photonView.RPC(
             nameof(RequestSubmitPlant),
             RpcTarget.MasterClient,
             submitPV.ViewID
         );
 
-        // 3) Free the grab so hand can re-pick
-        if (socket.GetOldestInteractableSelected() == args.interactableObject)
-            socket.interactionManager.SelectExit(socket, args.interactableObject);
+        // 2) Always drop the item so hand is free
+        socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
 
     [PunRPC]
@@ -58,11 +57,12 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 
         var submitPV = PhotonView.Find(plantViewID);
         if (submitPV == null) return;
-        var plantGO = submitPV.gameObject;
 
+        var plantGO = submitPV.gameObject;
         var type = plantGO.GetComponent<PlantType>();
         bool correct = (type != null) && orderManager.CheckPlantMatch(type.plantID);
 
+        // ---- Award & feedback via ShopManager RPCs ----
         if (correct)
         {
             Debug.Log("✅ Correct plant! Awarding points.");
@@ -76,26 +76,50 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("❌ Wrong plant submitted. No points awarded.");
+            Debug.Log("❌ Wrong plant submitted.");
             shopManager.photonView.RPC(
                 nameof(ShopManager.PlayWrongSubmissionFeedbackRPC),
                 RpcTarget.All
             );
         }
 
-        // 4) Transfer ownership & destroy on the MC
-        submitPV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
-        PhotonNetwork.Destroy(plantGO);
+        // ---- Owner‐destroys the plant ----
+        var owner = submitPV.Owner;
+        if (owner != null)
+        {
+            photonView.RPC(
+                nameof(RPC_DestroyPlant),
+                owner,
+                plantViewID
+            );
+        }
+        else
+        {
+            // Fallback: if owner left, MasterClient destroys
+            PhotonNetwork.Destroy(plantGO);
+        }
 
-        // 5) Generate next order on all clients—and reset the flag there
-        photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.All);
+        // ---- Next order & reset guard everywhere ----
+        photonView.RPC(
+            nameof(SyncGenerateNewOrder),
+            RpcTarget.All
+        );
+    }
+
+    [PunRPC]
+    void RPC_DestroyPlant(int plantViewID, PhotonMessageInfo info)
+    {
+        var pv = PhotonView.Find(plantViewID);
+        if (pv != null && pv.IsMine)
+        {
+            PhotonNetwork.Destroy(pv.gameObject);
+        }
     }
 
     [PunRPC]
     void SyncGenerateNewOrder()
     {
         orderManager.GenerateNewOrder();
-        // 6) Now that we’re ready for the next plant, clear the guard
         isProcessing = false;
     }
 }
