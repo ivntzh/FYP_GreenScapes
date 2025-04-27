@@ -10,42 +10,39 @@ public class RecycleBin : MonoBehaviourPun
 
     private void OnTriggerEnter(Collider other)
     {
-        // 1) Find trash type
         var trash = other.GetComponentInParent<TrashType>();
         if (trash == null) return;
 
-        // 2) Ask the host to process this trash
         var tv = trash.GetComponent<PhotonView>();
-        if (tv != null)
-            photonView.RPC(
-                nameof(RPC_ProcessTrash),
-                RpcTarget.MasterClient,
-                tv.ViewID
-            );
-        else
-            Debug.LogError("Trash had no PhotonView!");
+        if (tv == null)
+        {
+            Debug.LogError("[Bin] Trash has no PhotonView!", trash);
+            return;
+        }
+
+        Debug.Log($"[Bin] Detected trash {tv.ViewID} on client {PhotonNetwork.LocalPlayer.ActorNumber}, RPC ¡ú host");
+        photonView.RPC(nameof(RPC_ProcessTrash), RpcTarget.MasterClient, tv.ViewID);
     }
 
     [PunRPC]
     void RPC_ProcessTrash(int trashViewID, PhotonMessageInfo info)
     {
-        // 3) Only the host actually runs this
-        if (!PhotonNetwork.IsMasterClient) return;
+        Debug.Log($"[Bin][Host] RPC_ProcessTrash got ViewID={trashViewID} (sender={info.Sender})");
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            Debug.LogWarning("[Bin][Host] But I¡¯m not MasterClient!");
+            return;
+        }
 
         var tv = PhotonView.Find(trashViewID);
-        if (tv == null) return;
+        if (tv == null)
+        {
+            Debug.LogError($"[Bin][Host] Couldn¡¯t find PhotonView with ID={trashViewID}");
+            return;
+        }
+
         var trashGO = tv.gameObject;
-        var trash   = trashGO.GetComponent<TrashType>();
-        bool isCorrect = trash.trashCategory == acceptedTrashType;
-
-        // 4) Play the sound on everyone
-        photonView.RPC(
-            nameof(RPC_PlayBinSound),
-            RpcTarget.All,
-            isCorrect
-        );
-
-        // 5) Destroy the trash
+        Debug.Log($"[Bin][Host] Destroying trash GO {trashGO.name}");
         PhotonNetwork.Destroy(trashGO);
 
         // 6) Award points if correct
