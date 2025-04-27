@@ -23,14 +23,4 @@ public class XRGrabNetworkInteractable : UnityEngine.XR.Interaction.Toolkit.Inte
             photonView.RequestOwnership();
         }
     }
-
-    protected override void OnSelectExited(SelectExitEventArgs args)
-    {
-        base.OnSelectExited(args);
-        
-        if (photonView != null && photonView.IsMine)
-        {
-            photonView.TransferOwnership(PhotonNetwork.MasterClient);
-        }
-    }
 }
