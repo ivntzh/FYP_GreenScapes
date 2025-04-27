@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class RecycleBin : MonoBehaviourPun
 {
@@ -30,7 +31,7 @@ public class RecycleBin : MonoBehaviourPun
             return;
         }
 
-        // Ask the MasterClient to handle this specific trash instance
+        // Ask MasterClient to handle scoring & destruction
         photonView.RPC(
             nameof(RPC_ProcessTrash),
             RpcTarget.MasterClient,
@@ -57,8 +58,7 @@ public class RecycleBin : MonoBehaviourPun
             return;
         }
 
-        var trashGO = tv.gameObject;
-        var trash   = trashGO.GetComponent<TrashType>();
+        var trash = tv.GetComponent<TrashType>();
         if (trash == null)
         {
             Debug.LogError("[RecycleBin][Host] That view had no TrashType!");
@@ -67,14 +67,7 @@ public class RecycleBin : MonoBehaviourPun
 
         bool isCorrect = (trash.trashCategory == acceptedTrashType);
 
-        // 4) Transfer ownership so Host can destroy
-        if (tv.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
-            tv.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
-
-        // 5) Destroy network-wide
-        PhotonNetwork.Destroy(trashGO);
-
-        // 6) Award & sync coins if correct
+        // 4) Award & sync coins if correct
         if (isCorrect)
         {
             shopManager.AddCurrency(rewardAmount);
@@ -88,27 +81,46 @@ public class RecycleBin : MonoBehaviourPun
             );
         }
 
-        // 7) Broadcast sound RPC to all clients
+        // 5) Broadcast sound RPC to all clients
         photonView.RPC(
             nameof(RPC_PlayBinSound),
             RpcTarget.All,
             isCorrect
         );
+
+        // 6) Tell the **owner** of that trash object to destroy it
+        var owner = tv.Owner;
+        if (owner != null)
+        {
+            photonView.RPC(
+                nameof(RPC_DestroyTrash),
+                owner,
+                trashViewID
+            );
+        }
+        else
+        {
+            // Fallback if owner left: MasterClient can destroy
+            PhotonNetwork.Destroy(tv.gameObject);
+        }
+    }
+
+    [PunRPC]
+    void RPC_DestroyTrash(int trashViewID, PhotonMessageInfo info)
+    {
+        var tv = PhotonView.Find(trashViewID);
+        if (tv != null && tv.IsMine)
+        {
+            PhotonNetwork.Destroy(tv.gameObject);
+        }
     }
 
     [PunRPC]
     void RPC_PlayBinSound(bool correct)
     {
-        // This runs on every client¡ªplays one-shot so BGM isn¡¯t touched
-        if (correct)
-        {
-            if (correctSound != null)
-                AudioSource.PlayClipAtPoint(correctSound, transform.position);
-        }
-        else
-        {
-            if (wrongSound != null)
-                AudioSource.PlayClipAtPoint(wrongSound, transform.position);
-        }
+        // Plays on every client¡ªwon¡¯t interfere with BGM
+        var clip = correct ? correctSound : wrongSound;
+        if (clip != null)
+            AudioSource.PlayClipAtPoint(clip, transform.position);
     }
 }
