@@ -27190,7 +27190,6 @@ MonoBehaviour:
   - {fileID: 630589058889816199, guid: b55f901bb78c9044f8551cd9cf381439, type: 3}
   startDelay: 5
   maxNpcCount: 10
-  SpawnTime: 1
   canvas: {fileID: 4803623998527429825}
   timesUp: {fileID: 0}
   lightManager: {fileID: 954631841}
@@ -97877,7 +97876,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1302970701}
         m_TargetAssemblyTypeName: NpcSpawner, Assembly-CSharp
-        m_MethodName: Begin
+        m_MethodName: OnStartButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
