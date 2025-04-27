@@ -87,6 +87,7 @@ MonoBehaviour:
   - PlayWrongSubmissionFeedbackRPC
   - PlayHitSoundRPC
   - PlayRecycleSoundRPC
+  - RPC_Begin
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
