@@ -140,7 +140,7 @@ MonoBehaviour:
   - {fileID: 2700199988340220124, guid: ffde662e5e98a9343beaa68097e3fadb, type: 3}
   - {fileID: 1362536032441474627, guid: d3ee66230b0d1bc479efa3defa6657b8, type: 3}
   - {fileID: 6082268614941367942, guid: 9dfefce7cd8db6c4fa94d1b02501913d, type: 3}
-  spawnPosY: 0.05
+  spawnPosY: 0
   startDelay: 1
   spawnTrash: 0
   dropTimer: 5
