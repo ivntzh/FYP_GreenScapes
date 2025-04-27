@@ -3,49 +3,71 @@ using Photon.Pun;
 
 public class RecycleBin : MonoBehaviourPun
 {
+    [Header("Bin Settings")]
     public TrashCategory acceptedTrashType;
     public int rewardAmount = 1;
+
+    [Header("Feedback")]
     public ShopManager shopManager;
     public AudioClip correctSound;
+    public AudioClip wrongSound; // optional ¡°failure¡± sound
 
     private void OnTriggerEnter(Collider other)
     {
-        var trash = other.GetComponentInParent<TrashType>();
-        if (trash == null) return;
+        // 1) All clients detect the overlap
+        var trashComponent = other.GetComponentInParent<TrashType>();
+        if (trashComponent == null) return;
 
-        var tv = trash.GetComponent<PhotonView>();
-        if (tv == null)
+        var trashPV = trashComponent.GetComponent<PhotonView>();
+        if (trashPV == null)
         {
-            Debug.LogError("[Bin] Trash has no PhotonView!", trash);
+            Debug.LogError("[Bin] Trash has no PhotonView!", trashComponent);
             return;
         }
 
-        Debug.Log($"[Bin] Detected trash {tv.ViewID} on client {PhotonNetwork.LocalPlayer.ActorNumber}, RPC ¡ú host");
-        photonView.RPC(nameof(RPC_ProcessTrash), RpcTarget.MasterClient, tv.ViewID);
+        // 2) Tell the host which view to process
+        photonView.RPC(
+            nameof(RPC_ProcessTrash),
+            RpcTarget.MasterClient,
+            trashPV.ViewID
+        );
     }
 
     [PunRPC]
     void RPC_ProcessTrash(int trashViewID, PhotonMessageInfo info)
     {
-        Debug.Log($"[Bin][Host] RPC_ProcessTrash got ViewID={trashViewID} (sender={info.Sender})");
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            Debug.LogWarning("[Bin][Host] But I¡¯m not MasterClient!");
-            return;
-        }
+        // 3) Only the MasterClient actually runs this logic
+        if (!PhotonNetwork.IsMasterClient) return;
 
         var tv = PhotonView.Find(trashViewID);
         if (tv == null)
         {
-            Debug.LogError($"[Bin][Host] Couldn¡¯t find PhotonView with ID={trashViewID}");
+            Debug.LogError($"[Bin][Host] No PhotonView found for ID {trashViewID}");
             return;
         }
 
         var trashGO = tv.gameObject;
-        Debug.Log($"[Bin][Host] Destroying trash GO {trashGO.name}");
+        var trash   = trashGO.GetComponent<TrashType>();
+        if (trash == null)
+        {
+            Debug.LogError("[Bin][Host] That view had no TrashType!");
+            return;
+        }
+
+        // 4) Determine correctness
+        bool isCorrect = (trash.trashCategory == acceptedTrashType);
+
+        // 5) Broadcast the appropriate sound & toast to everyone
+        photonView.RPC(
+            nameof(RPC_PlayBinSound),
+            RpcTarget.All,
+            isCorrect
+        );
+
+        // 6) Destroy the trash network©\wide
         PhotonNetwork.Destroy(trashGO);
 
-        // 6) Award points if correct
+        // 7) Award currency if it was correct
         if (isCorrect)
         {
             shopManager.AddCurrency(rewardAmount);
@@ -61,8 +83,16 @@ public class RecycleBin : MonoBehaviourPun
     [PunRPC]
     void RPC_PlayBinSound(bool correct)
     {
-        if (correct && correctSound != null)
-            AudioSource.PlayClipAtPoint(correctSound, transform.position);
-        // else: play a ¡°wrong¡± clip or UI toast if you like
+        // 8) Play the matching clip locally
+        if (correct)
+        {
+            if (correctSound != null)
+                AudioSource.PlayClipAtPoint(correctSound, transform.position);
+        }
+        else
+        {
+            if (wrongSound != null)
+                AudioSource.PlayClipAtPoint(wrongSound, transform.position);
+        }
     }
 }
