@@ -91,6 +91,7 @@ MonoBehaviour:
   - RPC_PlayBinSound
   - RPC_ProcessTrash
   - RPC_DestroyTrash
+  - RPC_DestroyPlant
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
