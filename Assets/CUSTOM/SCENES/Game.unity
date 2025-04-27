@@ -4317,8 +4317,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!1 &164987930
 GameObject:
   m_ObjectHideFlags: 0
@@ -9733,8 +9732,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 30
-  _checkInterval: 1
+  _maxDistance: 30
 --- !u!1 &397413871
 GameObject:
   m_ObjectHideFlags: 0
@@ -12544,8 +12542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 30
-  _checkInterval: 1
+  _maxDistance: 30
 --- !u!1 &513780413
 GameObject:
   m_ObjectHideFlags: 0
@@ -13697,8 +13694,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!1 &571219512
 GameObject:
   m_ObjectHideFlags: 0
@@ -14282,8 +14278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!1001 &599030205
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18420,8 +18415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!1 &754193926
 GameObject:
   m_ObjectHideFlags: 0
@@ -23842,8 +23836,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 30
-  _checkInterval: 1
+  _maxDistance: 30
 --- !u!1 &966799328
 GameObject:
   m_ObjectHideFlags: 0
@@ -26320,8 +26313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 30
-  _checkInterval: 1
+  _maxDistance: 30
 --- !u!1 &1059981847
 GameObject:
   m_ObjectHideFlags: 0
@@ -26506,8 +26498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!1 &1081652848
 GameObject:
   m_ObjectHideFlags: 0
@@ -33979,8 +33970,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 30
-  _checkInterval: 1
+  _maxDistance: 30
 --- !u!1 &1354474254
 GameObject:
   m_ObjectHideFlags: 0
@@ -37297,8 +37287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!1 &1491678821
 GameObject:
   m_ObjectHideFlags: 0
@@ -46236,8 +46225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!64 &1784798398
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -52157,8 +52145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!64 &2037925147
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -52198,8 +52185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 20
-  _checkInterval: 0.5
+  _maxDistance: 10
 --- !u!64 &2040148032
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -206378,8 +206364,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 30
-  _checkInterval: 1
+  _maxDistance: 30
 --- !u!1 &8939615141389492258
 GameObject:
   m_ObjectHideFlags: 0
@@ -207103,8 +207088,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d85bc5c603c414980e1c71a9a5c82e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _returnDistance: 30
-  _checkInterval: 1
+  _maxDistance: 30
 --- !u!1 &8977443131201544088
 GameObject:
   m_ObjectHideFlags: 0
