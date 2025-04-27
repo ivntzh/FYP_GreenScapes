@@ -12,34 +12,31 @@ public class NpcSpawner : MonoBehaviourPun
 
     [Header("NPC Spawn Settings")]
     public GameObject[] npc;
-    public float startDelay = 5f;   // still used after button press
-    public int maxNpcCount = 10;
+    public float startDelay = 5f;
+    public int   maxNpcCount = 10;
 
-    // ¡û change default to false!
-    public bool SpawnTime = false;
+    bool SpawnTime = false;
 
     [Header("UI & Audio")]
     public GameObject canvas;
     public AudioClip timesUp;
 
-    [Header("Other References")]
+    [Header("Other Refs")]
     public GameObject lightManager;
     public GameObject player;
 
-    void Start()
+    // 1) This is what your UI button should call (on ANY client)
+    public void OnStartButtonPressed()
     {
-        // Nothing happens automatically anymore!
-        // (We removed the Invoke(Begin) from here.)
+        // Broadcast to everyone that we want to begin
+        photonView.RPC(nameof(RPC_Begin), RpcTarget.All);
     }
 
-    /// <summary>
-    /// Call *this* from your Start button OnClick (only on MasterClient).
-    /// </summary>
-    public void Begin()
+    // 2) Runs on ALL clients: shows the fly-in + hides UI locally
+    [PunRPC]
+    void RPC_Begin()
     {
-        if (!PhotonNetwork.IsMasterClient) return;
-        if (zeppelin != null && zeppelinDestination != null)
-            StartCoroutine(FlyInZeppelin());
+        StartCoroutine(FlyInZeppelin());
     }
 
     private IEnumerator FlyInZeppelin()
@@ -52,60 +49,43 @@ public class NpcSpawner : MonoBehaviourPun
         {
             timer += Time.deltaTime;
             float t = Mathf.Clamp01(timer / flyInDuration);
-            zeppelin.transform.position = Vector3.Lerp(startPoint, endPoint, flyInCurve.Evaluate(t));
+            zeppelin.transform.position = Vector3.Lerp(
+                startPoint, endPoint, flyInCurve.Evaluate(t)
+            );
             yield return null;
         }
 
         zeppelin.transform.position = endPoint;
-        StartGame();
-    }
 
-    void StartGame()
-    {
-        // now we actually start spawning
-        SpawnTime = true;
-        HideCanvas();
+        // Now we hide the canvas & turn on lights on every client:
+        canvas?.SetActive(false);
         lightManager?.SetActive(true);
 
-        // schedule the first NPC spawn
+        // And *ask* the MasterClient to actually start spawning NPCs:
         if (PhotonNetwork.IsMasterClient)
-            Invoke(nameof(Spawn), startDelay);
+            StartGame();
     }
 
-    void HideCanvas()
+    // 3) MasterClient¨Conly: kicks off the spawn loop
+    void StartGame()
     {
-        if (canvas != null)
-            canvas.SetActive(false);
+        SpawnTime = true;
+        Invoke(nameof(Spawn), startDelay);
     }
 
-    public void PlaySound2()
+    void Spawn()
     {
-        AudioSource.PlayClipAtPoint(timesUp, player.transform.position, 5f);
-    }
+        if (!SpawnTime || !PhotonNetwork.IsMasterClient) return;
 
-    public void stopSpawn()
-    {
-        SpawnTime = false;
-        CancelInvoke(nameof(Spawn));
-    }
-
-    public void Spawn()
-    {
-        if (!PhotonNetwork.IsMasterClient || !SpawnTime)
-            return;
-
-        int count = GameObject.FindGameObjectsWithTag("NPC").Length;
-        if (count < maxNpcCount)
+        int current = GameObject.FindGameObjectsWithTag("NPC").Length;
+        if (current < maxNpcCount)
         {
             int idx = Random.Range(0, npc.Length);
             Vector3 pos = new Vector3(91, 1, -7);
             PhotonNetwork.Instantiate(
-                npc[idx].name,
-                pos,
-                npc[idx].transform.rotation
+                npc[idx].name, pos, npc[idx].transform.rotation
             );
         }
-
         // schedule next
         float delay = Random.Range(7f, 12f);
         Invoke(nameof(Spawn), delay);
