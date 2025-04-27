@@ -1,57 +1,54 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class RecycleBin : MonoBehaviour
+public class RecycleBin : MonoBehaviourPun
 {
     public TrashCategory acceptedTrashType;
-    public int rewardAmount = 1;
-    public ShopManager shopManager;
-
-    public AudioClip correctSound;
+    public int           rewardAmount = 1;
+    public ShopManager   shopManager;
+    public AudioClip     correctSound;
 
     private void OnTriggerEnter(Collider other)
     {
+        // MasterClient processes everything
+        if (!PhotonNetwork.IsMasterClient) return;
+
         Debug.Log("Something entered the bin: " + other.name);
 
-        TrashType trash = other.GetComponentInParent<TrashType>();
-        if (trash != null)
-        {
-            if (trash.trashCategory == acceptedTrashType)
-            {
-                if (correctSound != null)
-                    AudioSource.PlayClipAtPoint(correctSound, transform.position);
+        var trash = other.GetComponentInParent<TrashType>();
+        if (trash == null) return;
 
-                AwardCurrency();
-                Destroy(trash.gameObject);
-            }
-            else
-            {
-                // Wrong bin handling will go here later
-                Destroy(trash.gameObject);
-            }
+        bool isCorrect = (trash.trashCategory == acceptedTrashType);
+
+        // Play sound on all clients
+        photonView.RPC(nameof(PlayRecycleSoundRPC), RpcTarget.All, isCorrect);
+
+        // Destroy networked trash if possible
+        var trashGO = trash.gameObject;
+        var pv      = trashGO.GetComponent<PhotonView>();
+        if (pv != null)
+            PhotonNetwork.Destroy(trashGO);
+        else
+            Destroy(trashGO);
+
+        // Award currency if correct
+        if (isCorrect)
+        {
+            shopManager.AddCurrency(rewardAmount);
+            shopManager.SyncDataToClients();
+            shopManager.photonView.RPC(
+                nameof(ShopManager.CurrencyAddedConfirmationRPC),
+                RpcTarget.All,
+                rewardAmount
+            );
         }
     }
 
-    private void AwardCurrency()
+    [PunRPC]
+    void PlayRecycleSoundRPC(bool correct)
     {
-        if (shopManager != null)
-        {
-            if (PhotonNetwork.IsConnected)
-            {
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    shopManager.AddCurrency(rewardAmount);
-                }
-                else
-                {
-                    shopManager.photonView.RPC("RequestAddCurrencyRPC", RpcTarget.MasterClient, rewardAmount);
-                }
-            }
-            else
-            {
-                shopManager.AddCurrency(rewardAmount);
-                shopManager.UpdateCurrencyDisplay();
-            }
-        }
+        if (correct && correctSound != null)
+            AudioSource.PlayClipAtPoint(correctSound, transform.position);
+        // else: you could play a ¡°wrong¡± clip here if desired
     }
 }

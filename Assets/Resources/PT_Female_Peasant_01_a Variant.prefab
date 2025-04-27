@@ -95,6 +95,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2224834628610083241, guid: 1906c8b8d7539724b9f8bed9421c270e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8061769795657471046}
+    - targetCorrespondingSourceObject: {fileID: 2224834628610083241, guid: 1906c8b8d7539724b9f8bed9421c270e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2703460421351946342}
+    - targetCorrespondingSourceObject: {fileID: 2224834628610083241, guid: 1906c8b8d7539724b9f8bed9421c270e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8179573767369901177}
+    - targetCorrespondingSourceObject: {fileID: 2224834628610083241, guid: 1906c8b8d7539724b9f8bed9421c270e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2430399849007866487}
   m_SourcePrefab: {fileID: 100100000, guid: 1906c8b8d7539724b9f8bed9421c270e, type: 3}
 --- !u!1 &630589058889816199 stripped
 GameObject:
@@ -132,13 +141,13 @@ MonoBehaviour:
   - {fileID: 2700199988340220124, guid: ffde662e5e98a9343beaa68097e3fadb, type: 3}
   - {fileID: 1362536032441474627, guid: d3ee66230b0d1bc479efa3defa6657b8, type: 3}
   - {fileID: 6082268614941367942, guid: 9dfefce7cd8db6c4fa94d1b02501913d, type: 3}
+  spawnPosY: 1
+  startDelay: 1
+  spawnTrash: 0
+  dropTimer: 5
+  maxTrashCount: 25
   npcSound: {fileID: 8300000, guid: 47585757d35d3b645b5bb2ec1dd707ed, type: 3}
   liveTime: 40
-  spawnTrash: 0
-  dropping: 0
-  dropTimer: 5
-  time: 0
-  maxTrashCount: 25
 --- !u!54 &8061769795657471046
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -166,3 +175,71 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2703460421351946342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630589058889816199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &8179573767369901177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630589058889816199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 1
+    SynchronizeType: 2
+    Name: Speed
+  - Type: 9
+    SynchronizeType: 2
+    Name: Drop
+  - Type: 9
+    SynchronizeType: 2
+    Name: Walk
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
+--- !u!114 &2430399849007866487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630589058889816199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 2261907010279786705}
+  - {fileID: 2703460421351946342}
+  - {fileID: 8179573767369901177}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

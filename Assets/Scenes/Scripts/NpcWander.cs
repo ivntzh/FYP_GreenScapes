@@ -1,174 +1,161 @@
 using UnityEngine;
 using UnityEngine.AI;
+using Photon.Pun;
 
-public class NpcWander : MonoBehaviour
+public class NpcWander : MonoBehaviourPun, IPunObservable
 {
     NavMeshAgent agent;
+    Animator     m_Animator;
 
+    [Header("Patrol Settings")]
     [SerializeField] LayerMask groundLayer;
-
-    Animator m_Animator;
-
-    //patrol
-    Vector3 destPoint;
-    bool walkPointSet;
     [SerializeField] float range;
 
+    [Header("Trash Spawn Settings")]
     public GameObject[] bottlePrefabs;
-    private float spawnPosY = 1f;
-    private float startDelay = 1.0f;
+    public float        spawnPosY   = 1f;
+    public float        startDelay  = 1f;
+    public bool         spawnTrash  = false;
+    public float        dropTimer   = 5f;
+    public int          maxTrashCount = 25;
+    public AudioClip    npcSound;
 
-    public AudioClip npcSound;
-
+    [Header("Lifetime")]
     public float liveTime = 40f;
 
-    public bool spawnTrash = false;
-
-    public bool dropping = false;
-
-    public float dropTimer = 5f, time;
-
-    public int maxTrashCount = 25;
-
+    // internal
+    bool   dropping = false;
+    float  time     = 0f;
+    Vector3 destPoint;
+    bool   walkPointSet;
     GameObject endPoint;
 
-    void SpawnRandomBottle()
-    {
-        int ballIndex = Random.Range(0, bottlePrefabs.Length);
-        Vector3 spawnPos = new Vector3(transform.position.x, spawnPosY, transform.position.z);
-
-        if (spawnTrash == true)
-        {
-            Instantiate(bottlePrefabs[ballIndex], spawnPos, bottlePrefabs[ballIndex].transform.rotation);
-
-            PlaySound();
-            m_Animator.SetTrigger("Drop");
-            float delay = Random.Range(15f, 26f);
-            Invoke("SpawnRandomBottle", delay);
-            dropping = true;
-            m_Animator.SetTrigger("Walk");
-        }
-        else
-        {
-            Invoke("SpawnRandomBottle", 1f);
-        }
-    }
-
-    private void PlaySound()
-    {
-        // Create a temporary audio source to play the sound
-        AudioSource.PlayClipAtPoint(npcSound, transform.position);
-    }
-
-
-    // Start is called before the first frame update
     void Start()
     {
-        m_Animator = gameObject.GetComponent<Animator>();
-        agent = GetComponent<NavMeshAgent>();
-        Invoke("SpawnRandomBottle", startDelay);
-        endPoint = GameObject.Find("EndPoint");
+        m_Animator = GetComponent<Animator>();
+        agent      = GetComponent<NavMeshAgent>();
+        endPoint   = GameObject.Find("EndPoint");
+
+        // Only host schedules drop calls
+        if (photonView.IsMine)
+            Invoke(nameof(SpawnRandomBottle), startDelay);
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // Only owner/host drives liveTime & patrol decisions
+        if (!photonView.IsMine) return;
+
+        liveTime -= Time.deltaTime;
 
         if (!dropping)
-        {
             Patrol();
-        }
-        else if (dropping && liveTime > 7)
+        else
         {
             agent.isStopped = true;
-
             time += Time.deltaTime;
             if (time >= dropTimer)
             {
-                time = 0;
+                time     = 0f;
                 dropping = false;
+                m_Animator.SetTrigger("Walk");
             }
         }
 
-        if (liveTime < 7)
+        // Remove NPC after they wander off or time out
+        if ((transform.position.x > 90 && liveTime < 0f) ||
+            liveTime < -35f)
         {
-            spawnTrash = false;
-            dropping = false;
+            if (PhotonNetwork.IsMasterClient)
+                PhotonNetwork.Destroy(gameObject);
+            else
+                Destroy(gameObject);
         }
     }
 
     void Patrol()
     {
-        liveTime -= Time.deltaTime;
         agent.isStopped = false;
-        int currentTrashCount = GameObject.FindGameObjectsWithTag("Trash").Length;
 
+        // Drop logic
+        int currentTrash = GameObject.FindGameObjectsWithTag("Trash").Length;
+        spawnTrash = (transform.position.x < 75f && liveTime > 7f && currentTrash < maxTrashCount);
 
         if (!walkPointSet)
         {
-            if (liveTime < 5)
-            {
+            if (liveTime < 5f)
                 GoHome();
-            }
             else
-            {
                 SearchForDest();
-            }
-        }
-
-        else if (walkPointSet)
-        {
-            agent.SetDestination(destPoint);
-        }
-
-        if (Vector3.Distance(transform.position, destPoint) < 3 || dropping == true)
-        {
-            walkPointSet = false;
-        }
-
-        if (transform.position.x > 90 && liveTime < 0)
-        {
-            Destroy(gameObject);
-        }
-
-        if (liveTime < -35)
-        {
-            Destroy(gameObject);
-        }
-
-        if (transform.position.x < 75 && liveTime > 7 && currentTrashCount < maxTrashCount)
-        {
-            spawnTrash = true;
         }
         else
         {
-            spawnTrash = false;
-            dropping = false;
+            agent.SetDestination(destPoint);
+            if (Vector3.Distance(transform.position, destPoint) < 3f)
+                walkPointSet = false;
         }
     }
 
     void SearchForDest()
     {
-
-        float z = Random.Range(-22.0f, 15.5f);
-        float x = Random.Range(34.0f, 75.0f);
-
+        float z = Random.Range(-22f, 15.5f);
+        float x = Random.Range(34f, 75f);
         destPoint = new Vector3(x, transform.position.y, z);
-
         if (Physics.Raycast(destPoint, Vector3.down, groundLayer))
-        {
             walkPointSet = true;
-        }
     }
 
     void GoHome()
     {
-        destPoint = new Vector3(91, transform.position.y, -7);
-
+        destPoint = new Vector3(91f, transform.position.y, -7f);
         if (Physics.Raycast(destPoint, Vector3.down, groundLayer))
-        {
             walkPointSet = true;
-        }
+    }
 
+    void SpawnRandomBottle()
+    {
+        if (!photonView.IsMine) return;
+
+        if (spawnTrash)
+        {
+            int idx = Random.Range(0, bottlePrefabs.Length);
+            Vector3 spawnPos = new Vector3(transform.position.x, spawnPosY, transform.position.z);
+
+            // networked spawn
+            PhotonNetwork.Instantiate(
+                bottlePrefabs[idx].name,
+                spawnPos,
+                bottlePrefabs[idx].transform.rotation
+            );
+
+            // play your sound & anim
+            AudioSource.PlayClipAtPoint(npcSound, transform.position);
+            m_Animator.SetTrigger("Drop");
+
+            // schedule next drop
+            float delay = Random.Range(15f, 26f);
+            Invoke(nameof(SpawnRandomBottle), delay);
+            dropping = true;
+        }
+        else
+        {
+            // re-try quickly until they start dropping
+            Invoke(nameof(SpawnRandomBottle), 1f);
+        }
+    }
+
+    // Sync position/rotation so movement looks smooth on all clients
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            transform.position = (Vector3)stream.ReceiveNext();
+            transform.rotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }
