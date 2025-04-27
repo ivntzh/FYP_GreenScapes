@@ -12,6 +12,7 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     public int               rewardAmount = 10;
 
     XRSocketInteractor socket;
+    bool isProcessing = false;   // ← guard flag
 
     void Awake()
     {
@@ -26,18 +27,26 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 
     void OnItemPlaced(SelectEnterEventArgs args)
     {
+        // 1) If we’re already handling a placement, ignore
+        if (isProcessing) return;
+        isProcessing = true;
+
         var go = args.interactableObject.transform.gameObject;
         var submitPV = go.GetComponent<PhotonView>();
-        if (submitPV == null) return;
+        if (submitPV == null)
+        {
+            isProcessing = false;  // nothing to do
+            return;
+        }
 
-        // Any client can place; ask the MasterClient to process it
+        // 2) Ask the MasterClient to submit
         photonView.RPC(
             nameof(RequestSubmitPlant),
             RpcTarget.MasterClient,
             submitPV.ViewID
         );
 
-        // free the grab so hand can re-pick
+        // 3) Free the grab so hand can re-pick
         if (socket.GetOldestInteractableSelected() == args.interactableObject)
             socket.interactionManager.SelectExit(socket, args.interactableObject);
     }
@@ -68,19 +77,17 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         else
         {
             Debug.Log("❌ Wrong plant submitted. No points awarded.");
-
-            // NEW: Play wrong sound + show fail UI toast
             shopManager.photonView.RPC(
                 nameof(ShopManager.PlayWrongSubmissionFeedbackRPC),
                 RpcTarget.All
             );
         }
 
-        // In all cases, destroy the plant
+        // 4) Transfer ownership & destroy on the MC
         submitPV.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
         PhotonNetwork.Destroy(plantGO);
 
-        // Always generate a new order
+        // 5) Generate next order on all clients—and reset the flag there
         photonView.RPC(nameof(SyncGenerateNewOrder), RpcTarget.All);
     }
 
@@ -88,5 +95,7 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     void SyncGenerateNewOrder()
     {
         orderManager.GenerateNewOrder();
+        // 6) Now that we’re ready for the next plant, clear the guard
+        isProcessing = false;
     }
 }
