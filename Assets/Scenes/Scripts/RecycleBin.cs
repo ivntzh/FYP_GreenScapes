@@ -36,9 +36,10 @@ public class RecycleBin : MonoBehaviourPun
     [PunRPC]
     void RPC_ProcessTrash(int trashViewID, PhotonMessageInfo info)
     {
-        // 3) Only the MasterClient actually runs this logic
+        // 1) Only the MasterClient actually runs this
         if (!PhotonNetwork.IsMasterClient) return;
 
+        // 2) Lookup the trash¡¯s PhotonView
         var tv = PhotonView.Find(trashViewID);
         if (tv == null)
         {
@@ -46,6 +47,7 @@ public class RecycleBin : MonoBehaviourPun
             return;
         }
 
+        // 3) Grab the TrashType and determine correctness
         var trashGO = tv.gameObject;
         var trash   = trashGO.GetComponent<TrashType>();
         if (trash == null)
@@ -53,46 +55,25 @@ public class RecycleBin : MonoBehaviourPun
             Debug.LogError("[Bin][Host] That view had no TrashType!");
             return;
         }
-
-        // 4) Determine correctness
         bool isCorrect = (trash.trashCategory == acceptedTrashType);
 
-        // 5) Broadcast the appropriate sound & toast to everyone
-        photonView.RPC(
-            nameof(RPC_PlayBinSound),
-            RpcTarget.All,
-            isCorrect
-        );
+        // 5) TAKE OWNERSHIP on the host so Destroy is allowed
+        if (tv.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
+            tv.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
 
-        // 6) Destroy the trash network©\wide
+        // 6) Now we can safely destroy it network-wide
         PhotonNetwork.Destroy(trashGO);
 
-        // 7) Award currency if it was correct
+        // 7) Award currency if correct
         if (isCorrect)
         {
             shopManager.AddCurrency(rewardAmount);
             shopManager.SyncDataToClients();
             shopManager.photonView.RPC(
-                nameof(ShopManager.CurrencyAddedConfirmationRPC),
+                nameof(ShopManager.PlayCorrectSubmissionFeedbackRPC),
                 RpcTarget.All,
                 rewardAmount
             );
-        }
-    }
-
-    [PunRPC]
-    void RPC_PlayBinSound(bool correct)
-    {
-        // 8) Play the matching clip locally
-        if (correct)
-        {
-            if (correctSound != null)
-                AudioSource.PlayClipAtPoint(correctSound, transform.position);
-        }
-        else
-        {
-            if (wrongSound != null)
-                AudioSource.PlayClipAtPoint(wrongSound, transform.position);
         }
     }
 }
