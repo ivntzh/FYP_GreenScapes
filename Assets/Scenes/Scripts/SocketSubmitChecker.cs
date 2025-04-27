@@ -4,7 +4,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 using Photon.Pun;
 using Photon.Realtime;
 
-[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor))]
+[RequireComponent(typeof(XRSocketInteractor))]
 public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 {
     [Header("References")]
@@ -12,12 +12,12 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     public ShopManager       shopManager;
     public int               rewardAmount = 10;
 
-    UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor socket;
+    XRSocketInteractor socket;
     bool isProcessing = false;   // guard flag
 
     void Awake()
     {
-        socket = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor>();
+        socket = GetComponent<XRSocketInteractor>();
         socket.selectEntered.AddListener(OnItemPlaced);
     }
 
@@ -28,6 +28,7 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 
     void OnItemPlaced(SelectEnterEventArgs args)
     {
+        // 1) Guard to avoid double‐processing
         if (isProcessing) return;
         isProcessing = true;
 
@@ -39,15 +40,18 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
             return;
         }
 
-        // 1) Ask MasterClient to check & schedule destruction
+        // 2) Ask MasterClient to check & schedule destruction
         photonView.RPC(
             nameof(RequestSubmitPlant),
             RpcTarget.MasterClient,
             submitPV.ViewID
         );
 
-        // 2) Always drop the item so hand is free
-        socket.interactionManager.SelectExit(socket, args.interactableObject);
+        // 3) Drop it from the actual interactor that selected it
+        socket.interactionManager.SelectExit(
+            args.interactorObject, 
+            args.interactableObject
+        );
     }
 
     [PunRPC]
@@ -59,13 +63,12 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         if (submitPV == null) return;
 
         var plantGO = submitPV.gameObject;
-        var type = plantGO.GetComponent<PlantType>();
+        var type    = plantGO.GetComponent<PlantType>();
         bool correct = (type != null) && orderManager.CheckPlantMatch(type.plantID);
 
-        // ---- Award & feedback via ShopManager RPCs ----
+        // ---- 4) Award & feedback via ShopManager RPCs ----
         if (correct)
         {
-            Debug.Log("✅ Correct plant! Awarding points.");
             shopManager.AddCurrency(rewardAmount);
             shopManager.SyncDataToClients();
             shopManager.photonView.RPC(
@@ -76,14 +79,13 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         }
         else
         {
-            Debug.Log("❌ Wrong plant submitted.");
             shopManager.photonView.RPC(
                 nameof(ShopManager.PlayWrongSubmissionFeedbackRPC),
                 RpcTarget.All
             );
         }
 
-        // ---- Owner‐destroys the plant ----
+        // ---- 5) Owner‐destroys the plant (or fallback) ----
         var owner = submitPV.Owner;
         if (owner != null)
         {
@@ -95,15 +97,14 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         }
         else
         {
-            // Fallback: if owner left, MasterClient destroys
+            // Fallback if the owner has left
             PhotonNetwork.Destroy(plantGO);
+            // Now that it's gone, spawn next order
+            photonView.RPC(
+                nameof(SyncGenerateNewOrder),
+                RpcTarget.All
+            );
         }
-
-        // ---- Next order & reset guard everywhere ----
-        photonView.RPC(
-            nameof(SyncGenerateNewOrder),
-            RpcTarget.All
-        );
     }
 
     [PunRPC]
@@ -113,6 +114,11 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
         if (pv != null && pv.IsMine)
         {
             PhotonNetwork.Destroy(pv.gameObject);
+            // Only *after* destroy do we tell everyone to make the next order
+            photonView.RPC(
+                nameof(SyncGenerateNewOrder),
+                RpcTarget.All
+            );
         }
     }
 
