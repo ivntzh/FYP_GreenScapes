@@ -17766,6 +17766,10 @@ PrefabInstance:
       value: TrashbinGreen
       objectReference: {fileID: 0}
     - target: {fileID: 8670502475110853590, guid: 9a012e4ac92f7ac429fc150b3496679e, type: 3}
+      propertyPath: wrongSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 94d6e33c00022fa468b73d26cd2abaaf, type: 3}
+    - target: {fileID: 8670502475110853590, guid: 9a012e4ac92f7ac429fc150b3496679e, type: 3}
       propertyPath: shopManager
       value: 
       objectReference: {fileID: 1055273094}
@@ -40887,6 +40891,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9084099341335578558, guid: cba9d60bf85b1bd409d2d677fdd27821, type: 3}
+      propertyPath: wrongSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 94d6e33c00022fa468b73d26cd2abaaf, type: 3}
+    - target: {fileID: 9084099341335578558, guid: cba9d60bf85b1bd409d2d677fdd27821, type: 3}
       propertyPath: shopManager
       value: 
       objectReference: {fileID: 1055273094}
@@ -46406,6 +46414,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 610634347}
     m_Modifications:
+    - target: {fileID: 2632074632285099022, guid: 8f3735a961a2f9147a72336667c8fac4, type: 3}
+      propertyPath: wrongSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 94d6e33c00022fa468b73d26cd2abaaf, type: 3}
     - target: {fileID: 2632074632285099022, guid: 8f3735a961a2f9147a72336667c8fac4, type: 3}
       propertyPath: shopManager
       value: 
