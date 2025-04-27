@@ -2,24 +2,28 @@ using UnityEngine;
 using Photon.Pun;
 
 [RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(Rigidbody))]
 public class NetworkedPositionReset : MonoBehaviourPun
 {
     [Header("Settings")]
     [SerializeField] private float _returnDistance = 10f;
-    [SerializeField] private float _returnSpeed = 5f;
-    [SerializeField] private bool _useSmoothReturn = true;
-
+    [SerializeField] private float _checkInterval = 0.5f;
+    
     private Vector3 _initialPosition;
     private Rigidbody _rb;
-    private bool _isReturning = false;
+    private float _lastCheckTime;
+    private bool _wasKinematic;
 
     void Start()
     {
         _initialPosition = transform.position;
         _rb = GetComponent<Rigidbody>();
         
-        // Only master client handles position reset logic
-        if (!PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            _lastCheckTime = Time.time;
+        }
+        else
         {
             enabled = false;
         }
@@ -27,109 +31,65 @@ public class NetworkedPositionReset : MonoBehaviourPun
 
     void Update()
     {
-        // Only check if we have authority or it's unowned
-        if (photonView.Owner == null || photonView.IsMine)
-        {
-            float currentDistance = Vector3.Distance(transform.position, _initialPosition);
-            
-            if (currentDistance > _returnDistance && !_isReturning)
-            {
-                StartReturnToOrigin();
-            }
-        }
+        if (!PhotonNetwork.IsMasterClient || Time.time - _lastCheckTime < _checkInterval)
+            return;
 
-        if (_isReturning)
+        _lastCheckTime = Time.time;
+        
+        // Only check objects that aren't currently owned
+        if (photonView.Owner == null || photonView.Owner.IsMasterClient)
         {
-            if (_useSmoothReturn)
-            {
-                SmoothReturn();
-            }
-            else
-            {
-                InstantReturn();
-            }
+            CheckPosition();
         }
     }
 
-    void StartReturnToOrigin()
+    void CheckPosition()
     {
-        _isReturning = true;
+        float currentDistance = Vector3.Distance(transform.position, _initialPosition);
         
-        // Request ownership before resetting
-        if (!photonView.IsMine)
+        if (currentDistance > _returnDistance)
         {
             photonView.RequestOwnership();
-        }
-
-        if (_rb != null)
-        {
-            _rb.linearVelocity = Vector3.zero;
-            _rb.angularVelocity = Vector3.zero;
-            _rb.isKinematic = true;
+            ResetObject();
         }
     }
 
-    void SmoothReturn()
+    void ResetObject()
     {
-        transform.position = Vector3.Lerp(transform.position, _initialPosition, _returnSpeed * Time.deltaTime);
-
-        if (Vector3.Distance(transform.position, _initialPosition) < 0.1f)
-        {
-            FinishReturn();
-        }
-    }
-
-    void InstantReturn()
-    {
-        transform.position = _initialPosition;
-        FinishReturn();
-    }
-
-    void FinishReturn()
-    {
-        _isReturning = false;
-        
-        // Reset physics and release ownership back to master
-        if (_rb != null)
-        {
-            _rb.isKinematic = false;
-        }
-        
-        // Transfer ownership back to server
-        if (photonView.IsMine)
-        {
-            photonView.TransferOwnership(PhotonNetwork.MasterClient);
-        }
+        photonView.RPC("RPC_ResetObject", RpcTarget.AllBuffered);
     }
 
     [PunRPC]
-    void SyncResetPosition(Vector3 position)
+    void RPC_ResetObject()
     {
-        transform.position = position;
-        if (_rb != null)
-        {
-            _rb.linearVelocity = Vector3.zero;
-            _rb.angularVelocity = Vector3.zero;
-        }
+        // Store original kinematic state
+        _wasKinematic = _rb.isKinematic;
+        
+        // Temporarily make kinematic for reset
+        _rb.isKinematic = true;
+        _rb.linearVelocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
+        transform.position = _initialPosition;
+        
+        // Restore kinematic state after reset
+        StartCoroutine(RestorePhysics());
     }
 
-    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    System.Collections.IEnumerator RestorePhysics()
     {
-        if (stream.IsWriting)
+        yield return new WaitForSeconds(0.1f);
+        _rb.isKinematic = _wasKinematic;
+        
+        // Return ownership to master if needed
+        if (photonView.IsMine && !PhotonNetwork.IsMasterClient)
         {
-            stream.SendNext(_isReturning);
-            stream.SendNext(_initialPosition);
-        }
-        else
-        {
-            _isReturning = (bool)stream.ReceiveNext();
-            _initialPosition = (Vector3)stream.ReceiveNext();
+            photonView.TransferOwnership(PhotonNetwork.MasterClient);
         }
     }
 
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(_initialPosition, _returnDistance);
+        Gizmos.DrawWireSphere(Application.isPlaying ? _initialPosition : transform.position, _returnDistance);
     }
 }
