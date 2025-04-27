@@ -4,7 +4,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 using Photon.Pun;
 using Photon.Realtime;
 
-[RequireComponent(typeof(XRSocketInteractor))]
+[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor))]
 public class SocketSubmitChecker : MonoBehaviourPunCallbacks
 {
     [Header("References")]
@@ -12,12 +12,12 @@ public class SocketSubmitChecker : MonoBehaviourPunCallbacks
     public ShopManager       shopManager;
     public int               rewardAmount = 10;
 
-    XRSocketInteractor socket;
+    UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor socket;
     bool isProcessing = false;   // guard flag
 
     void Awake()
     {
-        socket = GetComponent<XRSocketInteractor>();
+        socket = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactors.XRSocketInteractor>();
         socket.selectEntered.AddListener(OnItemPlaced);
     }
 
