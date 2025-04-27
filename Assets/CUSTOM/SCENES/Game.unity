@@ -28652,11 +28652,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb9f49bebc072fd47ad7650b7fe28da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clip: {fileID: 8300000, guid: 8ccc187f746358e4b842517ccf9af70d, type: 3}
+  clip: {fileID: 8300000, guid: c1a091ee781b02f45862b329bdd01b57, type: 3}
   triggerLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  volume: 1
+  volume: 0.15
 --- !u!114 &1331729780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28676,7 +28676,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
-  sceneViewId: 58
+  sceneViewId: 63
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!82 &1331729781
@@ -28692,7 +28692,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.5
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -135760,7 +135760,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 4405898046394602902}
-  sceneViewId: 58
+  sceneViewId: 64
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!23 &4408677206277504889
