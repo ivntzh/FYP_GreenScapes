@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class PlantOrderManager : MonoBehaviour
 {
-    public string[] possibleOrders = { "Plant", "Cactus"};
+    public string[] possibleOrders = { "Plant", "Cactus" };
     public string currentOrderID;
-    public TextMeshProUGUI orderText;
+
+    [Header("UI Order Images")]
+    public RawImage plantOrderImage;
+    public RawImage cactusOrderImage;
 
     void Start()
     {
@@ -15,8 +19,23 @@ public class PlantOrderManager : MonoBehaviour
     public void GenerateNewOrder()
     {
         currentOrderID = possibleOrders[Random.Range(0, possibleOrders.Length)];
-        if (orderText != null)
-            orderText.text = $"📝 Order: {currentOrderID}";
+
+        UpdateOrderUI();
+    }
+
+    void UpdateOrderUI()
+    {
+        if (plantOrderImage != null) plantOrderImage.enabled = false;
+        if (cactusOrderImage != null) cactusOrderImage.enabled = false;
+
+        if (currentOrderID == "Plant")
+        {
+            if (plantOrderImage != null) plantOrderImage.enabled = true;
+        }
+        else if (currentOrderID == "Cactus")
+        {
+            if (cactusOrderImage != null) cactusOrderImage.enabled = true;
+        }
     }
 
     public bool CheckPlantMatch(string plantID)
