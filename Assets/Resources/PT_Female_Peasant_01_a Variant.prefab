@@ -132,7 +132,6 @@ MonoBehaviour:
   - {fileID: 5719087377513103091, guid: d696d55238906c244931d043e7fc00ef, type: 3}
   - {fileID: 7821311986306202715, guid: 8d07c944105de3f419bb6495cac17495, type: 3}
   - {fileID: 6595325401666462123, guid: 013d34c2de5300d4b81e95a750b954c7, type: 3}
-  - {fileID: 2496292989304535798, guid: 71fcb6ab89f57484799e6d52c0322f10, type: 3}
   - {fileID: 2245669761757290743, guid: b3b4424640f739645b6433553afdc6b2, type: 3}
   - {fileID: 8926127054587302056, guid: 854a8bf77cbc04b4c90d10bdb4f218e9, type: 3}
   - {fileID: 4644263476883332084, guid: a0b1c0b388489414ba5d2efd06ad92e5, type: 3}
@@ -141,7 +140,7 @@ MonoBehaviour:
   - {fileID: 2700199988340220124, guid: ffde662e5e98a9343beaa68097e3fadb, type: 3}
   - {fileID: 1362536032441474627, guid: d3ee66230b0d1bc479efa3defa6657b8, type: 3}
   - {fileID: 6082268614941367942, guid: 9dfefce7cd8db6c4fa94d1b02501913d, type: 3}
-  spawnPosY: 1
+  spawnPosY: 0.2
   startDelay: 1
   spawnTrash: 0
   dropTimer: 5

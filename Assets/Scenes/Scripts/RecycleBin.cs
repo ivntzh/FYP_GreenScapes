@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 
@@ -14,9 +15,11 @@ public class RecycleBin : MonoBehaviourPun
     public AudioClip     correctSound;
     public AudioClip     wrongSound;
 
+    // Prevent double-processing the same trash
+    private HashSet<int> processedTrashIDs = new HashSet<int>();
+
     private void OnTriggerEnter(Collider other)
     {
-        // 1) All clients detect any trash overlap
         var trashComponent = other.GetComponentInParent<TrashType>();
         if (trashComponent == null) return;
 
@@ -27,7 +30,7 @@ public class RecycleBin : MonoBehaviourPun
             return;
         }
 
-        // 2) RPC to the MasterClient to process this specific trash ViewID
+        // Ask the MasterClient to handle this specific trash instance
         photonView.RPC(
             nameof(RPC_ProcessTrash),
             RpcTarget.MasterClient,
@@ -38,14 +41,19 @@ public class RecycleBin : MonoBehaviourPun
     [PunRPC]
     void RPC_ProcessTrash(int trashViewID, PhotonMessageInfo info)
     {
-        // Only the MasterClient runs the authoritative logic
+        // 1) Only MasterClient runs the authoritative logic
         if (!PhotonNetwork.IsMasterClient) return;
 
-        // Find the networked trash by its ViewID
+        // 2) Prevent double-awarding
+        if (processedTrashIDs.Contains(trashViewID))
+            return;
+        processedTrashIDs.Add(trashViewID);
+
+        // 3) Find the trash¡¯s PhotonView & component
         var tv = PhotonView.Find(trashViewID);
         if (tv == null)
         {
-            Debug.LogError($"[RecycleBin][Host] No PhotonView found for ID {trashViewID}");
+            Debug.LogError($"[RecycleBin][Host] No PhotonView for ID {trashViewID}");
             return;
         }
 
@@ -57,36 +65,48 @@ public class RecycleBin : MonoBehaviourPun
             return;
         }
 
-        // Did they dump the correct category?
         bool isCorrect = (trash.trashCategory == acceptedTrashType);
 
-        // 3) Transfer ownership so Destroy will succeed
+        // 4) Transfer ownership so Host can destroy
         if (tv.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
             tv.TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
 
-        // 4) Destroy the trash network-wide
+        // 5) Destroy network-wide
         PhotonNetwork.Destroy(trashGO);
 
+        // 6) Award & sync coins if correct
         if (isCorrect)
         {
-            // 5a) Award coins on the host
             shopManager.AddCurrency(rewardAmount);
             shopManager.SyncDataToClients();
 
-            // 5b) Show the UI toast on everyone (host+clients)
+            // Show UI toast on everyone
             shopManager.photonView.RPC(
                 nameof(ShopManager.CurrencyAddedConfirmationRPC),
                 RpcTarget.All,
                 rewardAmount
             );
+        }
 
-            // 6a) Play correct sound locally on each client
+        // 7) Broadcast sound RPC to all clients
+        photonView.RPC(
+            nameof(RPC_PlayBinSound),
+            RpcTarget.All,
+            isCorrect
+        );
+    }
+
+    [PunRPC]
+    void RPC_PlayBinSound(bool correct)
+    {
+        // This runs on every client¡ªplays one-shot so BGM isn¡¯t touched
+        if (correct)
+        {
             if (correctSound != null)
                 AudioSource.PlayClipAtPoint(correctSound, transform.position);
         }
         else
         {
-            // Wrong bin ¡ú just play failure sound
             if (wrongSound != null)
                 AudioSource.PlayClipAtPoint(wrongSound, transform.position);
         }
