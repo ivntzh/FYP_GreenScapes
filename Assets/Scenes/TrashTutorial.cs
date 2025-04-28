@@ -4,6 +4,7 @@ public class TrashTutorial : MonoBehaviour
 {
     public TrashCategory acceptedTrashType;
     public AudioClip correctSound;
+    public AudioClip errorSound; // 🎵 Assign an error sound in Inspector
 
     private void OnTriggerEnter(Collider other)
     {
@@ -20,20 +21,24 @@ public class TrashTutorial : MonoBehaviour
 
                 if (TutorialTrashManager.Instance != null)
                 {
-                    TutorialTrashManager.Instance.TrashDestroyed(); // Tell manager one trash was correctly handled
+                    TutorialTrashManager.Instance.TrashDestroyed(); // Count correct trash
                 }
 
-                Destroy(trash.gameObject); // ✅ Destroy parent object and DO NOT respawn now
+                Destroy(trash.gameObject); // Destroy correctly sorted trash
             }
             else
             {
-                // Wrong bin
-                Vector3 originalPosition = trash.spawnPosition;
+                // ❌ Wrong bin
 
-                Destroy(trash.gameObject);
+                if (errorSound != null)
+                    AudioSource.PlayClipAtPoint(errorSound, transform.position); // Play error sound here 🎵❗
 
-                // Respawn immediately
-                GameObject newTrash = Instantiate(trash.prefabReference, originalPosition, Quaternion.identity);
+                if (TutorialTrashManager.Instance != null)
+                {
+                    TutorialTrashManager.Instance.RespawnTrashImmediately(trash);
+                }
+
+                Destroy(trash.gameObject); // Destroy wrong trash
             }
         }
     }

@@ -7,13 +7,13 @@ public class TutorialTrashManager : MonoBehaviour
     [System.Serializable]
     public class TrashData
     {
-        public GameObject prefab;           // Prefab to instantiate later
-        public Vector3 spawnPosition;        // Original starting position
+        public GameObject prefab;         // Trash prefab to instantiate
+        public Vector3 spawnPosition;      // Where to spawn it
     }
 
     public static TutorialTrashManager Instance;
 
-    public List<TrashData> allTrashList = new List<TrashData>();
+    public List<TrashData> allTrashList = new List<TrashData>(); // Fill this manually in Inspector
 
     private int totalTrashDestroyed = 0;
     private int totalTrash;
@@ -28,24 +28,18 @@ public class TutorialTrashManager : MonoBehaviour
 
     private void Start()
     {
-        RegisterAllTrashInScene();
+        SpawnAllTrash(); // Spawn all trash at game start
     }
 
-    private void RegisterAllTrashInScene()
+    private void SpawnAllTrash()
     {
-        TutorialTrashType[] allTrash = FindObjectsOfType<TutorialTrashType>();
-
-        foreach (TutorialTrashType trash in allTrash)
+        foreach (TrashData data in allTrashList)
         {
-            TrashData data = new TrashData();
-            data.prefab = trash.prefabReference; // Link prefab manually inside trash
-            data.spawnPosition = trash.transform.position;
-
-            allTrashList.Add(data);
+            Instantiate(data.prefab, data.spawnPosition, Quaternion.identity);
         }
 
         totalTrash = allTrashList.Count;
-        Debug.Log($"Registered {totalTrash} trash objects at start.");
+        Debug.Log($"Spawned {totalTrash} trash at start.");
     }
 
     public void TrashDestroyed()
@@ -63,11 +57,24 @@ public class TutorialTrashManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
+        SpawnAllTrash();
+        totalTrashDestroyed = 0; // Reset counter
+    }
+
+    public void RespawnTrashImmediately(TutorialTrashType trash)
+    {
         foreach (TrashData data in allTrashList)
         {
-            Instantiate(data.prefab, data.spawnPosition, Quaternion.identity);
+            // Match based on prefab name
+            if (trash.name.Contains(data.prefab.name)) // match by prefab name
+            {
+                Instantiate(data.prefab, data.spawnPosition, Quaternion.identity);
+                Debug.Log($"Respawned {data.prefab.name} because it was placed in the wrong bin.");
+                return;
+            }
         }
 
-        totalTrashDestroyed = 0; // Reset counter for next round
+        Debug.LogWarning("No matching prefab found to respawn wrong trash!");
     }
+
 }
