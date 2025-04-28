@@ -1,9 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion;
+using UnityEngine.XR;
 
 public class TutorialTrashManager : MonoBehaviour
 {
+    [Header("XR Components")]
+    public Transform XROrigin;
+    public Camera XRCamera;
+    public CharacterController characterController;
+
+    [Header("Settings")]
+    public float fallThreshold = -5f;
+    public Vector3 respawnPosition = new Vector3(44.5f, 1.6f, -5.4f);
+    public float respawnDelay = 1f;
+
+    [Header("Settings")]
+    public float tofallThreshold = -5f;
+    public Vector3 totutorialPosition = new Vector3(-400f, 1.6f, -418f);
+    public float torespawnDelay = 1f;
+
+    bool isRespawning = false;
+
     [System.Serializable]
     public class TrashData
     {
@@ -58,7 +78,43 @@ public class TutorialTrashManager : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         SpawnAllTrash();
+        StartCoroutine(RespawnRoutine());
         totalTrashDestroyed = 0; // Reset counter
+    }
+
+    private IEnumerator RespawnRoutine()
+    {
+        isRespawning = true;
+
+        // 1) disable locomotion/physics
+        var bodyTransformer = GetComponent<XRBodyTransformer>();
+        if (bodyTransformer != null) bodyTransformer.enabled = false;
+        if (characterController != null) characterController.enabled = false;
+
+        // 2) zero out camera and move XR Origin
+        InputTracking.disablePositionalTracking = true;
+        XRCamera.transform.localPosition = Vector3.zero;
+        XRCamera.transform.localRotation = Quaternion.identity;
+        XROrigin.position = respawnPosition;
+
+        // 3) wait a frame (and physics step) to settle
+        yield return new WaitForFixedUpdate();
+        yield return null;
+
+        // 4) re-enable physics/locomotion
+        if (characterController != null) characterController.enabled = true;
+        if (bodyTransformer != null) bodyTransformer.enabled = true;
+        InputTracking.disablePositionalTracking = false;
+
+        // 5) clear any residual velocity
+        if (characterController != null)
+            characterController.Move(Vector3.zero);
+
+        // optional delay if you want a “teleport fade” effect
+        if (respawnDelay > 0f)
+            yield return new WaitForSeconds(respawnDelay);
+
+        isRespawning = false;
     }
 
     public void RespawnTrashImmediately(TutorialTrashType trash)
@@ -75,6 +131,46 @@ public class TutorialTrashManager : MonoBehaviour
         }
 
         Debug.LogWarning("No matching prefab found to respawn wrong trash!");
+    }
+
+    public void gotoTutorial()
+    {
+        StartCoroutine(gototutorialRoutine());
+    }
+
+    private IEnumerator gototutorialRoutine()
+    {
+        isRespawning = true;
+
+        // 1) disable locomotion/physics
+        var bodyTransformer = GetComponent<XRBodyTransformer>();
+        if (bodyTransformer != null) bodyTransformer.enabled = false;
+        if (characterController != null) characterController.enabled = false;
+
+        // 2) zero out camera and move XR Origin
+        InputTracking.disablePositionalTracking = true;
+        XRCamera.transform.localPosition = Vector3.zero;
+        XRCamera.transform.localRotation = Quaternion.identity;
+        XROrigin.position = totutorialPosition;
+
+        // 3) wait a frame (and physics step) to settle
+        yield return new WaitForFixedUpdate();
+        yield return null;
+
+        // 4) re-enable physics/locomotion
+        if (characterController != null) characterController.enabled = true;
+        if (bodyTransformer != null) bodyTransformer.enabled = true;
+        InputTracking.disablePositionalTracking = false;
+
+        // 5) clear any residual velocity
+        if (characterController != null)
+            characterController.Move(Vector3.zero);
+
+        // optional delay if you want a “teleport fade” effect
+        if (torespawnDelay > 0f)
+            yield return new WaitForSeconds(torespawnDelay);
+
+        isRespawning = false;
     }
 
 }

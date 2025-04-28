@@ -2,6 +2,9 @@
 using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using System.Collections;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion;
+using UnityEngine.XR;
 
 public class PlantingTutorialOutlineManager : MonoBehaviour
 {
@@ -43,6 +46,24 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
     [Header("Submit System")]
     public GameObject bluePot;
     public XRSocketInteractor submitSocket;
+
+    [Header("XR Components")]
+    public Transform XROrigin;
+    public Camera XRCamera;
+    public CharacterController characterController;
+
+    [Header("Settings")]
+    public float tfallThreshold = -5f;
+    public Vector3 tutorialPosition = new Vector3(-400f, 1.6f, -400f);
+    public float trespawnDelay = 1f;
+
+    [Header("Settings")]
+    public float nfallThreshold = -5f;
+    public Vector3 normalPosition = new Vector3(-13.5f, 1.6f, 19.7f);
+    public float nrespawnDelay = 1f;
+
+    // so we don’t spam the coroutine
+    bool isRespawning = false;
 
     private bool soilWasWet = false;
     private bool wateringPhaseFinished = false;
@@ -88,7 +109,7 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
             if (!soilWasWet)
             {
                 soilWasWet = true;
-                Debug.Log("🌧️ Water detected — Showing potUI_Timer!");
+                Debug.Log("🌧 Water detected — Showing potUI_Timer!");
                 EnableOnly(null, potUI_Timer);
             }
         }
@@ -97,7 +118,7 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
             if (soilWasWet && !wateringPhaseFinished)
             {
                 wateringPhaseFinished = true;
-                Debug.Log("🏜️ Watering finished — Showing potUI_WateringStage!");
+                Debug.Log("🏜 Watering finished — Showing potUI_WateringStage!");
                 EnableOnly(potOutline, potUI_WateringStage); // ✅ Show watering stage
             }
         }
@@ -118,14 +139,14 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
             if (selected != null) Destroy(selected.transform.gameObject);
             Debug.Log("✅ Submitted — Show done UI!");
             EnableOnly(null, doneUI);
-            Invoke(nameof(RestartTutorial), 5f);
+            Invoke(nameof(gotoTutorial), 5f);
         }
 
-        // 🛠️ Dirt attached to shovel detection
+        // 🛠 Dirt attached to shovel detection
         if (shovelDirtChild != null && shovelDirtChild.activeSelf && !dirtAttachedTriggered)
         {
             dirtAttachedTriggered = true;
-            Debug.Log("🛠️ Dirt attached to shovel!");
+            Debug.Log("🛠 Dirt attached to shovel!");
             OnDirtAttachedToShovel();
         }
 
@@ -149,11 +170,88 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
         }
     }
 
-    void RestartTutorial()
+    public void gotoTutorial()
     {
         Debug.Log("🔄 Restarting tutorial...");
         ResetFlags();
-        Start();
+        StartCoroutine(gototutorialRoutine());
+    }
+
+    private IEnumerator gototutorialRoutine()
+    {
+        isRespawning = true;
+
+        // 1) disable locomotion/physics
+        var bodyTransformer = GetComponent<XRBodyTransformer>();
+        if (bodyTransformer != null) bodyTransformer.enabled = false;
+        if (characterController != null) characterController.enabled = false;
+
+        // 2) zero out camera and move XR Origin
+        InputTracking.disablePositionalTracking = true;
+        XRCamera.transform.localPosition = Vector3.zero;
+        XRCamera.transform.localRotation = Quaternion.identity;
+        XROrigin.position = tutorialPosition;
+
+        // 3) wait a frame (and physics step) to settle
+        yield return new WaitForFixedUpdate();
+        yield return null;
+
+        // 4) re-enable physics/locomotion
+        if (characterController != null) characterController.enabled = true;
+        if (bodyTransformer != null) bodyTransformer.enabled = true;
+        InputTracking.disablePositionalTracking = false;
+
+        // 5) clear any residual velocity
+        if (characterController != null)
+            characterController.Move(Vector3.zero);
+
+        // optional delay if you want a “teleport fade” effect
+        if (trespawnDelay > 0f)
+            yield return new WaitForSeconds(trespawnDelay);
+
+        isRespawning = false;
+    }
+
+    public void backToMain()
+    {
+        Debug.Log("🔄 Restarting tutorial...");
+        ResetFlags();
+        StartCoroutine(gobackRoutine());
+    }
+
+    private IEnumerator gobackRoutine()
+    {
+        isRespawning = true;
+
+        // 1) disable locomotion/physics
+        var bodyTransformer = GetComponent<XRBodyTransformer>();
+        if (bodyTransformer != null) bodyTransformer.enabled = false;
+        if (characterController != null) characterController.enabled = false;
+
+        // 2) zero out camera and move XR Origin
+        InputTracking.disablePositionalTracking = true;
+        XRCamera.transform.localPosition = Vector3.zero;
+        XRCamera.transform.localRotation = Quaternion.identity;
+        XROrigin.position = normalPosition;
+
+        // 3) wait a frame (and physics step) to settle
+        yield return new WaitForFixedUpdate();
+        yield return null;
+
+        // 4) re-enable physics/locomotion
+        if (characterController != null) characterController.enabled = true;
+        if (bodyTransformer != null) bodyTransformer.enabled = true;
+        InputTracking.disablePositionalTracking = false;
+
+        // 5) clear any residual velocity
+        if (characterController != null)
+            characterController.Move(Vector3.zero);
+
+        // optional delay if you want a “teleport fade” effect
+        if (nrespawnDelay > 0f)
+            yield return new WaitForSeconds(nrespawnDelay);
+
+        isRespawning = false;
     }
 
     void ResetFlags()
