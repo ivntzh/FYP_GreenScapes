@@ -28,8 +28,8 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
     public RawImage potUI_WateringStage;
 
     [Header("New Submit/Done UI")]
-    public RawImage submitUI;     // ⬅️ New UI after blue pot destroyed
-    public RawImage doneUI;       // ⬅️ New UI after submit success
+    public RawImage submitUI;
+    public RawImage doneUI;
 
     [Header("Planting Progress")]
     public GameObject shovelDirtChild;
@@ -37,20 +37,21 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
     public GameObject potMixedDirt;
     public XRSocketInteractor seedSocket;
 
-    [Header("Material Monitoring")]
-    public MeshRenderer soilRenderer;
-    public Material drySoilMaterial;
-    public GameObject soil;
+    [Header("Watering Timer Detection")]
+    public GameObject[] wateringTimerUIs;   // ✅ Array of watering timers
 
     [Header("Submit System")]
-    public GameObject bluePot;                // ⬅️ Your blue pot object
-    public XRSocketInteractor submitSocket;   // ⬅️ Submit area socket
+    public GameObject bluePot;
+    public XRSocketInteractor submitSocket;
 
     private bool soilWasWet = false;
-    private bool seedPlaced = false;
     private bool wateringPhaseFinished = false;
     private bool submitStarted = false;
     private bool doneTriggered = false;
+    private bool dirtAttachedTriggered = false;
+    private bool dirtDroppedTriggered = false;
+    private bool soilMixedTriggered = false;
+    private bool seedPlaced = false;
 
     void Start()
     {
@@ -59,91 +60,120 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
 
     void Update()
     {
-        if (!seedPlaced && seedSocket.hasSelection)
+        // 🌱 Seed placement detection
+        if (!seedPlaced && seedSocket != null)
         {
-            seedPlaced = true;
-            EnableOnly(wateringCanOutline, wateringCanUI);
+            var selectedSeed = seedSocket.GetOldestInteractableSelected();
+            if (selectedSeed != null && selectedSeed.transform.CompareTag("Seed"))
+            {
+                seedPlaced = true;
+                Debug.Log("🌱 Seed placed — Show watering can!");
+                EnableOnly(wateringCanOutline, wateringCanUI); // ✅ directly show watering can
+            }
         }
 
-        if (soilRenderer != null && soil != null && soil.activeInHierarchy)
+        // 💧 Watering timer UI detection
+        bool anyTimerActive = false;
+        foreach (var timer in wateringTimerUIs)
         {
-            if (!soilWasWet && soilRenderer.material != drySoilMaterial)
+            if (timer != null && timer.activeInHierarchy)
+            {
+                anyTimerActive = true;
+                break;
+            }
+        }
+
+        if (anyTimerActive)
+        {
+            if (!soilWasWet)
             {
                 soilWasWet = true;
-                Debug.Log("🌧️ Soil became wet — Showing potUI_Timer");
+                Debug.Log("🌧️ Water detected — Showing potUI_Timer!");
                 EnableOnly(null, potUI_Timer);
             }
-            else if (soilWasWet && soilRenderer.material == drySoilMaterial && !wateringPhaseFinished)
+        }
+        else
+        {
+            if (soilWasWet && !wateringPhaseFinished)
             {
                 wateringPhaseFinished = true;
-                Debug.Log("🏜️ Soil became dry again — Showing wateringCanUI");
-                EnableOnly(wateringCanOutline, wateringCanUI);
+                Debug.Log("🏜️ Watering finished — Showing potUI_WateringStage!");
+                EnableOnly(potOutline, potUI_WateringStage); // ✅ Show watering stage
             }
         }
 
-        // 💥 New: Check if BluePot destroyed
+        // 📦 Blue pot destroyed detection
         if (!submitStarted && bluePot == null)
         {
             submitStarted = true;
-            Debug.Log("💥 Blue pot destroyed — Showing submit UI!");
+            Debug.Log("📦 Blue pot destroyed — Show submit UI!");
             EnableOnly(null, submitUI);
         }
 
-        // 🛒 New: Check if something submitted
+        // 🛒 Submitted plant detection
         if (submitStarted && !doneTriggered && submitSocket != null && submitSocket.hasSelection)
         {
             doneTriggered = true;
-
-            // Destroy the submitted object
             var selected = submitSocket.GetOldestInteractableSelected();
-            if (selected != null)
-            {
-                Destroy(selected.transform.gameObject);
-            }
-
-            Debug.Log("✅ Submitted successfully — Showing done UI!");
+            if (selected != null) Destroy(selected.transform.gameObject);
+            Debug.Log("✅ Submitted — Show done UI!");
             EnableOnly(null, doneUI);
-
-            // ✅ After 5 seconds, call Start() again
             Invoke(nameof(RestartTutorial), 5f);
         }
+
+        // 🛠️ Dirt attached to shovel detection
+        if (shovelDirtChild != null && shovelDirtChild.activeSelf && !dirtAttachedTriggered)
+        {
+            dirtAttachedTriggered = true;
+            Debug.Log("🛠️ Dirt attached to shovel!");
+            OnDirtAttachedToShovel();
+        }
+
+        // 🪣 Dirt dropped into pot detection
+        if (potFlatDirtChild != null && potFlatDirtChild.activeSelf && !dirtDroppedTriggered)
+        {
+            dirtDroppedTriggered = true;
+            Debug.Log("🪣 Dirt dropped into pot!");
+            OnDirtDroppedInPot();
+        }
+
+        // 🌱 Soil mixed detection
+        if (!soilMixedTriggered && potFlatDirtChild != null && potMixedDirt != null)
+        {
+            if (!potFlatDirtChild.activeSelf && potMixedDirt.activeSelf)
+            {
+                soilMixedTriggered = true;
+                Debug.Log("🌱 Soil mixed!");
+                OnSoilMixed();
+            }
+        }
     }
+
     void RestartTutorial()
     {
         Debug.Log("🔄 Restarting tutorial...");
-
-        Start(); // Call Start() again to reset flow
+        ResetFlags();
+        Start();
     }
 
-    public void OnShovelGrabbed()
+    void ResetFlags()
     {
-        EnableOnly(dirtPlateOutline, dirtPlateUI);
+        soilWasWet = false;
+        wateringPhaseFinished = false;
+        submitStarted = false;
+        doneTriggered = false;
+        dirtAttachedTriggered = false;
+        dirtDroppedTriggered = false;
+        soilMixedTriggered = false;
+        seedPlaced = false;
     }
 
-    public void OnDirtAttachedToShovel()
-    {
-        EnableOnly(potOutline, potUI_DirtDropped);
-    }
-
-    public void OnDirtDroppedInPot()
-    {
-        EnableOnly(rakeOutline, rakeUI);
-    }
-
-    public void OnRakeGrabbed()
-    {
-        EnableOnly(potOutline, potUI_MixedSoil);
-    }
-
-    public void OnSoilMixed()
-    {
-        EnableOnly(seedOutline, seedUI);
-    }
-
-    public void OnSeedGrabbed()
-    {
-        EnableOnly(potOutline, potUI_WithSeed);
-    }
+    public void OnShovelGrabbed() => EnableOnly(dirtPlateOutline, dirtPlateUI);
+    public void OnDirtAttachedToShovel() => EnableOnly(potOutline, potUI_DirtDropped);
+    public void OnDirtDroppedInPot() => EnableOnly(rakeOutline, rakeUI);
+    public void OnRakeGrabbed() => EnableOnly(potOutline, potUI_MixedSoil);
+    public void OnSoilMixed() => EnableOnly(seedOutline, seedUI);
+    public void OnSeedGrabbed() => EnableOnly(potOutline, potUI_WithSeed);
 
     public void OnWateringCanGrabbed()
     {
@@ -152,9 +182,7 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
         if (potUI_DirtDropped != null) potUI_DirtDropped.enabled = false;
         if (potUI_MixedSoil != null) potUI_MixedSoil.enabled = false;
         if (potUI_WithSeed != null) potUI_WithSeed.enabled = false;
-
-        if (potUI_WateringStage != null)
-            potUI_WateringStage.enabled = true;
+        if (potUI_WateringStage != null) potUI_WateringStage.enabled = true;
     }
 
     void EnableOnly(Outline targetOutline, RawImage targetUI)
@@ -181,10 +209,8 @@ public class PlantingTutorialOutlineManager : MonoBehaviour
         if (submitUI != null) submitUI.enabled = false;
         if (doneUI != null) doneUI.enabled = false;
 
-        // Enable the selected one
-        if (targetOutline != null)
-            targetOutline.enabled = true;
-        if (targetUI != null)
-            targetUI.enabled = true;
+        // Enable the selected
+        if (targetOutline != null) targetOutline.enabled = true;
+        if (targetUI != null) targetUI.enabled = true;
     }
 }
