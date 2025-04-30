@@ -5283,7 +5283,7 @@ PrefabInstance:
       objectReference: {fileID: 1055273094}
     - target: {fileID: 2872799805246837056, guid: 090a0b852139b2646bfbbfb1617d8e4c, type: 3}
       propertyPath: rewardAmount
-      value: 10
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7862869920084810400, guid: 090a0b852139b2646bfbbfb1617d8e4c, type: 3}
       propertyPath: m_Name
@@ -24706,7 +24706,7 @@ PrefabInstance:
       objectReference: {fileID: 1055273094}
     - target: {fileID: 8670502475110853590, guid: 9a012e4ac92f7ac429fc150b3496679e, type: 3}
       propertyPath: rewardAmount
-      value: 10
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 8752270036699658023, guid: 9a012e4ac92f7ac429fc150b3496679e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -31033,7 +31033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9994b06071b51e4488f17bfe4104612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testCurrency: 10000
+  testCurrency: 300
   shopPanel: {fileID: 33837947}
   openShopButton: {fileID: 1160606228}
   resetShopButton: {fileID: 237870416}
@@ -34671,6 +34671,10 @@ PrefabInstance:
       propertyPath: orderManager
       value: 
       objectReference: {fileID: 778384871}
+    - target: {fileID: 1735037418969426049, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
+      propertyPath: rewardAmount
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 1735037418969426049, guid: 665c51ad22df6e74186a72677ca91fb1, type: 3}
       propertyPath: growthManager
       value: 
@@ -53742,7 +53746,7 @@ PrefabInstance:
       objectReference: {fileID: 1055273094}
     - target: {fileID: 9084099341335578558, guid: cba9d60bf85b1bd409d2d677fdd27821, type: 3}
       propertyPath: rewardAmount
-      value: 10
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -59922,7 +59926,7 @@ PrefabInstance:
       objectReference: {fileID: 1055273094}
     - target: {fileID: 2632074632285099022, guid: 8f3735a961a2f9147a72336667c8fac4, type: 3}
       propertyPath: rewardAmount
-      value: 10
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 4190684472297604331, guid: 8f3735a961a2f9147a72336667c8fac4, type: 3}
       propertyPath: m_Name
