@@ -50,6 +50,10 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("References")]
     public EnvironmentSettingsManager environmentSettingsManager;
 
+    [Header("Audio Clips")]
+    public AudioClip correctSubmissionAudioClip;
+    public AudioClip wrongSubmissionAudioClip;
+
     // Purchased and selected IDs
     public HashSet<string> currentPurchasedIds = new HashSet<string>();
     private HashSet<string> selectedIds = new HashSet<string>();
@@ -135,7 +139,7 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
             environmentSettingsManager.photonView.RPC("RefreshEnvironmentRPC", RpcTarget.Others);
     }
 
-    void SyncDataToClients()
+    public void SyncDataToClients()
     {
         var fishGM = FindObjectOfType<FishingGameManager>();
         if (fishGM != null) fishGM.UpdateCurrencyUI(currentCurrency);
@@ -350,7 +354,7 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-    private void CurrencyAddedConfirmationRPC(int amount)
+    public void CurrencyAddedConfirmationRPC(int amount)
     {
         ShowMessage($"Gained {amount} Coins!", Color.green);
         UpdateUI();
@@ -365,6 +369,29 @@ public class ShopManager : MonoBehaviourPunCallbacks, IPunObservable
             SaveLocalData();
             SyncDataToClients();
         }
+    }
+
+    [PunRPC]
+    public void PlayCorrectSubmissionFeedbackRPC(int amount)
+    {
+        // Play correct sound
+        if (correctSubmissionAudioClip != null)
+            AudioSource.PlayClipAtPoint(correctSubmissionAudioClip, transform.position);
+
+        // Show success message
+        ShowMessage($"+  {amount}  coins!", Color.green);
+        UpdateUI();
+    }
+
+    [PunRPC]
+    public void PlayWrongSubmissionFeedbackRPC()
+    {
+        // Play wrong sound
+        if (wrongSubmissionAudioClip != null)
+            AudioSource.PlayClipAtPoint(wrongSubmissionAudioClip, transform.position);
+
+        // Show failure message
+        ShowMessage("Wrong plant!", Color.red);
     }
 
     [System.Serializable]

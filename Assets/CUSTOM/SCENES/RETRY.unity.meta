@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/CUSTOM/SCENES/RETRY.unity.meta
 guid: a3305e31e3927e64994dfe7bcc161092
+========
+guid: d884527f3e242c144af52b11faf49d2f
+>>>>>>>> MultiplayerPlanting:Assets/EmaceArt/Slavic World Free/URP_Support/URP/URP_Standard.unitypackage.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

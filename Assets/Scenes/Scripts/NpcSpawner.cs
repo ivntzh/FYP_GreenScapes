@@ -1,8 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
-public class NpcSpawner : MonoBehaviour
+public class NpcSpawner : MonoBehaviourPun
 {
     [Header("Zeppelin Fly-In Settings")]
     public GameObject zeppelin;
@@ -10,130 +10,84 @@ public class NpcSpawner : MonoBehaviour
     public float flyInDuration = 10f;
     public AnimationCurve flyInCurve;
 
+    [Header("NPC Spawn Settings")]
     public GameObject[] npc;
+    public float startDelay = 5f;
+    public int   maxNpcCount = 10;
 
-    public float startDelay = 5.0f;
-    public int maxNpcCount = 10;
+    bool SpawnTime = false;
 
-    public bool SpawnTime = true;
-
-    public float duration = 2f; // Duration of the animation in seconds
-
-    private bool isOpen = false; // Track whether the door is open
-
-    public GameObject canvas; // Assign your Canvas GameObject in the Inspector
+    [Header("UI & Audio")]
+    public GameObject canvas;
     public AudioClip timesUp;
 
+    [Header("Other Refs")]
     public GameObject lightManager;
     public GameObject player;
 
-    /*public void facingPlayer()
+    // 1) This is what your UI button should call (on ANY client)
+    public void OnStartButtonPressed()
     {
-        if (canvas.activeSelf)
-        {
-            canvas.transform.LookAt(new Vector3(player.transform.forward.x, 0, player.transform.forward.z));
-        }
-        else
-        {
-            Debug.Log("No Canvas");
-        }
-    }*/
-
-    public void Hide()
-    {
-        if (canvas != null)
-        {
-            canvas.SetActive(false); // Disable the Canvas GameObject
-        }
+        // Broadcast to everyone that we want to begin
+        photonView.RPC(nameof(RPC_Begin), RpcTarget.All);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    // 2) Runs on ALL clients: shows the fly-in + hides UI locally
+    [PunRPC]
+    void RPC_Begin()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public void Spawn()
-    {
-        // Count the number of NPCs currently in the scene
-        int currentNpcCount = GameObject.FindGameObjectsWithTag("NPC").Length;
-
-        float delay = Random.Range(7f, 12f);
-
-        // Check if the count is below the maximum limit
-        if (currentNpcCount < maxNpcCount && SpawnTime)
-        {
-            int npcIndex = Random.Range(0, npc.Length);
-            Vector3 spawnPos = new Vector3(91, 1, -7);
-
-            // Instantiate the NPC
-            Instantiate(npc[npcIndex], spawnPos, npc[npcIndex].transform.rotation);
-            Invoke("Spawn", delay);
-        }
-        else if (currentNpcCount > maxNpcCount && SpawnTime)
-        {
-            Debug.Log("Maximum NPC count reached. No more NPCs will be spawned.");
-            Invoke("Spawn", 1f);
-        }
-        else if (!SpawnTime)
-        {
-            stopSpawn();
-        }
-    }
-
-    public void PlaySound2()
-    {
-        // Create a temporary audio source to play the sound
-        AudioSource.PlayClipAtPoint(timesUp, player.transform.position, 5.0f);
-    }
-
-    public void stopSpawn()
-    {
-        SpawnTime = false;
-    }
-
-    public void StartGame()
-    {
-        SpawnTime = true;
-        Spawn();
-        Hide();
-        lightManager.SetActive(true);
-    }
-
-    public void Begin()
-    {
-        if (zeppelin != null && zeppelinDestination != null)
-        {
-            StartCoroutine(FlyInZeppelin());
-        }
+        StartCoroutine(FlyInZeppelin());
     }
 
     private IEnumerator FlyInZeppelin()
     {
         Vector3 startPoint = zeppelin.transform.position;
-        Vector3 endPoint = zeppelinDestination.position;
-        float timer = 0f;
+        Vector3 endPoint   = zeppelinDestination.position;
+        float timer        = 0f;
 
         while (timer < flyInDuration)
         {
             timer += Time.deltaTime;
             float t = Mathf.Clamp01(timer / flyInDuration);
-            float curvedT = flyInCurve.Evaluate(t);
-
-            zeppelin.transform.position = Vector3.Lerp(startPoint, endPoint, curvedT);
-
+            zeppelin.transform.position = Vector3.Lerp(
+                startPoint, endPoint, flyInCurve.Evaluate(t)
+            );
             yield return null;
         }
 
         zeppelin.transform.position = endPoint;
 
-        // Start the game AFTER the zeppelin finishes flying in
-        StartGame();
+        // Now we hide the canvas & turn on lights on every client:
+        canvas?.SetActive(false);
+        lightManager?.SetActive(true);
+
+        // And *ask* the MasterClient to actually start spawning NPCs:
+        if (PhotonNetwork.IsMasterClient)
+            StartGame();
+    }
+
+    // 3) MasterClient¨Conly: kicks off the spawn loop
+    void StartGame()
+    {
+        SpawnTime = true;
+        Invoke(nameof(Spawn), startDelay);
+    }
+
+    void Spawn()
+    {
+        if (!SpawnTime || !PhotonNetwork.IsMasterClient) return;
+
+        int current = GameObject.FindGameObjectsWithTag("NPC").Length;
+        if (current < maxNpcCount)
+        {
+            int idx = Random.Range(0, npc.Length);
+            Vector3 pos = new Vector3(91, 1, -7);
+            PhotonNetwork.Instantiate(
+                npc[idx].name, pos, npc[idx].transform.rotation
+            );
+        }
+        // schedule next
+        float delay = Random.Range(7f, 12f);
+        Invoke(nameof(Spawn), delay);
     }
 }

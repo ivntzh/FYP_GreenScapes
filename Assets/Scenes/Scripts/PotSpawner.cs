@@ -1,20 +1,26 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class PotSpawner : MonoBehaviour
+public class PotSpawner : MonoBehaviourPun
 {
-    public GameObject soilAndPlantPrefab;       // Prefab to spawn
-    public Transform spawnPoint;                // Scene object for position & rotation
+    public GameObject potPrefab;
+    private Vector3 spawnPosition;
+    private Quaternion spawnRotation;
+    private bool hasSpawnedNew = false;
 
-    private bool hasSpawned = false;
+    void Start()
+    {
+        spawnPosition = transform.position;
+        spawnRotation = transform.rotation;
+    }
 
     public void OnGrab(SelectEnterEventArgs args)
     {
-        if (hasSpawned || soilAndPlantPrefab == null || spawnPoint == null) return;
+        if (hasSpawnedNew || potPrefab == null) return;
 
-        Debug.Log("🌾 Plant grabbed — spawning new soil plot");
-
-        Instantiate(soilAndPlantPrefab, spawnPoint.position, spawnPoint.rotation);
-        hasSpawned = true;
+        Debug.Log("🪴 Pot grabbed — spawning new one");
+        PhotonNetwork.Instantiate(potPrefab.name, spawnPosition, spawnRotation);
+        hasSpawnedNew = true;
     }
 }

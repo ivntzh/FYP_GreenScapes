@@ -12,7 +12,6 @@ public class NetworkedPlayer : MonoBehaviour
     public Transform leftHand;
     public Transform rightHand;
 
-    // Use the full-body animator for both body and hand gestures.
     public Animator fullBodyAnimator;
 
     private PhotonView photonView;
@@ -31,7 +30,6 @@ public class NetworkedPlayer : MonoBehaviour
 
         if (photonView.IsMine)
         {
-            // Hide local renderers so the local player doesn't see their own avatar.
             foreach (var item in GetComponentsInChildren<Renderer>())
             {
                 item.enabled = false;
@@ -41,22 +39,18 @@ public class NetworkedPlayer : MonoBehaviour
 
     void Update()
     {
-        // Only update positions and animator parameters on the local instance.
         if (photonView.IsMine)
         {
             MapPosition(head, headRig);
             MapPosition(leftHand, leftHandRig);
             MapPosition(rightHand, rightHandRig);
 
-            // Update the full-body animator with hand input values.
             UpdateFullBodyAnimator();
         }
     }
 
-    // Reads the XR device input and assigns the values to the full-body animator parameters.
     void UpdateFullBodyAnimator()
     {
-        // Get left-hand input
         InputDevice leftDevice = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
         float leftTrigger = 0f, leftGrip = 0f;
         if (leftDevice.TryGetFeatureValue(CommonUsages.trigger, out leftTrigger))
@@ -76,7 +70,6 @@ public class NetworkedPlayer : MonoBehaviour
             fullBodyAnimator.SetFloat("Left Grab", 0f);
         }
 
-        // Get right-hand input
         InputDevice rightDevice = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
         float rightTrigger = 0f, rightGrip = 0f;
         if (rightDevice.TryGetFeatureValue(CommonUsages.trigger, out rightTrigger))
@@ -97,7 +90,6 @@ public class NetworkedPlayer : MonoBehaviour
         }
     }
 
-    // Updates the position and rotation of a target transform to match the corresponding XR rig transform.
     void MapPosition(Transform target, Transform xrOriginTransform)
     {
         target.position = xrOriginTransform.position;

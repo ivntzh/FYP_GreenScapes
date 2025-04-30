@@ -53,6 +53,47 @@ MonoBehaviour:
   - RefreshAllEnvironment
   - CurrencyAddedConfirmationRPC
   - RequestAddCurrencyRPC
+  - PlaySoundRPC
+  - RPC_DoSpawnSeed
+  - RPC_RequestSpawnSeed
+  - EnableDirt
+  - RPC_GrowFinal
+  - RPC_GrowMedium
+  - RPC_GrowSmall
+  - SyncOrderToClients
+  - RequestBeginWatering
+  - RequestStopWatering
+  - RequestSubmitPlant
+  - RPC_BeginWatering
+  - RPC_StopWatering
+  - SyncGenerateNewOrder
+  - RPC_ShowBeginWatering
+  - RPC_ShowFinal
+  - RPC_ShowStage1
+  - RPC_ShowStage2
+  - RPC_ShowStopWatering
+  - RPC_GrowStage
+  - RPC_HideWaterUI
+  - RPC_ShowWaterUI
+  - RPC_StartTimerForStage
+  - RPC_LocalDestroyPlant
+  - RPC_ResetGrowth
+  - ResetPot
+  - RPC_MixDirt
+  - RPC_DropDirt
+  - RPC_PickupDirt
+  - PlayNoteRPC
+  - PlayCorrectSubmissionFeedbackRPC
+  - PlayWrongSubmissionFeedbackRPC
+  - PlayHitSoundRPC
+  - PlayRecycleSoundRPC
+  - RPC_Begin
+  - RPC_PlayBinSound
+  - RPC_ProcessTrash
+  - RPC_DestroyTrash
+  - RPC_DestroyPlant
+  - SyncResetPosition
+  - RPC_ResetObject
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

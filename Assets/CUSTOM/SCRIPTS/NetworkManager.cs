@@ -80,7 +80,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         RoomOptions options = new RoomOptions()
         {
-            MaxPlayers = 2,
+            MaxPlayers = 4,
             CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
             {
                 { "hostId", PhotonNetwork.LocalPlayer.ActorNumber },

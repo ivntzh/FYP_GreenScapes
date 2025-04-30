@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Fries and Seagull/Bar 02/Pipelines/Built-in Pipeline.unitypackage.meta
 guid: 093ce627446337646a96787ed6e23f91
+========
+guid: 96435cbd74d626942a48e9e27364fe92
+>>>>>>>> MultiplayerPlanting:Assets/Fries and Seagull/Bar 02/Pipelines/Universal Pipeline.unitypackage.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

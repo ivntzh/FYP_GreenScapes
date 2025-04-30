@@ -1,31 +1,27 @@
+// PotManager.cs
+using Photon.Pun;
 using UnityEngine;
 
-public class PotManager : MonoBehaviour
+public class PotManager : MonoBehaviourPun
 {
-    public GameObject flatDirt; // Assign this in Inspector
-    public AudioSource dirtDropSound; // Assign this in Inspector
+    [Header("Flat Dirt Visual")]
+    public GameObject flatDirt;      // Assign same ¡°flat dirt¡± you gave to Dirt.flatDirt
+    public AudioSource dirtDropSound;
 
-    private void Start()
-    {
-        if (flatDirt != null)
-            flatDirt.SetActive(false); // Make sure it's hidden at start
-    }
+    void Start() => flatDirt?.SetActive(false);
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DroppedDirt"))
-        {
-            Debug.Log("Dirt detected in pot!");
+        if (!other.CompareTag("DroppedDirt")) return;
+        photonView.RPC(nameof(EnableDirt), RpcTarget.AllBuffered);
+        Destroy(other.gameObject);
+        enabled = false;  // stop until reset
+    }
 
-            if (flatDirt != null)
-                flatDirt.SetActive(true); // Show the flat dirt
-
-            if (dirtDropSound != null)
-                dirtDropSound.Play(); // Play sound on trigger
-
-            Destroy(other.gameObject); // Optional: destroy dropped dirt
-
-            this.enabled = false; // Disable script after triggered
-        }
+    [PunRPC]
+    void EnableDirt()
+    {
+        flatDirt?.SetActive(true);
+        dirtDropSound?.Play();
     }
 }
